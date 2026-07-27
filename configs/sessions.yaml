@@ -1,0 +1,30 @@
+# Structural placeholders only. Times are intentionally unset pending a
+# pre-registered methodology decision. Never replace these with fixed UTC offsets.
+sessions:
+  asia:
+    enabled: false
+    timezone: Asia/Tokyo
+    start_local: null
+    end_local: null
+  london:
+    enabled: false
+    timezone: Europe/London
+    start_local: null
+    end_local: null
+  new_york:
+    enabled: false
+    timezone: America/New_York
+    start_local: null
+    end_local: null
+  london_new_york_overlap:
+    enabled: false
+    timezone: Europe/London
+    start_local: null
+    end_local: null
+fx_trading_day_rollover:
+  enabled: false
+  timezone: America/New_York
+  local_time: null
+warning: >-
+  Session definitions are placeholders. Future logic must use IANA timezones
+  and daylight-saving-aware conversion, never fixed UTC offsets.

@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=69,<81"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "eurusd-quant-research"
+version = "0.1.0"
+description = "Reproducible infrastructure for EUR/USD behavioural research"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+license = { text = "Proprietary research" }
+authors = [{ name = "EUR/USD Quant Research" }]
+dependencies = [
+  "matplotlib>=3.8,<4",
+  "numpy>=1.26,<3",
+  "pandas>=2.2,<3",
+  "pyarrow>=14,<22",
+  "pydantic>=2.7,<3",
+  "PyYAML>=6,<7",
+  "scipy>=1.11,<2",
+  "statsmodels>=0.14,<1",
+]
+
+[project.optional-dependencies]
+dev = [
+  "mypy>=1.10,<2",
+  "pytest>=7.4,<9",
+  "pytest-cov>=4.1,<7",
+  "ruff>=0.6,<1",
+  "types-PyYAML>=6.0.12,<7",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-config --strict-markers"
+testpaths = ["tests"]
+markers = [
+  "integration: tests spanning package components or filesystem boundaries",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["eurusd_research"]
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+skip_covered = true
+
+[tool.ruff]
+target-version = "py311"
+line-length = 88
+src = ["src", "scripts", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM", "RUF"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.11"
+files = ["src", "scripts"]
+strict = true
+warn_unreachable = true
+pretty = true
+

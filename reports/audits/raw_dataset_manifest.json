@@ -1,0 +1,20 @@
+{
+  "dataset_version": "sha256:b2a41310927aa9a9",
+  "detected_columns": [
+    "timestamp_utc",
+    "open",
+    "high",
+    "low",
+    "close",
+    "volume_or_tick_count",
+    "source"
+  ],
+  "file_size_bytes": 32180041,
+  "first_timestamp": "2010-01-03T22:00:00Z",
+  "last_timestamp": "2026-06-26T20:45:00Z",
+  "logical_dataset_name": "eurusd_m15_utc",
+  "registration_timestamp_utc": "2026-07-27T19:47:36.321863Z",
+  "relative_file_path": "data/raw/EURUSD_M15_UTC.csv",
+  "row_count": 406945,
+  "sha256": "b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c"
+}

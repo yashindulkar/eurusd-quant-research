@@ -1,0 +1,13 @@
+raw_dataset_path: data/raw/EURUSD_M15_UTC.csv
+expected_columns:
+  - timestamp_utc
+  - open
+  - high
+  - low
+  - close
+  - volume_or_tick_count
+  - source
+timestamp_column: timestamp_utc
+expected_timezone: UTC
+expected_frequency: 15min
+immutable_raw_data: true

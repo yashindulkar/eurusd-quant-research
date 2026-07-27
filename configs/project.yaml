@@ -1,0 +1,10 @@
+project_name: EUR/USD Quantitative Behavioural Research
+instrument: EURUSD
+nominal_timeframe: M15
+storage_timezone: UTC
+random_seed: 20260727
+report_directories:
+  figures: reports/figures
+  tables: reports/tables
+  audits: reports/audits
+default_confidence_level: 0.95
