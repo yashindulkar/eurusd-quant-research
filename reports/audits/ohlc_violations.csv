@@ -1,0 +1,1 @@
+row_number,timestamp_utc,open,high,low,close,all_finite,all_positive,high_ge_low,high_ge_open,high_ge_close,low_le_open,low_le_close

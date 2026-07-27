@@ -75,7 +75,45 @@ make test-unit            # unit tests
 make test-integration     # integration tests
 make test                 # all tests with coverage thresholds
 make check                # lint, typecheck, tests, and environment validation
+make audit-raw-data       # read-only registered raw-data quality audit
 ```
+
+`make audit-raw-data` verifies the registered identity, loads the CSV once for
+the main calculations, performs schema, timestamp, cadence, OHLC, precision,
+count-field, source, coverage, weekly-boundary, and discontinuity diagnostics,
+then writes the computed JSON, Markdown, and diagnostic CSVs under
+`reports/audits/`. The command returns exit code 1 only for fatal identity,
+mandatory-schema, timestamp, duplicate-primary-key, OHLC, unreadable-file, or
+raw-mutation findings. Warnings and `CONDITIONALLY_READY` findings return 0.
+
+The audit does not clean, interpolate, sort, exclude, or rewrite raw
+observations. Its gap and calendar summaries are coverage diagnostics only.
+
+The JSON manifest at `reports/audits/raw_dataset_manifest.json` is the
+authoritative immutable identity record. The audit fatally reconciles its
+logical identifier, version, relative path, SHA-256, size, row count, schema,
+and timestamp bounds against configuration expectations and the actual file.
+Re-registering identical identity leaves manifest bytes unchanged.
+
+Absent grid timestamps are allocated to the UTC year and month in which each
+timestamp physically falls. Coverage tables separately report gaps beginning,
+ending, and touching each period. A boundary month is the first or last
+observed month; a sparse month is below 75% of its within-year monthly
+bar-count median; a continuity-impaired month has at least 10 non-weekend
+intraday gaps touching it. These flags are independent and may overlap.
+
+The configured weekly threshold is 1,440 minutes. Gaps outside that rule are
+described neutrally as `long_nonweekly_gap`, `non_weekend_intraday`, or
+`unclassified`; no holiday cause is assigned. Count-field relationship subsets
+use immediate weekly endpoints, immediate endpoints of gaps at least 720
+minutes, observations on continuity-impaired UTC dates, and computed recurring
+anomaly bounds, each with an explicit comparator.
+
+Analytical JSON content, warning/failure order, CSV row order, and Markdown are
+deterministic. Execution timestamp, elapsed time, and raw modification time are
+documented volatile JSON fields; serialized paths are repository-relative.
+Exit code 1 is reserved for fatal validation failures; warnings and conditional
+readiness return 0.
 
 ## Research workflow
 
@@ -92,14 +130,15 @@ outputs must be reproducible from registered inputs and versioned definitions.
 
 ## Current status
 
-Repository infrastructure, configuration, registration, documentation, and test
-scaffolding are established. Dataset registration records identity and basic
-file metadata only. No complete data-quality audit or behavioural analysis has
-been performed.
+Repository infrastructure, configuration, registration, and a reproducible raw
+dataset quality audit are established. No market-behaviour analysis has been
+performed. RAW-DQ-001 classifies the registered dataset as
+`CONDITIONALLY_READY`: structural integrity is sound, while material 2023
+coverage discontinuities, partial boundary periods, and unresolved source
+semantics require explicit treatment before feature engineering.
 
 ## Next planned task
 
-Implement a read-only dataset-quality audit covering types, OHLC invariants,
-timestamp parsing and ordering, duplicate timestamps, cadence gaps, nulls,
-source values, numeric validity, and coverage summaries. The audit must report
-issues without cleaning, interpolating, or removing observations.
+Define research-specific treatment of the audit's confirmed coverage
+limitations before feature engineering. Do not silently repair or exclude raw
+observations.

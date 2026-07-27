@@ -6,32 +6,65 @@ import csv
 import hashlib
 import json
 import os
-from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from pydantic import BaseModel, ConfigDict, Field, ValidationError
+
 from eurusd_research.data.validation import validate_columns
 
 
-@dataclass(frozen=True, slots=True)
-class DatasetRegistration:
-    """Machine-readable identity and observed file metadata."""
+class ManifestError(ValueError):
+    """Raised when the authoritative dataset manifest cannot be trusted."""
 
-    logical_dataset_name: str
-    relative_file_path: str
-    file_size_bytes: int
-    sha256: str
-    row_count: int
-    detected_columns: tuple[str, ...]
-    first_timestamp: str | None
-    last_timestamp: str | None
-    registration_timestamp_utc: str
-    dataset_version: str
+
+class DatasetManifest(BaseModel):
+    """Strict authoritative identity and observed metadata for one raw file."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    logical_dataset_name: str = Field(min_length=1)
+    relative_file_path: str = Field(min_length=1)
+    file_size_bytes: int = Field(gt=0)
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    row_count: int = Field(gt=0)
+    detected_columns: tuple[str, ...] = Field(min_length=1)
+    first_timestamp: str = Field(min_length=1)
+    last_timestamp: str = Field(min_length=1)
+    registration_timestamp_utc: str = Field(min_length=1)
+    dataset_version: str = Field(pattern=r"^sha256:[0-9a-f]{16}$")
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to a JSON-compatible mapping."""
-        return asdict(self)
+        return self.model_dump(mode="json")
+
+    def identity_dict(self) -> dict[str, Any]:
+        """Return immutable registration identity, excluding verification time."""
+        content = self.to_dict()
+        content.pop("registration_timestamp_utc")
+        return content
+
+
+DatasetRegistration = DatasetManifest
+
+
+def read_manifest(path: Path) -> DatasetManifest:
+    """Read and strictly validate the authoritative registration manifest."""
+    if not path.is_file():
+        raise ManifestError(f"Dataset manifest not found: {path}")
+    try:
+        with path.open(encoding="utf-8") as handle:
+            value = json.load(handle)
+    except (OSError, json.JSONDecodeError) as error:
+        raise ManifestError(f"Dataset manifest is unreadable: {path}") from error
+    try:
+        manifest = DatasetManifest.model_validate(value)
+    except ValidationError as error:
+        raise ManifestError(f"Dataset manifest is malformed: {error}") from error
+    if manifest.dataset_version != f"sha256:{manifest.sha256[:16]}":
+        raise ManifestError("Dataset manifest version does not match its SHA-256")
+    return manifest
 
 
 def sha256_file(path: Path, chunk_size: int = 1024 * 1024) -> str:
@@ -88,9 +121,11 @@ def register_raw_dataset(
         stat_after.st_mtime_ns,
     ):
         raise RuntimeError("Raw dataset changed during registration")
+    if row_count == 0 or first_timestamp is None or last_timestamp is None:
+        raise ValueError("Raw dataset must contain at least one data row")
 
     registration_time = (registered_at or datetime.now(UTC)).astimezone(UTC)
-    return DatasetRegistration(
+    return DatasetManifest(
         logical_dataset_name=logical_name,
         relative_file_path=resolved_path.relative_to(resolved_root).as_posix(),
         file_size_bytes=stat_after.st_size,
@@ -107,8 +142,12 @@ def register_raw_dataset(
 def write_registration(
     registration: DatasetRegistration,
     output_path: Path,
-) -> None:
-    """Atomically write a registration manifest as stable, formatted JSON."""
+) -> bool:
+    """Write changed identity atomically; preserve bytes for identical identity."""
+    if output_path.is_file():
+        existing = read_manifest(output_path)
+        if existing.identity_dict() == registration.identity_dict():
+            return False
     output_path.parent.mkdir(parents=True, exist_ok=True)
     temporary_path = output_path.with_suffix(f"{output_path.suffix}.tmp")
     with temporary_path.open("w", encoding="utf-8", newline="\n") as handle:
@@ -117,3 +156,4 @@ def write_registration(
         handle.flush()
         os.fsync(handle.fileno())
     temporary_path.replace(output_path)
+    return True

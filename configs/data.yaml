@@ -11,3 +11,22 @@ timestamp_column: timestamp_utc
 expected_timezone: UTC
 expected_frequency: 15min
 immutable_raw_data: true
+dataset_logical_name: eurusd_m15_utc
+registered_manifest_path: reports/audits/raw_dataset_manifest.json
+expected_dataset_version: "sha256:b2a41310927aa9a9"
+timestamp_convention: null
+quote_convention: null
+count_field_semantics: null
+upstream_feed_continuity_documented: false
+audit:
+  cadence_minutes: 15
+  weekly_gap_minimum_minutes: 1440
+  large_gap_minimum_minutes: 720
+  sparse_month_fraction: 0.75
+  continuity_impaired_min_nonweekend_gap_count: 10
+  recurring_gap_minimum_count: 10
+  low_count_quantile: 0.10
+  relationship_boundary_radius_bars: 0
+  report_percentiles: [0.01, 0.05, 0.25, 0.50, 0.75, 0.95, 0.99]
+  unusual_range_quantile: 0.999
+  extreme_movement_rows_per_class: 25

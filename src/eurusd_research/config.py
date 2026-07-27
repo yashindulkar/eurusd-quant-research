@@ -53,6 +53,14 @@ class DataConfig(StrictModel):
     expected_timezone: str
     expected_frequency: str = Field(pattern=r"^\d+(min|h|s)$")
     immutable_raw_data: bool
+    dataset_logical_name: str = Field(min_length=1)
+    registered_manifest_path: Path
+    expected_dataset_version: str = Field(pattern=r"^sha256:[0-9a-f]{16}$")
+    timestamp_convention: str | None
+    quote_convention: str | None
+    count_field_semantics: str | None
+    upstream_feed_continuity_documented: bool
+    audit: AuditConfig
 
     @model_validator(mode="after")
     def validate_data_rules(self) -> DataConfig:
@@ -63,6 +71,36 @@ class DataConfig(StrictModel):
         if not self.immutable_raw_data:
             raise ValueError("immutable_raw_data must be true")
         _validate_iana_timezone(self.expected_timezone)
+        return self
+
+
+class AuditConfig(StrictModel):
+    """Predeclared technical-audit rules and descriptive thresholds."""
+
+    cadence_minutes: int = Field(gt=0)
+    weekly_gap_minimum_minutes: int = Field(gt=0)
+    large_gap_minimum_minutes: int = Field(gt=0)
+    sparse_month_fraction: float = Field(gt=0.0, lt=1.0)
+    continuity_impaired_min_nonweekend_gap_count: int = Field(gt=0)
+    recurring_gap_minimum_count: int = Field(gt=0)
+    low_count_quantile: float = Field(gt=0.0, lt=0.5)
+    relationship_boundary_radius_bars: int = Field(ge=0, le=16)
+    report_percentiles: tuple[float, ...] = Field(min_length=1)
+    unusual_range_quantile: float = Field(gt=0.0, lt=1.0)
+    extreme_movement_rows_per_class: int = Field(gt=0, le=100)
+
+    @model_validator(mode="after")
+    def validate_audit_rules(self) -> AuditConfig:
+        if self.large_gap_minimum_minutes <= self.cadence_minutes:
+            raise ValueError("large_gap_minimum_minutes must exceed cadence_minutes")
+        if self.weekly_gap_minimum_minutes < self.large_gap_minimum_minutes:
+            raise ValueError(
+                "weekly_gap_minimum_minutes must be at least large_gap_minimum_minutes"
+            )
+        if tuple(sorted(set(self.report_percentiles))) != self.report_percentiles:
+            raise ValueError("report_percentiles must be unique and increasing")
+        if any(level <= 0.0 or level >= 1.0 for level in self.report_percentiles):
+            raise ValueError("report_percentiles must be between zero and one")
         return self
 
 

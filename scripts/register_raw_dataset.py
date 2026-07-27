@@ -19,24 +19,23 @@ def main() -> int:
     root = find_repository_root()
     config = load_config(root)
     raw_path = project_path(config.data.raw_dataset_path, root)
-    output_path = project_path(
-        config.project.report_directories.audits / "raw_dataset_manifest.json",
-        root,
-    )
+    output_path = project_path(config.data.registered_manifest_path, root)
     registration = register_raw_dataset(
         path=raw_path,
         repository_root=root,
-        logical_name="eurusd_m15_utc",
+        logical_name=config.data.dataset_logical_name,
         expected_columns=config.data.expected_columns,
         timestamp_column=config.data.timestamp_column,
     )
-    write_registration(registration, output_path)
+    changed = write_registration(registration, output_path)
     LOGGER.info(
         "Registered %s (%d rows, %s)",
         registration.relative_file_path,
         registration.row_count,
         registration.dataset_version,
     )
+    if not changed:
+        LOGGER.info("Registration identity verified; manifest bytes unchanged")
     print(output_path)
     return 0
 

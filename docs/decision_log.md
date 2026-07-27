@@ -41,3 +41,92 @@ times disabled and unset.
 
 **Rationale:** Session and FX rollover definitions are methodological choices
 that require explicit preregistration and daylight-saving-aware implementation.
+
+## 2026-07-27 — Treat raw quality findings as evidence, not repairs
+
+**Decision:** Implement RAW-DQ-001 as a strictly read-only package workflow with
+separate typed results, gap classification, serialization, and CLI concerns.
+Retain every detailed gap and violation in diagnostic tables; do not clean,
+sort, interpolate, fill, or rewrite the registered input.
+
+**Rationale:** Future research needs reproducible evidence and complete lineage
+before any research-specific exclusion rule can be justified.
+
+## 2026-07-27 — Predeclare conservative readiness and gap rules
+
+**Decision:** Classify fatal identity, mandatory-schema, timestamp,
+duplicate-primary-timestamp, material OHLC, unreadable-file, and mutation
+findings as `NOT_READY`. Coverage gaps, partial periods, and unresolved source
+semantics produce `CONDITIONALLY_READY`; `READY` is reserved for the absence of
+material issues. Gap labels use only endpoint weekdays and configured duration
+thresholds and do not name holidays.
+
+**Rationale:** Predeclared criteria prevent the observed production result from
+driving the classification rule and prevent plausible calendar interpretations
+from being reported as confirmed facts.
+
+## 2026-07-27 — Keep count-field language neutral
+
+**Decision:** Preserve the raw name `volume_or_tick_count` but refer to it in
+research prose only as the source-provided count field until source
+documentation establishes its meaning.
+
+**Rationale:** Empirical bounds may support a constituent-M1-count hypothesis
+but cannot establish volume, activity, participation, liquidity, or feed
+semantics.
+
+## 2026-07-27 — Type-check against the validated Python 3.12 runtime
+
+**Decision:** Set mypy's target to Python 3.12, the repository's recommended and
+validated runtime, while retaining the declared runtime support range.
+Scientific-library imports without installed third-party stubs are explicitly
+ignored; internal annotations remain under strict mypy rules.
+
+**Rationale:** Installed NumPy stubs use Python 3.12 type-alias syntax. This
+keeps the quality gate executable in the validated environment without adding
+an undeclared network-time dependency.
+
+## 2026-07-27 — Repair RAW-DQ-001 lineage and coverage semantics
+
+**Decision:** Make the typed raw manifest authoritative; keep only logical,
+path, schema, and version expectations in configuration; and make every
+manifest/config/file disagreement fatal. Identical registration does not
+rewrite the manifest solely for a later verification timestamp.
+
+**Rationale:** Immutable registration identity must not be shadowed by
+duplicated configuration values or churn from transient verification metadata.
+
+## 2026-07-27 — Allocate missing timestamps to physical UTC periods
+
+**Decision:** Expand cadence-aligned missing grid points and allocate them to
+their actual UTC year/month. Report gap starts, ends, touches, and missing
+timestamps separately. Classify months independently as boundary, sparse, and
+continuity-impaired; the latter requires at least 10 non-weekend intraday gaps
+touching the month.
+
+**Rationale:** Assigning an entire cross-period gap to its ending period
+misstates coverage, while total bar count alone cannot detect systematic
+intramonth discontinuity.
+
+## 2026-07-27 — Use neutral gap and count-relationship diagnostics
+
+**Decision:** Replace holiday-like language with `long_nonweekly_gap`. Apply the
+configured weekly threshold consistently. Compare the source-provided count
+field at immediate weekly boundaries, immediate endpoints of gaps at least 720
+minutes, continuity-impaired UTC dates, and computed affected-period bounds,
+with explicit comparator statistics.
+
+**Rationale:** Duration and weekday evidence do not establish a holiday,
+source cause, liquidity, participation, or count-field semantics.
+
+## 2026-07-27 — Define warnings and deterministic serialization
+
+**Decision:** Emit ordered coverage, data-value, and semantic warnings
+separately from fatal failures. Stable analytical JSON, CSVs, and Markdown are
+deterministic; execution timestamp, elapsed time, and raw modification time are
+normalized out of deterministic comparisons. Serialized artifact paths are
+repository-relative so outputs do not embed a local workstation path.
+
+**Rationale:** Conditional readiness must expose its nonfatal limitations, and
+reviewers need a reproducible analytical-content contract without pretending
+execution metadata is invariant.

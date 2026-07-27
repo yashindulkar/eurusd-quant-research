@@ -22,31 +22,17 @@ def test_load_repository_config() -> None:
 
 
 def test_invalid_data_config_rejected() -> None:
+    values = load_config().data.model_dump(mode="python")
+    values["expected_columns"] = ["open"]
     with pytest.raises(ValidationError, match="timestamp_column"):
-        DataConfig.model_validate(
-            {
-                "raw_dataset_path": "data/raw/file.csv",
-                "expected_columns": ["open"],
-                "timestamp_column": "timestamp_utc",
-                "expected_timezone": "UTC",
-                "expected_frequency": "15min",
-                "immutable_raw_data": True,
-            }
-        )
+        DataConfig.model_validate(values)
 
 
 def test_unknown_timezone_rejected() -> None:
+    values = load_config().data.model_dump(mode="python")
+    values["expected_timezone"] = "Not/A_Zone"
     with pytest.raises(ValidationError, match="Unknown IANA timezone"):
-        DataConfig.model_validate(
-            {
-                "raw_dataset_path": "data/raw/file.csv",
-                "expected_columns": ["timestamp_utc"],
-                "timestamp_column": "timestamp_utc",
-                "expected_timezone": "Not/A_Zone",
-                "expected_frequency": "15min",
-                "immutable_raw_data": True,
-            }
-        )
+        DataConfig.model_validate(values)
 
 
 def test_load_config_rejects_unknown_key(tmp_path: Path) -> None:

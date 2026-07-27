@@ -8,6 +8,7 @@ import pytest
 from tests.conftest import EXPECTED_COLUMNS
 
 from eurusd_research.data.registry import (
+    read_manifest,
     register_raw_dataset,
     sha256_file,
     write_registration,
@@ -88,7 +89,54 @@ def test_write_registration_json(tiny_raw_csv: Path, tmp_path: Path) -> None:
         timestamp_column="timestamp_utc",
     )
     output = tmp_path / "reports" / "manifest.json"
-    write_registration(registration, output)
+    assert write_registration(registration, output)
     loaded = json.loads(output.read_text(encoding="utf-8"))
     assert loaded["sha256"] == registration.sha256
     assert not output.with_suffix(".json.tmp").exists()
+    before = output.read_bytes()
+    later = registration.model_copy(
+        update={"registration_timestamp_utc": "2099-01-01T00:00:00Z"}
+    )
+    assert not write_registration(later, output)
+    assert output.read_bytes() == before
+    assert read_manifest(output) == registration
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [
+        ("sha256", "bad"),
+        ("row_count", 0),
+        ("file_size_bytes", 0),
+        ("detected_columns", []),
+    ],
+)
+def test_manifest_rejects_malformed_required_fields(
+    tmp_path: Path, field: str, value: object
+) -> None:
+    manifest = tmp_path / "manifest.json"
+    content = {
+        "logical_dataset_name": "fixture",
+        "relative_file_path": "data/raw/file.csv",
+        "file_size_bytes": 10,
+        "sha256": "a" * 64,
+        "row_count": 1,
+        "detected_columns": list(EXPECTED_COLUMNS),
+        "first_timestamp": "2020-01-01T00:00:00Z",
+        "last_timestamp": "2020-01-01T00:00:00Z",
+        "registration_timestamp_utc": "2026-01-01T00:00:00Z",
+        "dataset_version": "sha256:" + "a" * 16,
+    }
+    content[field] = value
+    manifest.write_text(json.dumps(content), encoding="utf-8")
+    with pytest.raises(ValueError, match=r"malformed|version"):
+        read_manifest(manifest)
+
+
+def test_missing_and_invalid_json_manifest_fail(tmp_path: Path) -> None:
+    with pytest.raises(ValueError, match="not found"):
+        read_manifest(tmp_path / "missing.json")
+    path = tmp_path / "bad.json"
+    path.write_text("{", encoding="utf-8")
+    with pytest.raises(ValueError, match="unreadable"):
+        read_manifest(path)

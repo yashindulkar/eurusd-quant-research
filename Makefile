@@ -2,7 +2,7 @@ PYTHON_BOOTSTRAP ?= python3.12
 VENV ?= .venv
 PYTHON := $(VENV)/bin/python
 
-.PHONY: setup validate-environment format lint typecheck test test-unit test-integration coverage check register-data
+.PHONY: setup validate-environment format lint typecheck test test-unit test-integration coverage check register-data audit-raw-data
 
 setup:
 	$(PYTHON_BOOTSTRAP) -m venv $(VENV)
@@ -38,3 +38,6 @@ check: lint typecheck test validate-environment
 
 register-data:
 	$(PYTHON) scripts/register_raw_dataset.py
+
+audit-raw-data:
+	$(PYTHON) -m eurusd_research.data
