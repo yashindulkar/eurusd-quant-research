@@ -1,0 +1,17 @@
+flag,rule_id,true_count,false_count,true_percentage
+raw_available,COV-ROW-001,5146,0,100
+schema_valid,COV-ROW-002,5146,0,100
+timestamp_valid,COV-ROW-003,5146,0,100
+ohlc_valid,COV-ROW-004,5146,0,100
+duplicate_free,COV-ROW-005,5146,0,100
+cadence_valid,COV-ROW-006,4134,1012,80.3342401866
+weekly_gap_boundary,COV-ROW-007,1710,3436,33.2296929654
+long_nonweekly_gap_boundary,COV-ROW-008,38,5108,0.738437621454
+nonweekend_gap_boundary,COV-ROW-009,132,5014,2.5650991061
+unclassified_gap_boundary,COV-ROW-010,47,5099,0.913330742324
+continuity_impaired_period,COV-PERIOD-001,154,4992,2.99261562379
+affected_period_2023,COV-PERIOD-002,156,4990,3.03148076176
+partial_boundary_year,COV-PERIOD-003,464,4682,9.01671200933
+partial_boundary_month,COV-PERIOD-004,48,5098,0.93276331131
+research_eligible_default,COV-ELIG-001,5146,0,100
+requires_sensitivity_analysis,COV-ELIG-002,681,4465,13.2335794792

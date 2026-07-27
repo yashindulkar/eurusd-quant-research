@@ -52,6 +52,7 @@ def main() -> int:
         "reports/figures",
         "reports/tables",
         "reports/audits",
+        "reports/coverage",
     )
     for relative in required_directories:
         path = project_path(relative, root)

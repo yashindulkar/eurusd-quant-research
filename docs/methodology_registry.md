@@ -120,3 +120,86 @@ implementation and methodology before their repaired production evaluation.
 The current Task 02 worktree is uncommitted, so this is not claimed as
 Git-verifiable preregistration. Future research criteria should be committed
 before production evaluation whenever practical.
+
+---
+
+**Method ID:** COVERAGE-001
+
+**Status:** validated
+
+**Created (UTC):** 2026-07-27
+
+**Owner:** EUR/USD Quant Research
+
+**Research question:** Which registered observations and UTC periods are
+available, structurally eligible, coverage-conditional, or members of a named
+sensitivity population for later research?
+
+**Population and sample window:** Every registered source row in
+`sha256:b2a41310927aa9a9`, with the RAW-DQ-001 observed bounds.
+
+**Input dataset version(s):** `sha256:b2a41310927aa9a9`; full SHA-256 is
+retained in lineage.
+
+**Unit of observation:** One source CSV row. Higher units are observed UTC date,
+month, year, and the registered dataset.
+
+**Exact variable definitions:** Stable flags COV-ROW-001 through COV-ROW-010,
+COV-PERIOD-001 through COV-PERIOD-004, and COV-ELIG-001/002 are defined in
+`docs/data_dictionary.md` and the package rule registry. `eligibility_status`
+is `structurally_ineligible` when COV-ELIG-001 fails,
+`conditionally_eligible` when structural eligibility passes and COV-ELIG-002
+applies, and `fully_eligible` otherwise.
+
+**Timezone, calendar, and boundary rules:** Raw timestamps are normalized to
+UTC only after RAW-DQ-001 confirms their validity. Date, month, and year keys
+are UTC. No session, holiday, local trading-day, or fixed-offset definition is
+introduced. The affected-2023 bounds and continuity-impaired months are
+consumed directly from RAW-DQ-001.
+
+**Inclusion and exclusion rules:** `DEFAULT_RESEARCH` requires structural
+eligibility and does not exclude coverage-flagged rows. `FULL_DATASET` applies
+no filter. `STRICT_CONTINUITY` excludes any COV-ELIG-002 row.
+`SENSITIVITY_FULL` selects COV-ELIG-002 rows and `SENSITIVITY_2023` selects
+rows inside the audited affected bounds that also satisfy COV-ELIG-001 and
+COV-ELIG-002. COV-ELIG-002 includes the affected-period flag, making
+`SENSITIVITY_2023` a configuration-provable subset of `SENSITIVITY_FULL`.
+Profiles are configuration-driven, reversible masks.
+
+**Missing/invalid observation policy:** Do not insert, delete, repair,
+interpolate, or reorder observations. Refuse coverage generation if RAW-DQ-001
+has fatal findings or if its JSON, gap table, monthly table, manifest, and raw
+identity do not reconcile.
+
+**Statistical estimand and method:** Deterministic boolean classification and
+counts/percentages by flag, profile, and coverage level. Structural/all flags
+propagate upward with `all`; boundary/sensitivity flags propagate with `any`.
+No inferential or market-behaviour statistic is calculated.
+
+**Confidence level and multiplicity policy:** Not applicable; this is
+deterministic metadata.
+
+**Robustness checks planned before results:** Reconcile Task 02 artifacts;
+verify raw SHA-256 before and after; test flag propagation, profile partitions,
+configuration overrides, lineage, deterministic serialization, and raw
+immutability.
+
+The configured Task 02 dependency pins its normalized audit-result fingerprint,
+gap-table fingerprint, monthly-table fingerprint, and audit method version.
+Any drift requires explicit review before COVERAGE-001 can regenerate.
+
+**Outputs:** `reports/coverage/coverage_summary.json`,
+`coverage_summary.md`, `row_flag_counts.csv`, `date_flag_counts.csv`,
+`month_flag_counts.csv`, and `coverage_profiles.csv`.
+
+**Known limitations:** Coverage metadata cannot establish the cause of a gap or
+resolve raw timestamp, quote, count-field, or feed semantics. Higher-level
+`any` masks describe whether a child row is flagged; they are not completeness
+rates. The framework represents observed rows and periods only.
+
+**Supersedes / superseded by:** None.
+
+**Results access status at definition time:** The rule design was recorded in
+the Task 03 worktree before the final production quality-gate run. It is not
+claimed as a committed preregistration because the task explicitly forbids a
+commit.

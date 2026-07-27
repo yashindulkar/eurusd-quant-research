@@ -1,0 +1,1140 @@
+{
+  "affected_period_2023": {
+    "definition": "2023 non-weekend intraday durations occurring at least 10 times and below 720 minutes",
+    "estimated_missing_m15_timestamps": 2956,
+    "first_timestamp_before": "2023-01-27T10:45:00Z",
+    "gap_count": 655,
+    "included_duration_minutes": [
+      75.0,
+      135.0
+    ],
+    "last_timestamp_after": "2023-07-28T20:00:00Z"
+  },
+  "continuity_impaired_months": [
+    "2023-02",
+    "2023-03",
+    "2023-04",
+    "2023-05",
+    "2023-06",
+    "2023-07"
+  ],
+  "coverage_profiles": [
+    {
+      "description": "Every registered raw observation; no eligibility filter.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 406945,
+      "level": "row",
+      "profile": "FULL_DATASET",
+      "require_all": "",
+      "require_any": "",
+      "total_units": 406945
+    },
+    {
+      "description": "Every registered raw observation; no eligibility filter.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 5146,
+      "level": "date",
+      "profile": "FULL_DATASET",
+      "require_all": "",
+      "require_any": "",
+      "total_units": 5146
+    },
+    {
+      "description": "Every registered raw observation; no eligibility filter.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 198,
+      "level": "month",
+      "profile": "FULL_DATASET",
+      "require_all": "",
+      "require_any": "",
+      "total_units": 198
+    },
+    {
+      "description": "Every registered raw observation; no eligibility filter.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 17,
+      "level": "year",
+      "profile": "FULL_DATASET",
+      "require_all": "",
+      "require_any": "",
+      "total_units": 17
+    },
+    {
+      "description": "Every registered raw observation; no eligibility filter.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 1,
+      "level": "dataset",
+      "profile": "FULL_DATASET",
+      "require_all": "",
+      "require_any": "",
+      "total_units": 1
+    },
+    {
+      "description": "Structurally valid observations; flagged coverage remains included.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 406945,
+      "level": "row",
+      "profile": "DEFAULT_RESEARCH",
+      "require_all": "research_eligible_default",
+      "require_any": "",
+      "total_units": 406945
+    },
+    {
+      "description": "Structurally valid observations; flagged coverage remains included.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 5146,
+      "level": "date",
+      "profile": "DEFAULT_RESEARCH",
+      "require_all": "research_eligible_default",
+      "require_any": "",
+      "total_units": 5146
+    },
+    {
+      "description": "Structurally valid observations; flagged coverage remains included.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 198,
+      "level": "month",
+      "profile": "DEFAULT_RESEARCH",
+      "require_all": "research_eligible_default",
+      "require_any": "",
+      "total_units": 198
+    },
+    {
+      "description": "Structurally valid observations; flagged coverage remains included.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 17,
+      "level": "year",
+      "profile": "DEFAULT_RESEARCH",
+      "require_all": "research_eligible_default",
+      "require_any": "",
+      "total_units": 17
+    },
+    {
+      "description": "Structurally valid observations; flagged coverage remains included.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 1,
+      "level": "dataset",
+      "profile": "DEFAULT_RESEARCH",
+      "require_all": "research_eligible_default",
+      "require_any": "",
+      "total_units": 1
+    },
+    {
+      "description": "Default-eligible observations outside all sensitivity conditions.",
+      "exclude_any": "requires_sensitivity_analysis",
+      "excluded_units": 46468,
+      "included_percentage": 88.58125790954551,
+      "included_units": 360477,
+      "level": "row",
+      "profile": "STRICT_CONTINUITY",
+      "require_all": "research_eligible_default",
+      "require_any": "",
+      "total_units": 406945
+    },
+    {
+      "description": "Default-eligible observations outside all sensitivity conditions.",
+      "exclude_any": "requires_sensitivity_analysis",
+      "excluded_units": 681,
+      "included_percentage": 86.76642052079285,
+      "included_units": 4465,
+      "level": "date",
+      "profile": "STRICT_CONTINUITY",
+      "require_all": "research_eligible_default",
+      "require_any": "",
+      "total_units": 5146
+    },
+    {
+      "description": "Default-eligible observations outside all sensitivity conditions.",
+      "exclude_any": "requires_sensitivity_analysis",
+      "excluded_units": 61,
+      "included_percentage": 69.1919191919192,
+      "included_units": 137,
+      "level": "month",
+      "profile": "STRICT_CONTINUITY",
+      "require_all": "research_eligible_default",
+      "require_any": "",
+      "total_units": 198
+    },
+    {
+      "description": "Default-eligible observations outside all sensitivity conditions.",
+      "exclude_any": "requires_sensitivity_analysis",
+      "excluded_units": 15,
+      "included_percentage": 11.76470588235294,
+      "included_units": 2,
+      "level": "year",
+      "profile": "STRICT_CONTINUITY",
+      "require_all": "research_eligible_default",
+      "require_any": "",
+      "total_units": 17
+    },
+    {
+      "description": "Default-eligible observations outside all sensitivity conditions.",
+      "exclude_any": "requires_sensitivity_analysis",
+      "excluded_units": 1,
+      "included_percentage": 0.0,
+      "included_units": 0,
+      "level": "dataset",
+      "profile": "STRICT_CONTINUITY",
+      "require_all": "research_eligible_default",
+      "require_any": "",
+      "total_units": 1
+    },
+    {
+      "description": "Default-eligible observations carrying any sensitivity condition.",
+      "exclude_any": "",
+      "excluded_units": 360477,
+      "included_percentage": 11.418742090454485,
+      "included_units": 46468,
+      "level": "row",
+      "profile": "SENSITIVITY_FULL",
+      "require_all": "research_eligible_default|requires_sensitivity_analysis",
+      "require_any": "",
+      "total_units": 406945
+    },
+    {
+      "description": "Default-eligible observations carrying any sensitivity condition.",
+      "exclude_any": "",
+      "excluded_units": 4465,
+      "included_percentage": 13.23357947920715,
+      "included_units": 681,
+      "level": "date",
+      "profile": "SENSITIVITY_FULL",
+      "require_all": "research_eligible_default|requires_sensitivity_analysis",
+      "require_any": "",
+      "total_units": 5146
+    },
+    {
+      "description": "Default-eligible observations carrying any sensitivity condition.",
+      "exclude_any": "",
+      "excluded_units": 137,
+      "included_percentage": 30.808080808080806,
+      "included_units": 61,
+      "level": "month",
+      "profile": "SENSITIVITY_FULL",
+      "require_all": "research_eligible_default|requires_sensitivity_analysis",
+      "require_any": "",
+      "total_units": 198
+    },
+    {
+      "description": "Default-eligible observations carrying any sensitivity condition.",
+      "exclude_any": "",
+      "excluded_units": 2,
+      "included_percentage": 88.23529411764706,
+      "included_units": 15,
+      "level": "year",
+      "profile": "SENSITIVITY_FULL",
+      "require_all": "research_eligible_default|requires_sensitivity_analysis",
+      "require_any": "",
+      "total_units": 17
+    },
+    {
+      "description": "Default-eligible observations carrying any sensitivity condition.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 1,
+      "level": "dataset",
+      "profile": "SENSITIVITY_FULL",
+      "require_all": "research_eligible_default|requires_sensitivity_analysis",
+      "require_any": "",
+      "total_units": 1
+    },
+    {
+      "description": "Default-eligible observations inside the audited 2023 affected bounds.",
+      "exclude_any": "",
+      "excluded_units": 397687,
+      "included_percentage": 2.2750003071668163,
+      "included_units": 9258,
+      "level": "row",
+      "profile": "SENSITIVITY_2023",
+      "require_all": "research_eligible_default|requires_sensitivity_analysis|affected_period_2023",
+      "require_any": "",
+      "total_units": 406945
+    },
+    {
+      "description": "Default-eligible observations inside the audited 2023 affected bounds.",
+      "exclude_any": "",
+      "excluded_units": 4990,
+      "included_percentage": 3.031480761756704,
+      "included_units": 156,
+      "level": "date",
+      "profile": "SENSITIVITY_2023",
+      "require_all": "research_eligible_default|requires_sensitivity_analysis|affected_period_2023",
+      "require_any": "",
+      "total_units": 5146
+    },
+    {
+      "description": "Default-eligible observations inside the audited 2023 affected bounds.",
+      "exclude_any": "",
+      "excluded_units": 191,
+      "included_percentage": 3.535353535353535,
+      "included_units": 7,
+      "level": "month",
+      "profile": "SENSITIVITY_2023",
+      "require_all": "research_eligible_default|requires_sensitivity_analysis|affected_period_2023",
+      "require_any": "",
+      "total_units": 198
+    },
+    {
+      "description": "Default-eligible observations inside the audited 2023 affected bounds.",
+      "exclude_any": "",
+      "excluded_units": 16,
+      "included_percentage": 5.88235294117647,
+      "included_units": 1,
+      "level": "year",
+      "profile": "SENSITIVITY_2023",
+      "require_all": "research_eligible_default|requires_sensitivity_analysis|affected_period_2023",
+      "require_any": "",
+      "total_units": 17
+    },
+    {
+      "description": "Default-eligible observations inside the audited 2023 affected bounds.",
+      "exclude_any": "",
+      "excluded_units": 0,
+      "included_percentage": 100.0,
+      "included_units": 1,
+      "level": "dataset",
+      "profile": "SENSITIVITY_2023",
+      "require_all": "research_eligible_default|requires_sensitivity_analysis|affected_period_2023",
+      "require_any": "",
+      "total_units": 1
+    }
+  ],
+  "eligibility_status_counts": {
+    "conditionally_eligible": 46468,
+    "fully_eligible": 360477
+  },
+  "flag_counts_by_level": {
+    "dataset": [
+      {
+        "false_count": 0,
+        "flag": "raw_available",
+        "rule_id": "COV-ROW-001",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "schema_valid",
+        "rule_id": "COV-ROW-002",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "timestamp_valid",
+        "rule_id": "COV-ROW-003",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "ohlc_valid",
+        "rule_id": "COV-ROW-004",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "duplicate_free",
+        "rule_id": "COV-ROW-005",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 1,
+        "flag": "cadence_valid",
+        "rule_id": "COV-ROW-006",
+        "true_count": 0,
+        "true_percentage": 0.0
+      },
+      {
+        "false_count": 0,
+        "flag": "weekly_gap_boundary",
+        "rule_id": "COV-ROW-007",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "long_nonweekly_gap_boundary",
+        "rule_id": "COV-ROW-008",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "nonweekend_gap_boundary",
+        "rule_id": "COV-ROW-009",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "unclassified_gap_boundary",
+        "rule_id": "COV-ROW-010",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "continuity_impaired_period",
+        "rule_id": "COV-PERIOD-001",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "affected_period_2023",
+        "rule_id": "COV-PERIOD-002",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "partial_boundary_year",
+        "rule_id": "COV-PERIOD-003",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "partial_boundary_month",
+        "rule_id": "COV-PERIOD-004",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "research_eligible_default",
+        "rule_id": "COV-ELIG-001",
+        "true_count": 1,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "requires_sensitivity_analysis",
+        "rule_id": "COV-ELIG-002",
+        "true_count": 1,
+        "true_percentage": 100.0
+      }
+    ],
+    "date": [
+      {
+        "false_count": 0,
+        "flag": "raw_available",
+        "rule_id": "COV-ROW-001",
+        "true_count": 5146,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "schema_valid",
+        "rule_id": "COV-ROW-002",
+        "true_count": 5146,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "timestamp_valid",
+        "rule_id": "COV-ROW-003",
+        "true_count": 5146,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "ohlc_valid",
+        "rule_id": "COV-ROW-004",
+        "true_count": 5146,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "duplicate_free",
+        "rule_id": "COV-ROW-005",
+        "true_count": 5146,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 1012,
+        "flag": "cadence_valid",
+        "rule_id": "COV-ROW-006",
+        "true_count": 4134,
+        "true_percentage": 80.33424018655266
+      },
+      {
+        "false_count": 3436,
+        "flag": "weekly_gap_boundary",
+        "rule_id": "COV-ROW-007",
+        "true_count": 1710,
+        "true_percentage": 33.22969296541003
+      },
+      {
+        "false_count": 5108,
+        "flag": "long_nonweekly_gap_boundary",
+        "rule_id": "COV-ROW-008",
+        "true_count": 38,
+        "true_percentage": 0.7384376214535562
+      },
+      {
+        "false_count": 5014,
+        "flag": "nonweekend_gap_boundary",
+        "rule_id": "COV-ROW-009",
+        "true_count": 132,
+        "true_percentage": 2.565099106101827
+      },
+      {
+        "false_count": 5099,
+        "flag": "unclassified_gap_boundary",
+        "rule_id": "COV-ROW-010",
+        "true_count": 47,
+        "true_percentage": 0.9133307423241352
+      },
+      {
+        "false_count": 4992,
+        "flag": "continuity_impaired_period",
+        "rule_id": "COV-PERIOD-001",
+        "true_count": 154,
+        "true_percentage": 2.9926156237854644
+      },
+      {
+        "false_count": 4990,
+        "flag": "affected_period_2023",
+        "rule_id": "COV-PERIOD-002",
+        "true_count": 156,
+        "true_percentage": 3.031480761756704
+      },
+      {
+        "false_count": 4682,
+        "flag": "partial_boundary_year",
+        "rule_id": "COV-PERIOD-003",
+        "true_count": 464,
+        "true_percentage": 9.016712009327634
+      },
+      {
+        "false_count": 5098,
+        "flag": "partial_boundary_month",
+        "rule_id": "COV-PERIOD-004",
+        "true_count": 48,
+        "true_percentage": 0.9327633113097552
+      },
+      {
+        "false_count": 0,
+        "flag": "research_eligible_default",
+        "rule_id": "COV-ELIG-001",
+        "true_count": 5146,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 4465,
+        "flag": "requires_sensitivity_analysis",
+        "rule_id": "COV-ELIG-002",
+        "true_count": 681,
+        "true_percentage": 13.23357947920715
+      }
+    ],
+    "month": [
+      {
+        "false_count": 0,
+        "flag": "raw_available",
+        "rule_id": "COV-ROW-001",
+        "true_count": 198,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "schema_valid",
+        "rule_id": "COV-ROW-002",
+        "true_count": 198,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "timestamp_valid",
+        "rule_id": "COV-ROW-003",
+        "true_count": 198,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "ohlc_valid",
+        "rule_id": "COV-ROW-004",
+        "true_count": 198,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "duplicate_free",
+        "rule_id": "COV-ROW-005",
+        "true_count": 198,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 198,
+        "flag": "cadence_valid",
+        "rule_id": "COV-ROW-006",
+        "true_count": 0,
+        "true_percentage": 0.0
+      },
+      {
+        "false_count": 0,
+        "flag": "weekly_gap_boundary",
+        "rule_id": "COV-ROW-007",
+        "true_count": 198,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 174,
+        "flag": "long_nonweekly_gap_boundary",
+        "rule_id": "COV-ROW-008",
+        "true_count": 24,
+        "true_percentage": 12.121212121212121
+      },
+      {
+        "false_count": 177,
+        "flag": "nonweekend_gap_boundary",
+        "rule_id": "COV-ROW-009",
+        "true_count": 21,
+        "true_percentage": 10.606060606060606
+      },
+      {
+        "false_count": 182,
+        "flag": "unclassified_gap_boundary",
+        "rule_id": "COV-ROW-010",
+        "true_count": 16,
+        "true_percentage": 8.080808080808081
+      },
+      {
+        "false_count": 192,
+        "flag": "continuity_impaired_period",
+        "rule_id": "COV-PERIOD-001",
+        "true_count": 6,
+        "true_percentage": 3.0303030303030303
+      },
+      {
+        "false_count": 191,
+        "flag": "affected_period_2023",
+        "rule_id": "COV-PERIOD-002",
+        "true_count": 7,
+        "true_percentage": 3.535353535353535
+      },
+      {
+        "false_count": 180,
+        "flag": "partial_boundary_year",
+        "rule_id": "COV-PERIOD-003",
+        "true_count": 18,
+        "true_percentage": 9.090909090909092
+      },
+      {
+        "false_count": 196,
+        "flag": "partial_boundary_month",
+        "rule_id": "COV-PERIOD-004",
+        "true_count": 2,
+        "true_percentage": 1.0101010101010102
+      },
+      {
+        "false_count": 0,
+        "flag": "research_eligible_default",
+        "rule_id": "COV-ELIG-001",
+        "true_count": 198,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 137,
+        "flag": "requires_sensitivity_analysis",
+        "rule_id": "COV-ELIG-002",
+        "true_count": 61,
+        "true_percentage": 30.808080808080806
+      }
+    ],
+    "row": [
+      {
+        "false_count": 0,
+        "flag": "raw_available",
+        "rule_id": "COV-ROW-001",
+        "true_count": 406945,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "schema_valid",
+        "rule_id": "COV-ROW-002",
+        "true_count": 406945,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "timestamp_valid",
+        "rule_id": "COV-ROW-003",
+        "true_count": 406945,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "ohlc_valid",
+        "rule_id": "COV-ROW-004",
+        "true_count": 406945,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "duplicate_free",
+        "rule_id": "COV-ROW-005",
+        "true_count": 406945,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 1587,
+        "flag": "cadence_valid",
+        "rule_id": "COV-ROW-006",
+        "true_count": 405358,
+        "true_percentage": 99.61002101021023
+      },
+      {
+        "false_count": 405235,
+        "flag": "weekly_gap_boundary",
+        "rule_id": "COV-ROW-007",
+        "true_count": 1710,
+        "true_percentage": 0.42020420449937956
+      },
+      {
+        "false_count": 406901,
+        "flag": "long_nonweekly_gap_boundary",
+        "rule_id": "COV-ROW-008",
+        "true_count": 44,
+        "true_percentage": 0.010812271928639006
+      },
+      {
+        "false_count": 405583,
+        "flag": "nonweekend_gap_boundary",
+        "rule_id": "COV-ROW-009",
+        "true_count": 1362,
+        "true_percentage": 0.3346889628819619
+      },
+      {
+        "false_count": 406887,
+        "flag": "unclassified_gap_boundary",
+        "rule_id": "COV-ROW-010",
+        "true_count": 58,
+        "true_percentage": 0.014252540269569597
+      },
+      {
+        "false_count": 397817,
+        "flag": "continuity_impaired_period",
+        "rule_id": "COV-PERIOD-001",
+        "true_count": 9128,
+        "true_percentage": 2.2430549582867463
+      },
+      {
+        "false_count": 397687,
+        "flag": "affected_period_2023",
+        "rule_id": "COV-PERIOD-002",
+        "true_count": 9258,
+        "true_percentage": 2.2750003071668163
+      },
+      {
+        "false_count": 369935,
+        "flag": "partial_boundary_year",
+        "rule_id": "COV-PERIOD-003",
+        "true_count": 37010,
+        "true_percentage": 9.094595092702946
+      },
+      {
+        "false_count": 403108,
+        "flag": "partial_boundary_month",
+        "rule_id": "COV-PERIOD-004",
+        "true_count": 3837,
+        "true_percentage": 0.942879258867906
+      },
+      {
+        "false_count": 0,
+        "flag": "research_eligible_default",
+        "rule_id": "COV-ELIG-001",
+        "true_count": 406945,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 360477,
+        "flag": "requires_sensitivity_analysis",
+        "rule_id": "COV-ELIG-002",
+        "true_count": 46468,
+        "true_percentage": 11.418742090454485
+      }
+    ],
+    "year": [
+      {
+        "false_count": 0,
+        "flag": "raw_available",
+        "rule_id": "COV-ROW-001",
+        "true_count": 17,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "schema_valid",
+        "rule_id": "COV-ROW-002",
+        "true_count": 17,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "timestamp_valid",
+        "rule_id": "COV-ROW-003",
+        "true_count": 17,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "ohlc_valid",
+        "rule_id": "COV-ROW-004",
+        "true_count": 17,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 0,
+        "flag": "duplicate_free",
+        "rule_id": "COV-ROW-005",
+        "true_count": 17,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 17,
+        "flag": "cadence_valid",
+        "rule_id": "COV-ROW-006",
+        "true_count": 0,
+        "true_percentage": 0.0
+      },
+      {
+        "false_count": 0,
+        "flag": "weekly_gap_boundary",
+        "rule_id": "COV-ROW-007",
+        "true_count": 17,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 4,
+        "flag": "long_nonweekly_gap_boundary",
+        "rule_id": "COV-ROW-008",
+        "true_count": 13,
+        "true_percentage": 76.47058823529412
+      },
+      {
+        "false_count": 7,
+        "flag": "nonweekend_gap_boundary",
+        "rule_id": "COV-ROW-009",
+        "true_count": 10,
+        "true_percentage": 58.82352941176471
+      },
+      {
+        "false_count": 9,
+        "flag": "unclassified_gap_boundary",
+        "rule_id": "COV-ROW-010",
+        "true_count": 8,
+        "true_percentage": 47.05882352941176
+      },
+      {
+        "false_count": 16,
+        "flag": "continuity_impaired_period",
+        "rule_id": "COV-PERIOD-001",
+        "true_count": 1,
+        "true_percentage": 5.88235294117647
+      },
+      {
+        "false_count": 16,
+        "flag": "affected_period_2023",
+        "rule_id": "COV-PERIOD-002",
+        "true_count": 1,
+        "true_percentage": 5.88235294117647
+      },
+      {
+        "false_count": 15,
+        "flag": "partial_boundary_year",
+        "rule_id": "COV-PERIOD-003",
+        "true_count": 2,
+        "true_percentage": 11.76470588235294
+      },
+      {
+        "false_count": 15,
+        "flag": "partial_boundary_month",
+        "rule_id": "COV-PERIOD-004",
+        "true_count": 2,
+        "true_percentage": 11.76470588235294
+      },
+      {
+        "false_count": 0,
+        "flag": "research_eligible_default",
+        "rule_id": "COV-ELIG-001",
+        "true_count": 17,
+        "true_percentage": 100.0
+      },
+      {
+        "false_count": 2,
+        "flag": "requires_sensitivity_analysis",
+        "rule_id": "COV-ELIG-002",
+        "true_count": 15,
+        "true_percentage": 88.23529411764706
+      }
+    ]
+  },
+  "level_semantics": {
+    "dataset": "the registered dataset; all-rules require every row and any-rules require at least one row",
+    "date": "one UTC date with observations; all-rules require every row and any-rules require at least one row",
+    "month": "one UTC month with observations; propagated from its observed rows",
+    "row": "one observed raw CSV row; physical row number is retained",
+    "year": "one UTC year with observations; propagated from its observed rows"
+  },
+  "lineage": {
+    "audit_gap_table_path": "reports/audits/timestamp_gaps.csv",
+    "audit_gap_table_sha256": "60b48e06c107b5c676f200392db6002ca4f678ed4a6c31bb3f0439ebbf6e06c9",
+    "audit_method_version": "raw-data-quality-audit-v2",
+    "audit_monthly_table_path": "reports/audits/monthly_coverage.csv",
+    "audit_monthly_table_sha256": "16a7bcc38addf98892b532b4386f59cc5833bd6cf4ecc423e7b9e286027c495a",
+    "audit_result_content_sha256": "670968cbfcf018abc59bbb64a4b2b3912bae9df44988542765748328caf9c61f",
+    "audit_result_path": "reports/audits/raw_data_quality_audit.json",
+    "coverage_config_sha256": "5681a86eb0c79fc5e45bbe164f321ef3f9e8deb438e6723bb2078c602148acb0",
+    "coverage_method_id": "COVERAGE-001",
+    "coverage_method_version": "research-coverage-v1",
+    "dataset_logical_name": "eurusd_m15_utc",
+    "dataset_version": "sha256:b2a41310927aa9a9",
+    "raw_sha256": "b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c",
+    "repository_version": "git:c21113da7f91f64804704a2a7c9ccc1b50df0edd+dirty"
+  },
+  "method": {
+    "does_not_clean_or_repair_raw_data": true,
+    "method_id": "COVERAGE-001",
+    "method_version": "research-coverage-v1",
+    "purpose": "reversible research coverage and eligibility metadata"
+  },
+  "rule_registry": {
+    "affected_period_2023": {
+      "aggregation": "any",
+      "audit_source": "continuity_investigation_2023.concentrated_2023_period",
+      "description": "The row is within the inclusive audited concentrated-2023 bounds.",
+      "rule_id": "COV-PERIOD-002"
+    },
+    "cadence_valid": {
+      "aggregation": "all",
+      "audit_source": "timestamp_gaps.csv: timestamp_after",
+      "description": "The incoming observed interval is exactly M15; the first row is vacuously true.",
+      "rule_id": "COV-ROW-006"
+    },
+    "continuity_impaired_period": {
+      "aggregation": "any",
+      "audit_source": "monthly_coverage.csv: continuity_impaired_month",
+      "description": "The row belongs to a RAW-DQ-001 continuity-impaired UTC month.",
+      "rule_id": "COV-PERIOD-001"
+    },
+    "duplicate_free": {
+      "aggregation": "all",
+      "audit_source": "duplicate_results",
+      "description": "RAW-DQ-001 reports no duplicate primary timestamp.",
+      "rule_id": "COV-ROW-005"
+    },
+    "long_nonweekly_gap_boundary": {
+      "aggregation": "any",
+      "audit_source": "timestamp_gaps.csv: long_nonweekly_gap",
+      "description": "The row is either boundary endpoint of an audited long non-weekly gap.",
+      "rule_id": "COV-ROW-008"
+    },
+    "nonweekend_gap_boundary": {
+      "aggregation": "any",
+      "audit_source": "timestamp_gaps.csv: non_weekend_intraday",
+      "description": "The row is either boundary endpoint of an audited non-weekend intraday gap.",
+      "rule_id": "COV-ROW-009"
+    },
+    "ohlc_valid": {
+      "aggregation": "all",
+      "audit_source": "ohlc_results",
+      "description": "RAW-DQ-001 reports no OHLC invariant violation.",
+      "rule_id": "COV-ROW-004"
+    },
+    "partial_boundary_month": {
+      "aggregation": "any",
+      "audit_source": "monthly_coverage.csv: boundary_month",
+      "description": "The row belongs to an audited boundary UTC month.",
+      "rule_id": "COV-PERIOD-004"
+    },
+    "partial_boundary_year": {
+      "aggregation": "any",
+      "audit_source": "partial_period_results",
+      "description": "The row belongs to an audited incomplete first or final UTC year.",
+      "rule_id": "COV-PERIOD-003"
+    },
+    "raw_available": {
+      "aggregation": "all",
+      "audit_source": "raw file joined by physical row and timestamp",
+      "description": "The registered raw source row is present.",
+      "rule_id": "COV-ROW-001"
+    },
+    "requires_sensitivity_analysis": {
+      "aggregation": "any",
+      "audit_source": "COV-ROW-008 through COV-ROW-010 and COV-PERIOD-001 through COV-PERIOD-004",
+      "description": "At least one boundary, continuity, affected-period, or non-weekly gap condition applies.",
+      "rule_id": "COV-ELIG-002"
+    },
+    "research_eligible_default": {
+      "aggregation": "all",
+      "audit_source": "COV-ROW-001 through COV-ROW-005",
+      "description": "All structural quality flags pass; coverage warnings remain included.",
+      "rule_id": "COV-ELIG-001"
+    },
+    "schema_valid": {
+      "aggregation": "all",
+      "audit_source": "schema_results",
+      "description": "RAW-DQ-001 reports mandatory schema and row-count reconciliation.",
+      "rule_id": "COV-ROW-002"
+    },
+    "timestamp_valid": {
+      "aggregation": "all",
+      "audit_source": "timestamp_results",
+      "description": "RAW-DQ-001 reports valid, ordered, UTC-aware, on-grid timestamps.",
+      "rule_id": "COV-ROW-003"
+    },
+    "unclassified_gap_boundary": {
+      "aggregation": "any",
+      "audit_source": "timestamp_gaps.csv: unclassified",
+      "description": "The row is either boundary endpoint of an audited unclassified gap.",
+      "rule_id": "COV-ROW-010"
+    },
+    "weekly_gap_boundary": {
+      "aggregation": "any",
+      "audit_source": "timestamp_gaps.csv: likely_weekly_closure",
+      "description": "The row is either boundary endpoint of an audited likely-weekly-closure gap.",
+      "rule_id": "COV-ROW-007"
+    }
+  },
+  "sensitivity_analysis": {
+    "contributing_rules": [
+      {
+        "flag": "long_nonweekly_gap_boundary",
+        "row_count": 44,
+        "rule_id": "COV-ROW-008",
+        "unique_only_row_count": 41
+      },
+      {
+        "flag": "nonweekend_gap_boundary",
+        "row_count": 1362,
+        "rule_id": "COV-ROW-009",
+        "unique_only_row_count": 34
+      },
+      {
+        "flag": "unclassified_gap_boundary",
+        "row_count": 58,
+        "rule_id": "COV-ROW-010",
+        "unique_only_row_count": 14
+      },
+      {
+        "flag": "continuity_impaired_period",
+        "row_count": 9128,
+        "rule_id": "COV-PERIOD-001",
+        "unique_only_row_count": 111
+      },
+      {
+        "flag": "affected_period_2023",
+        "row_count": 9258,
+        "rule_id": "COV-PERIOD-002",
+        "unique_only_row_count": 239
+      },
+      {
+        "flag": "partial_boundary_year",
+        "row_count": 37010,
+        "rule_id": "COV-PERIOD-003",
+        "unique_only_row_count": 33156
+      },
+      {
+        "flag": "partial_boundary_month",
+        "row_count": 3837,
+        "rule_id": "COV-PERIOD-004",
+        "unique_only_row_count": 0
+      }
+    ],
+    "mutually_exclusive_combinations": [
+      {
+        "flags": "affected_period_2023",
+        "row_count": 239
+      },
+      {
+        "flags": "continuity_impaired_period",
+        "row_count": 111
+      },
+      {
+        "flags": "continuity_impaired_period|affected_period_2023",
+        "row_count": 7661
+      },
+      {
+        "flags": "long_nonweekly_gap_boundary",
+        "row_count": 41
+      },
+      {
+        "flags": "long_nonweekly_gap_boundary|continuity_impaired_period|affected_period_2023",
+        "row_count": 2
+      },
+      {
+        "flags": "long_nonweekly_gap_boundary|partial_boundary_year",
+        "row_count": 1
+      },
+      {
+        "flags": "nonweekend_gap_boundary",
+        "row_count": 34
+      },
+      {
+        "flags": "nonweekend_gap_boundary|affected_period_2023",
+        "row_count": 2
+      },
+      {
+        "flags": "nonweekend_gap_boundary|continuity_impaired_period|affected_period_2023",
+        "row_count": 1312
+      },
+      {
+        "flags": "nonweekend_gap_boundary|partial_boundary_year",
+        "row_count": 14
+      },
+      {
+        "flags": "partial_boundary_year",
+        "row_count": 33156
+      },
+      {
+        "flags": "partial_boundary_year|partial_boundary_month",
+        "row_count": 3837
+      },
+      {
+        "flags": "unclassified_gap_boundary",
+        "row_count": 14
+      },
+      {
+        "flags": "unclassified_gap_boundary|continuity_impaired_period|affected_period_2023",
+        "row_count": 42
+      },
+      {
+        "flags": "unclassified_gap_boundary|partial_boundary_year",
+        "row_count": 2
+      }
+    ],
+    "union_row_count": 46468
+  },
+  "task_02_relationship": {
+    "audit_readiness": "CONDITIONALLY_READY",
+    "consumes_registered_audit_artifacts": true,
+    "duplicates_audit_logic": false
+  }
+}

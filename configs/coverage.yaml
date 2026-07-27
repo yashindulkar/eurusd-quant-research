@@ -1,0 +1,41 @@
+method_id: COVERAGE-001
+method_version: research-coverage-v1
+required_audit_method_version: raw-data-quality-audit-v2
+required_audit_result_content_sha256: 670968cbfcf018abc59bbb64a4b2b3912bae9df44988542765748328caf9c61f
+required_audit_gap_table_sha256: 60b48e06c107b5c676f200392db6002ca4f678ed4a6c31bb3f0439ebbf6e06c9
+required_audit_monthly_table_sha256: 16a7bcc38addf98892b532b4386f59cc5833bd6cf4ecc423e7b9e286027c495a
+audit_result_path: reports/audits/raw_data_quality_audit.json
+audit_gap_table_path: reports/audits/timestamp_gaps.csv
+audit_monthly_table_path: reports/audits/monthly_coverage.csv
+output_directory: reports/coverage
+profiles:
+  FULL_DATASET:
+    description: Every registered raw observation; no eligibility filter.
+    require_all: []
+    require_any: []
+    exclude_any: []
+  DEFAULT_RESEARCH:
+    description: Structurally valid observations; flagged coverage remains included.
+    require_all: [research_eligible_default]
+    require_any: []
+    exclude_any: []
+  STRICT_CONTINUITY:
+    description: Default-eligible observations outside all sensitivity conditions.
+    require_all: [research_eligible_default]
+    require_any: []
+    exclude_any: [requires_sensitivity_analysis]
+  SENSITIVITY_FULL:
+    description: Default-eligible observations carrying any sensitivity condition.
+    require_all:
+      - research_eligible_default
+      - requires_sensitivity_analysis
+    require_any: []
+    exclude_any: []
+  SENSITIVITY_2023:
+    description: Default-eligible observations inside the audited 2023 affected bounds.
+    require_all:
+      - research_eligible_default
+      - requires_sensitivity_analysis
+      - affected_period_2023
+    require_any: []
+    exclude_any: []

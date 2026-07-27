@@ -1,0 +1,26 @@
+profile,description,level,total_units,included_units,excluded_units,included_percentage,require_all,require_any,exclude_any
+FULL_DATASET,Every registered raw observation; no eligibility filter.,row,406945,406945,0,100,,,
+FULL_DATASET,Every registered raw observation; no eligibility filter.,date,5146,5146,0,100,,,
+FULL_DATASET,Every registered raw observation; no eligibility filter.,month,198,198,0,100,,,
+FULL_DATASET,Every registered raw observation; no eligibility filter.,year,17,17,0,100,,,
+FULL_DATASET,Every registered raw observation; no eligibility filter.,dataset,1,1,0,100,,,
+DEFAULT_RESEARCH,Structurally valid observations; flagged coverage remains included.,row,406945,406945,0,100,research_eligible_default,,
+DEFAULT_RESEARCH,Structurally valid observations; flagged coverage remains included.,date,5146,5146,0,100,research_eligible_default,,
+DEFAULT_RESEARCH,Structurally valid observations; flagged coverage remains included.,month,198,198,0,100,research_eligible_default,,
+DEFAULT_RESEARCH,Structurally valid observations; flagged coverage remains included.,year,17,17,0,100,research_eligible_default,,
+DEFAULT_RESEARCH,Structurally valid observations; flagged coverage remains included.,dataset,1,1,0,100,research_eligible_default,,
+STRICT_CONTINUITY,Default-eligible observations outside all sensitivity conditions.,row,406945,360477,46468,88.5812579095,research_eligible_default,,requires_sensitivity_analysis
+STRICT_CONTINUITY,Default-eligible observations outside all sensitivity conditions.,date,5146,4465,681,86.7664205208,research_eligible_default,,requires_sensitivity_analysis
+STRICT_CONTINUITY,Default-eligible observations outside all sensitivity conditions.,month,198,137,61,69.1919191919,research_eligible_default,,requires_sensitivity_analysis
+STRICT_CONTINUITY,Default-eligible observations outside all sensitivity conditions.,year,17,2,15,11.7647058824,research_eligible_default,,requires_sensitivity_analysis
+STRICT_CONTINUITY,Default-eligible observations outside all sensitivity conditions.,dataset,1,0,1,0,research_eligible_default,,requires_sensitivity_analysis
+SENSITIVITY_FULL,Default-eligible observations carrying any sensitivity condition.,row,406945,46468,360477,11.4187420905,research_eligible_default|requires_sensitivity_analysis,,
+SENSITIVITY_FULL,Default-eligible observations carrying any sensitivity condition.,date,5146,681,4465,13.2335794792,research_eligible_default|requires_sensitivity_analysis,,
+SENSITIVITY_FULL,Default-eligible observations carrying any sensitivity condition.,month,198,61,137,30.8080808081,research_eligible_default|requires_sensitivity_analysis,,
+SENSITIVITY_FULL,Default-eligible observations carrying any sensitivity condition.,year,17,15,2,88.2352941176,research_eligible_default|requires_sensitivity_analysis,,
+SENSITIVITY_FULL,Default-eligible observations carrying any sensitivity condition.,dataset,1,1,0,100,research_eligible_default|requires_sensitivity_analysis,,
+SENSITIVITY_2023,Default-eligible observations inside the audited 2023 affected bounds.,row,406945,9258,397687,2.27500030717,research_eligible_default|requires_sensitivity_analysis|affected_period_2023,,
+SENSITIVITY_2023,Default-eligible observations inside the audited 2023 affected bounds.,date,5146,156,4990,3.03148076176,research_eligible_default|requires_sensitivity_analysis|affected_period_2023,,
+SENSITIVITY_2023,Default-eligible observations inside the audited 2023 affected bounds.,month,198,7,191,3.53535353535,research_eligible_default|requires_sensitivity_analysis|affected_period_2023,,
+SENSITIVITY_2023,Default-eligible observations inside the audited 2023 affected bounds.,year,17,1,16,5.88235294118,research_eligible_default|requires_sensitivity_analysis|affected_period_2023,,
+SENSITIVITY_2023,Default-eligible observations inside the audited 2023 affected bounds.,dataset,1,1,0,100,research_eligible_default|requires_sensitivity_analysis|affected_period_2023,,

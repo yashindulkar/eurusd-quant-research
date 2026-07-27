@@ -74,4 +74,76 @@ exist.
 
 Future derived datasets must document input dataset version, code/configuration
 version, column definitions, exclusions, time conventions, and creation time.
-No derived field is defined in this infrastructure task.
+
+## Research coverage metadata
+
+COVERAGE-001 consumes, rather than redefines, RAW-DQ-001. The package builds
+row metadata on demand and writes bounded aggregate counts under
+`reports/coverage/`.
+
+| Flag | Meaning |
+|---|---|
+| `raw_available` | The registered source row is present. |
+| `schema_valid` | RAW-DQ-001 schema and row-count reconciliation pass. |
+| `timestamp_valid` | RAW-DQ-001 timestamp parsing, UTC, order, and grid checks pass. |
+| `ohlc_valid` | RAW-DQ-001 reports no OHLC invariant violation. |
+| `duplicate_free` | RAW-DQ-001 reports no duplicate primary timestamp. |
+| `cadence_valid` | The incoming observed interval is exactly M15; true for the first row. |
+| `weekly_gap_boundary` | Row is either `timestamp_before` or `timestamp_after` for an audited likely-weekly-closure gap. |
+| `long_nonweekly_gap_boundary` | Row is either boundary endpoint of an audited long non-weekly gap. |
+| `nonweekend_gap_boundary` | Row is either boundary endpoint of an audited non-weekend intraday gap. |
+| `unclassified_gap_boundary` | Row is either boundary endpoint of an audited unclassified gap. |
+| `continuity_impaired_period` | Row belongs anywhere within an audited continuity-impaired UTC month; it need not be a gap endpoint. |
+| `affected_period_2023` | Row lies within the inclusive audited concentrated-2023 bounds. |
+| `partial_boundary_year` | Row belongs to the audited incomplete first or final UTC year. |
+| `partial_boundary_month` | Row belongs to the audited first or final UTC month. |
+| `research_eligible_default` | All structural flags pass; coverage warnings remain included. |
+| `requires_sensitivity_analysis` | A partial boundary, impaired month, audited affected period, or non-weekly gap-boundary condition applies. |
+
+`eligibility_status` is derived from the two eligibility flags:
+
+- `fully_eligible`: `research_eligible_default` is true and
+  `requires_sensitivity_analysis` is false;
+- `conditionally_eligible`: both flags are true;
+- `structurally_ineligible`: `research_eligible_default` is false, regardless
+  of sensitivity flags.
+
+For gap-boundary flags, both the last observed row before the gap and the first
+observed row after it are flagged. By contrast, `cadence_valid` is false only
+on the after-gap row because it describes that row's incoming interval.
+`continuity_impaired_period` is a period-membership flag applied to every
+observed row in the affected month, not a gap-endpoint flag.
+
+At date, month, year, and dataset levels, structural and default-eligibility
+flags require all observed child rows to pass. Boundary, affected-period, and
+sensitivity flags are true when any observed child row is flagged. Only UTC
+periods containing an observed row are represented; absent timestamps remain
+Task 02 audit evidence, not inserted observations.
+
+Profiles are masks over those flags:
+
+- `FULL_DATASET`: every registered observation;
+- `DEFAULT_RESEARCH`: structurally eligible observations, with coverage
+  warnings retained;
+- `STRICT_CONTINUITY`: default-eligible observations without a sensitivity
+  condition;
+- `SENSITIVITY_FULL`: default-eligible observations with any sensitivity
+  condition;
+- `SENSITIVITY_2023`: default-eligible observations inside the audited
+  concentrated-2023 bounds.
+
+Every flag is registered to a stable rule ID in
+`eurusd_research.research.registry`. Row lineage retains the physical CSV row
+number and raw timestamp; all levels retain raw checksum, dataset version,
+normalized Task 02 result fingerprint, coverage-config fingerprint,
+COVERAGE-001 version, exact gap/month artifact fingerprints, and Git repository
+version plus clean/dirty source-worktree state. The configured generated
+coverage-output directory is excluded from that state check so refreshing the
+reports cannot make its own lineage dirty; every other tracked or untracked
+path remains part of the check.
+
+`configs/coverage.yaml` pins the normalized RAW-DQ-001 result fingerprint and
+the exact Task 02 gap/month table fingerprints. Missing artifacts, mismatched
+dataset identity, changed audit rules, incompatible schemas, cross-artifact
+disagreement, or fingerprint drift stop generation. Refreshing these pins
+requires an explicit review of a newly generated Task 02 audit.

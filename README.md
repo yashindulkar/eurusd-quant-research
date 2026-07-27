@@ -22,6 +22,7 @@ notebooks/               Thin, reproducible research interfaces
 reports/figures/         Generated figures
 reports/tables/          Generated tables
 reports/audits/          Machine-readable lineage and audit records
+reports/coverage/        Reproducible eligibility metadata and profile counts
 scripts/                 Operational entry points
 src/eurusd_research/     Reusable Python package
 tests/                   Unit and integration tests
@@ -76,6 +77,7 @@ make test-integration     # integration tests
 make test                 # all tests with coverage thresholds
 make check                # lint, typecheck, tests, and environment validation
 make audit-raw-data       # read-only registered raw-data quality audit
+make generate-coverage    # Task 02-backed research eligibility metadata
 ```
 
 `make audit-raw-data` verifies the registered identity, loads the CSV once for
@@ -115,6 +117,24 @@ documented volatile JSON fields; serialized paths are repository-relative.
 Exit code 1 is reserved for fatal validation failures; warnings and conditional
 readiness return 0.
 
+## Research coverage and eligibility
+
+`make generate-coverage` consumes the registered Task 02 audit JSON,
+`timestamp_gaps.csv`, and `monthly_coverage.csv`. It verifies their lineage,
+reads only raw timestamps, and builds descriptive masks at row, UTC-date,
+UTC-month, UTC-year, and dataset levels. It does not repeat the audit's gap,
+schema, timestamp, duplicate, or OHLC rules.
+
+Coverage warnings remain included under `DEFAULT_RESEARCH`. The
+`STRICT_CONTINUITY` profile applies a reversible exclusion mask, while
+`SENSITIVITY_FULL` and `SENSITIVITY_2023` expose comparison populations.
+`FULL_DATASET` always preserves the registered population. Profile definitions
+are validated from `configs/coverage.yaml`.
+
+The bounded outputs under `reports/coverage/` contain deterministic flag and
+profile counts. The package API builds the full masks on demand; no row is
+deleted and no row-level copy of the raw dataset is written.
+
 ## Research workflow
 
 1. Register and verify immutable source data.
@@ -130,15 +150,14 @@ outputs must be reproducible from registered inputs and versioned definitions.
 
 ## Current status
 
-Repository infrastructure, configuration, registration, and a reproducible raw
-dataset quality audit are established. No market-behaviour analysis has been
-performed. RAW-DQ-001 classifies the registered dataset as
-`CONDITIONALLY_READY`: structural integrity is sound, while material 2023
-coverage discontinuities, partial boundary periods, and unresolved source
-semantics require explicit treatment before feature engineering.
+Repository infrastructure, registration, RAW-DQ-001, and the canonical
+COVERAGE-001 eligibility framework are established. No market-behaviour
+analysis has been performed. All 406,945 rows are structurally eligible under
+`DEFAULT_RESEARCH`; coverage limitations remain explicit and 46,468 rows carry
+at least one sensitivity condition.
 
 ## Next planned task
 
-Define research-specific treatment of the audit's confirmed coverage
-limitations before feature engineering. Do not silently repair or exclude raw
-observations.
+Pre-register and implement the first bounded behavioural research study. It
+must declare its coverage profile and compare the default population with the
+relevant sensitivity populations.

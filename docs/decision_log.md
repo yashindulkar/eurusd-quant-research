@@ -130,3 +130,59 @@ repository-relative so outputs do not embed a local workstation path.
 **Rationale:** Conditional readiness must expose its nonfatal limitations, and
 reviewers need a reproducible analytical-content contract without pretending
 execution metadata is invariant.
+
+## 2026-07-27 — Retain coverage warnings in the default population
+
+**Decision:** Define `DEFAULT_RESEARCH` from structural validity only.
+Continuity-impaired periods, partial boundaries, and non-weekly gap endpoints
+remain included but set `requires_sensitivity_analysis`. Put actual exclusions
+in named configuration-driven profiles.
+
+**Rationale:** Task 02 findings justify visible robustness checks, not silent
+deletion or a universal claim that affected prices are invalid.
+
+## 2026-07-27 — Consume Task 02 artifacts as the coverage source of truth
+
+**Decision:** Build COVERAGE-001 from the registered audit JSON,
+`timestamp_gaps.csv`, and `monthly_coverage.csv`; do not reclassify gaps or
+repeat schema, timestamp, duplicate, and OHLC validation. Refuse generation
+when the evidence does not reconcile.
+
+**Rationale:** One audited definition prevents methodological drift and
+preserves direct lineage from later research masks to RAW-DQ-001.
+
+## 2026-07-27 — Propagate flags with explicit any/all semantics
+
+**Decision:** At UTC date, month, year, and dataset levels, structural flags use
+`all`; boundary, impairment, affected-period, and sensitivity flags use `any`.
+Represent observed periods only.
+
+**Rationale:** Higher-level masks need deterministic meaning without inventing
+missing rows. Explicit propagation makes study exclusions reversible and
+testable.
+
+## 2026-07-28 — Include the audited affected period in sensitivity eligibility
+
+**Decision:** Add `affected_period_2023` to COV-ELIG-002 and require
+COV-ELIG-002 explicitly in `SENSITIVITY_2023`.
+
+**Rationale:** Independent verification found 239 affected-period rows outside
+the original six-condition sensitivity union. The original 46,229-row
+population therefore failed the required
+`SENSITIVITY_2023 ⊆ SENSITIVITY_FULL` relationship. The corrected union is
+46,468 rows, and the profile algebra is now verified over every truth
+assignment of its referenced flags rather than only the production dataset.
+
+## 2026-07-28 — Pin exact Task 02 evidence and report dirty lineage
+
+**Decision:** Pin the normalized audit-result, gap-table, and monthly-table
+fingerprints in coverage configuration. Persist exact consumed artifact
+fingerprints and append `+clean` or `+dirty` to the Git HEAD lineage. Exclude
+only the configured generated coverage-output directory from the worktree
+state check so an artifact refresh does not change its own lineage.
+
+**Rationale:** Dataset identity and aggregate counts alone cannot detect every
+stale table substitution, and a dirty Task 03 worktree must not be represented
+as the clean committed HEAD. Generated outputs are consequences of that state,
+not source inputs, and including them would make clean-lineage regeneration
+self-referential and non-deterministic.

@@ -104,6 +104,52 @@ class AuditConfig(StrictModel):
         return self
 
 
+class CoverageProfileConfig(StrictModel):
+    """Configuration-driven selection rule for a named coverage profile."""
+
+    description: str = Field(min_length=1)
+    require_all: tuple[str, ...] = ()
+    require_any: tuple[str, ...] = ()
+    exclude_any: tuple[str, ...] = ()
+
+    @model_validator(mode="after")
+    def validate_profile(self) -> CoverageProfileConfig:
+        fields = (*self.require_all, *self.require_any, *self.exclude_any)
+        if len(set(fields)) != len(fields):
+            raise ValueError("coverage profile flags must not repeat")
+        return self
+
+
+class CoverageConfig(StrictModel):
+    """Canonical research-coverage inputs, outputs, and named profiles."""
+
+    method_id: str = Field(pattern=r"^[A-Z][A-Z0-9-]+$")
+    method_version: str = Field(min_length=1)
+    required_audit_method_version: str = Field(min_length=1)
+    required_audit_result_content_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    required_audit_gap_table_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    required_audit_monthly_table_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    audit_result_path: Path
+    audit_gap_table_path: Path
+    audit_monthly_table_path: Path
+    output_directory: Path
+    profiles: dict[str, CoverageProfileConfig] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_profiles(self) -> CoverageConfig:
+        if any(not name or name != name.upper() for name in self.profiles):
+            raise ValueError("coverage profile names must be non-empty uppercase names")
+        paths = (
+            self.audit_result_path,
+            self.audit_gap_table_path,
+            self.audit_monthly_table_path,
+            self.output_directory,
+        )
+        if any(path.is_absolute() for path in paths):
+            raise ValueError("coverage paths must be repository-relative")
+        return self
+
+
 class SessionPlaceholder(StrictModel):
     """Disabled placeholder for a future local-time session definition."""
 
@@ -157,6 +203,7 @@ class ResearchConfig(StrictModel):
 
     project: ProjectConfig
     data: DataConfig
+    coverage: CoverageConfig
     sessions: SessionsConfig
 
 
@@ -186,6 +233,9 @@ def load_config(root: Path | None = None) -> ResearchConfig:
             _load_yaml(config_directory / "project.yaml")
         ),
         data=DataConfig.model_validate(_load_yaml(config_directory / "data.yaml")),
+        coverage=CoverageConfig.model_validate(
+            _load_yaml(config_directory / "coverage.yaml")
+        ),
         sessions=SessionsConfig.model_validate(
             _load_yaml(config_directory / "sessions.yaml")
         ),
