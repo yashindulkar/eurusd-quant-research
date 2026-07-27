@@ -13,7 +13,7 @@ This framework assigns reversible descriptive eligibility metadata. It does not 
 - Task 02 gap-table fingerprint: `60b48e06c107b5c676f200392db6002ca4f678ed4a6c31bb3f0439ebbf6e06c9`
 - Task 02 monthly-table fingerprint: `16a7bcc38addf98892b532b4386f59cc5833bd6cf4ecc423e7b9e286027c495a`
 - Coverage method: `COVERAGE-001` (`research-coverage-v1`)
-- Repository version: `git:c21113da7f91f64804704a2a7c9ccc1b50df0edd+dirty`
+- Repository version: `git:e9b2e5e65a379314da932695ffcd9b0be0cd1289+clean`
 
 ## Eligibility summary
 
