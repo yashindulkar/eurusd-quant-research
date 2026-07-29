@@ -1,0 +1,53 @@
+profile,analysis_scope,comparison,effect_size_method,effect_size,sample_size,effect_size_magnitude,effect_direction
+DEFAULT_RESEARCH,complete_weekday_dates,Monday versus Tuesday,cliffs_delta,-0.13824538063562453,1645,negligible,Monday<Tuesday
+DEFAULT_RESEARCH,complete_weekday_dates,Monday versus Wednesday,cliffs_delta,-0.18846119733924616,1645,small,Monday<Wednesday
+DEFAULT_RESEARCH,complete_weekday_dates,Monday versus Thursday,cliffs_delta,-0.23613467656415699,1648,small,Monday<Thursday
+DEFAULT_RESEARCH,complete_weekday_dates,Monday versus Friday,cliffs_delta,-0.17618641325134599,1649,small,Monday<Friday
+DEFAULT_RESEARCH,complete_weekday_dates,Tuesday versus Wednesday,cliffs_delta,-0.051158861340679485,1650,negligible,Tuesday<Wednesday
+DEFAULT_RESEARCH,complete_weekday_dates,Tuesday versus Thursday,cliffs_delta,-0.10344459083589519,1653,negligible,Tuesday<Thursday
+DEFAULT_RESEARCH,complete_weekday_dates,Tuesday versus Friday,cliffs_delta,-0.040736922908213624,1654,negligible,Tuesday<Friday
+DEFAULT_RESEARCH,complete_weekday_dates,Wednesday versus Thursday,cliffs_delta,-0.054374176548089626,1653,negligible,Wednesday<Thursday
+DEFAULT_RESEARCH,complete_weekday_dates,Wednesday versus Friday,cliffs_delta,0.0084746134444566579,1654,negligible,Wednesday>Friday
+DEFAULT_RESEARCH,complete_weekday_dates,Thursday versus Friday,cliffs_delta,0.061579634388676086,1657,negligible,Thursday>Friday
+DEFAULT_RESEARCH,complete_weekday_dates,Monday-Friday,epsilon_squared,0.018564466831704395,4127,,
+DEFAULT_RESEARCH,complete_weekday_dates,Monday-Friday,eta_squared,0.015465212964634312,4127,,
+DEFAULT_RESEARCH,complete_weekday_dates,Monday-Friday,omega_squared,0.01450635290708664,4127,,
+STRICT_CONTINUITY,complete_weekday_dates,Monday versus Tuesday,cliffs_delta,-0.14062110343411227,1477,negligible,Monday<Tuesday
+STRICT_CONTINUITY,complete_weekday_dates,Monday versus Wednesday,cliffs_delta,-0.20359284726736682,1478,small,Monday<Wednesday
+STRICT_CONTINUITY,complete_weekday_dates,Monday versus Thursday,cliffs_delta,-0.25282028523370426,1480,small,Monday<Thursday
+STRICT_CONTINUITY,complete_weekday_dates,Monday versus Friday,cliffs_delta,-0.18832007527934558,1484,small,Monday<Friday
+STRICT_CONTINUITY,complete_weekday_dates,Tuesday versus Wednesday,cliffs_delta,-0.06799812369199687,1489,negligible,Tuesday<Wednesday
+STRICT_CONTINUITY,complete_weekday_dates,Tuesday versus Thursday,cliffs_delta,-0.12392221214607535,1491,negligible,Tuesday<Thursday
+STRICT_CONTINUITY,complete_weekday_dates,Tuesday versus Friday,cliffs_delta,-0.054028320662056317,1495,negligible,Tuesday<Friday
+STRICT_CONTINUITY,complete_weekday_dates,Wednesday versus Thursday,cliffs_delta,-0.057392882491936414,1492,negligible,Wednesday<Thursday
+STRICT_CONTINUITY,complete_weekday_dates,Wednesday versus Friday,cliffs_delta,0.012396893627288907,1496,negligible,Wednesday>Friday
+STRICT_CONTINUITY,complete_weekday_dates,Thursday versus Friday,cliffs_delta,0.068109098622630704,1498,negligible,Thursday>Friday
+STRICT_CONTINUITY,complete_weekday_dates,Monday-Friday,epsilon_squared,0.021744685396303625,3720,,
+STRICT_CONTINUITY,complete_weekday_dates,Monday-Friday,eta_squared,0.019004163263375125,3720,,
+STRICT_CONTINUITY,complete_weekday_dates,Monday-Friday,omega_squared,0.017943171197913617,3720,,
+SENSITIVITY_FULL,complete_weekday_dates,Monday versus Tuesday,cliffs_delta,-0.23050476636974526,160,small,Monday<Tuesday
+SENSITIVITY_FULL,complete_weekday_dates,Monday versus Wednesday,cliffs_delta,-0.10110954836693231,160,negligible,Monday<Wednesday
+SENSITIVITY_FULL,complete_weekday_dates,Monday versus Thursday,cliffs_delta,-0.11675049535131843,162,negligible,Monday<Thursday
+SENSITIVITY_FULL,complete_weekday_dates,Monday versus Friday,cliffs_delta,-0.13168724279835387,159,negligible,Monday<Friday
+SENSITIVITY_FULL,complete_weekday_dates,Tuesday versus Wednesday,cliffs_delta,0.15670565614484855,158,small,Tuesday>Wednesday
+SENSITIVITY_FULL,complete_weekday_dates,Tuesday versus Thursday,cliffs_delta,0.12314424128770129,160,negligible,Tuesday>Thursday
+SENSITIVITY_FULL,complete_weekday_dates,Tuesday versus Friday,cliffs_delta,0.1226874391431354,157,negligible,Tuesday>Friday
+SENSITIVITY_FULL,complete_weekday_dates,Wednesday versus Thursday,cliffs_delta,-0.026566651039224842,160,negligible,Wednesday<Thursday
+SENSITIVITY_FULL,complete_weekday_dates,Wednesday versus Friday,cliffs_delta,-0.043330087633885128,157,negligible,Wednesday<Friday
+SENSITIVITY_FULL,complete_weekday_dates,Thursday versus Friday,cliffs_delta,-0.0082304526748970819,159,negligible,Thursday<Friday
+SENSITIVITY_FULL,complete_weekday_dates,Monday-Friday,epsilon_squared,0.0082162181048740738,398,,
+SENSITIVITY_FULL,complete_weekday_dates,Monday-Friday,eta_squared,0.018417981795553057,398,,
+SENSITIVITY_FULL,complete_weekday_dates,Monday-Friday,omega_squared,0.0084063289351468482,398,,
+SENSITIVITY_2023,complete_weekday_dates,Monday versus Tuesday,cliffs_delta,-0.33333333333333337,6,medium,Monday<Tuesday
+SENSITIVITY_2023,complete_weekday_dates,Monday versus Wednesday,cliffs_delta,-0.11111111111111116,6,negligible,Monday<Wednesday
+SENSITIVITY_2023,complete_weekday_dates,Monday versus Thursday,cliffs_delta,0.16666666666666674,7,small,Monday>Thursday
+SENSITIVITY_2023,complete_weekday_dates,Monday versus Friday,cliffs_delta,-0.55555555555555558,6,large,Monday<Friday
+SENSITIVITY_2023,complete_weekday_dates,Tuesday versus Wednesday,cliffs_delta,0.11111111111111116,6,negligible,Tuesday>Wednesday
+SENSITIVITY_2023,complete_weekday_dates,Tuesday versus Thursday,cliffs_delta,0.33333333333333326,7,medium,Tuesday>Thursday
+SENSITIVITY_2023,complete_weekday_dates,Tuesday versus Friday,cliffs_delta,-0.11111111111111116,6,negligible,Tuesday<Friday
+SENSITIVITY_2023,complete_weekday_dates,Wednesday versus Thursday,cliffs_delta,0.16666666666666674,7,small,Wednesday>Thursday
+SENSITIVITY_2023,complete_weekday_dates,Wednesday versus Friday,cliffs_delta,-0.33333333333333337,6,medium,Wednesday<Friday
+SENSITIVITY_2023,complete_weekday_dates,Thursday versus Friday,cliffs_delta,-0.66666666666666674,7,large,Thursday<Friday
+SENSITIVITY_2023,complete_weekday_dates,Monday-Friday,epsilon_squared,0,16,,
+SENSITIVITY_2023,complete_weekday_dates,Monday-Friday,eta_squared,0.093914038240835315,16,,
+SENSITIVITY_2023,complete_weekday_dates,Monday-Friday,omega_squared,0,16,,

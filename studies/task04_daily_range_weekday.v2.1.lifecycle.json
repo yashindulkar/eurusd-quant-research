@@ -1,0 +1,15 @@
+{
+  "current_status": "COMPLETED",
+  "deviation_ledger_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+  "executable_configuration_sha256": "06a84490a3b28234493ab3702ad3b665d6128aa7213de44b9b0ec2fe0d7e5f04",
+  "lifecycle_fingerprint": "19238d75594511740be3c3467387bdae6b6cf172f997b8455b0bdfba2cf62017",
+  "lifecycle_schema_version": "task04-registration-lifecycle-v1",
+  "receipt_fingerprint": "6df41faa6805f96e57d9c9c4ea2fc66383fcc0b4d3bb5b6ebb431671ecf2bd35",
+  "registration_version": "2.1",
+  "semantic_design_sha256": "20521ab7198faddbeaf81af869515cf101d437d19571ae2375a8eeb3554ba9a2",
+  "status_history": [
+    "PREREGISTERED",
+    "COMPLETED"
+  ],
+  "study_id": "TASK-04"
+}

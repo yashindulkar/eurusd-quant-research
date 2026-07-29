@@ -147,3 +147,66 @@ the exact Task 02 gap/month table fingerprints. Missing artifacts, mismatched
 dataset identity, changed audit rules, incompatible schemas, cross-artifact
 disagreement, or fingerprint drift stop generation. Refreshing these pins
 requires an explicit review of a newly generated Task 02 audit.
+
+## Task 04 daily observations
+
+The historical v2.2 file
+`reports/research/task04_daily_range_weekday/daily_observations.csv` contains
+one row per observed UTC date. It is a daily lineage and eligibility table, not
+a duplicate M15 dataset. After the authorized v2.3 anchor, the same registered
+schema will be generated under
+`reports/research/task04_daily_range_weekday_v2.3/`.
+
+| Field | Definition |
+|---|---|
+| `utc_date` | UTC calendar date, `00:00:00` through `23:59:59.999999`. |
+| `weekday_number` / `weekday_name` | UTC weekday; Monday is 0. |
+| `daily_open` | Open of the earliest contributing `DEFAULT_RESEARCH` M15 row. |
+| `daily_high` | Maximum high among contributing primary-profile rows. |
+| `daily_low` | Minimum low among contributing primary-profile rows. |
+| `daily_close` | Close of the latest contributing primary-profile row. |
+| `daily_range_price` | `daily_high - daily_low`, without pre-analysis rounding. |
+| `daily_range_pips` | `daily_range_price / 0.0001`; the Task 04 primary outcome. |
+| `expected_m15_rows` | Expected grid size under the registered UTC/Task 02 boundary rule. |
+| `observed_coverage_ratio` | Contributing rows divided by expected rows. |
+| `is_partial_daily_observation` | At least one registered completeness condition fails. |
+| `primary_profile_eligible` | Complete non-boundary Monday-Friday date under `DEFAULT_RESEARCH`. |
+| `*_analysis_eligible` | Equivalent separately aggregated membership for a named Task 03 profile. |
+| `*_observed_m15_rows` | Profile contribution count; zero is explicit rather than an absent date. |
+| `*_daily_range_pips` | Nullable for a zero-contribution profile-date; no artificial range is created. |
+| `contributing_rows_sha256` | Digest of contributing physical CSV row numbers. |
+| lineage fields | Dataset, audit, coverage, Task 04 configuration, preregistration, method, and Git identities. |
+
+Monday-Thursday expected grids contain 96 M15 timestamps. Friday grids end at
+the applicable `timestamp_before` from an audited RAW-DQ-001
+`likely_weekly_closure`; Sunday grids begin at the corresponding
+`timestamp_after` but remain excluded from Monday-Friday inference. Saturday
+and all other weekend observations remain traceable. Profile-prefixed fields
+come from row-level profile selection before aggregation.
+Floating-point fields are serialized with 17 significant digits so CSV
+round-tripping preserves the unrounded analysis values and test statistics.
+
+Every profile reconciles to all 5,146 raw-observed UTC dates. A
+zero-contribution date has nullable OHLC/range, zero contributing rows, and
+explicit `zero_profile_contribution` and `task03_profile_ineligible_date`
+reasons in the internal long-form per-profile aggregation. The public wide
+daily CSV exports primary OHLC plus profile-prefixed contribution, range,
+eligibility, and digest fields; it does not export secondary-profile OHLC.
+
+The v2.3 population reconciliation reports `zero_contribution_dates`,
+`nonzero_partial_dates`, `complete_dates`, `incomplete_dates`, and
+`dates_included_in_analysis`. For every profile:
+
+`incomplete_dates = zero_contribution_dates + nonzero_partial_dates`.
+
+The historical v2.2 label `partial_daily_observations` meant total incomplete
+dates, including zero contribution; it remains historical output only.
+
+## Task 04 volatility-regime lineage
+
+`volatility_regime_lineage.csv` contains one row per primary eligible UTC date.
+It reports the lagged 60-date trailing median, number of earlier regime
+measures, past-only 0.33/0.67 thresholds, regime label, warm-up flag/reason,
+lookback/minimum-history settings, and complete Task 04 lineage. Current-day
+range is shifted out before the trailing statistic, and thresholds use only
+earlier trailing measures.

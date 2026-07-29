@@ -68,5 +68,14 @@ warn_unreachable = true
 pretty = true
 
 [[tool.mypy.overrides]]
-module = ["pandas", "pandas.*"]
+module = [
+  "matplotlib",
+  "matplotlib.*",
+  "pandas",
+  "pandas.*",
+  "scipy",
+  "scipy.*",
+  "statsmodels",
+  "statsmodels.*",
+]
 ignore_missing_imports = true

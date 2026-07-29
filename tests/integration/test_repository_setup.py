@@ -5,7 +5,7 @@ import sys
 from pathlib import Path
 
 import pytest
-from tests.conftest import EXPECTED_COLUMNS
+from tests.helpers import EXPECTED_COLUMNS
 
 from eurusd_research.config import load_config
 from eurusd_research.data.registry import register_raw_dataset

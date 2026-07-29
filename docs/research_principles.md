@@ -48,8 +48,36 @@ Avoid look-ahead bias, future leakage, survivorship-like source changes, and
 post-result definition changes. Define methods before inspecting results.
 Separate exploratory findings from confirmatory tests and preserve both labels.
 
+For a preregistered or correctively registered study, every semantic design
+field, executable setting, evidence-rating rule, limitation, dependency, and
+expected output is locked before production calculation. A deterministic
+receipt outside the lifecycle YAML binds that semantic fingerprint to the
+executable configuration, complete declared source/dependency closure, exact
+Task 03 row membership, an identified Git commit/tree, and the output
+inventory. Completion must descend from the anchor object, and registered paths
+must remain byte-identical to their anchor blobs. Git does not make local files
+undeletable; a replacement scientific design creates a different auditable
+commit lineage.
+
+RANGE-WEEKDAY-001 v2.3 does not support same-version post-anchor deviations.
+Any scientific, population, threshold, output-contract, or interpretive change
+requires a new registration version and new anchor. Its committed
+preregistration remains `PREREGISTERED`; completion is represented only by the
+receipt-bound lifecycle.
+
+When analysis or results were already developed before an enforceable receipt,
+the corrected run is labelled a registered replication, not a pristine
+first-look preregistration.
+
 ## Statistical discipline
 
 Report denominators, uncertainty, missing-data effects, multiple-comparison
 considerations, regime sensitivity, and practical magnitude. Robustness across
 years or regimes does not rescue an ambiguously defined metric.
+
+RANGE-WEEKDAY-001 uses Kruskal-Wallis as its primary test and reports all ten
+Dunn pairwise comparisons with Holm correction. Parametric tests are
+complementary, outliers remain in the primary analysis, and the evidence rating
+requires stability and effect magnitude rather than relying on a small p-value.
+Registration version 2.3 cannot exceed `MODERATE` while authoritative
+candle-open-versus-candle-close timestamp semantics remain unresolved.

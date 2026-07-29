@@ -203,3 +203,145 @@ rates. The framework represents observed rows and periods only.
 the Task 03 worktree before the final production quality-gate run. It is not
 claimed as a committed preregistration because the task explicitly forbids a
 commit.
+
+---
+
+**Method ID:** RANGE-WEEKDAY-001
+
+**Status:** correctively registered replication, registration version 2.3
+prepared; preregistration anchor commit required
+
+**Created (UTC):** 2026-07-28
+
+**Owner:** EUR/USD Quant Research
+
+**Research question:** Does the distribution of EUR/USD daily high-low range
+differ across UTC weekdays?
+
+**Population and sample window:** Monday-Friday UTC dates constructed
+separately from the `DEFAULT_RESEARCH`, `STRICT_CONTINUITY`,
+`SENSITIVITY_FULL`, and `SENSITIVITY_2023` row populations. Primary inference
+uses complete `DEFAULT_RESEARCH` dates. The registered dataset bounds are
+2010-01-03T22:00:00Z through 2026-06-26T20:45:00Z.
+
+**Input dataset version(s):** `sha256:b2a41310927aa9a9`; full SHA-256
+`b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c`.
+The exact RAW-DQ-001 and COVERAGE-001 dependency fingerprints are locked in
+`studies/task04_daily_range_weekday.v2.3.yaml`. Historical v2.2 registration
+and control files remain alongside it without being rewritten.
+
+**Unit of observation:** One observed UTC calendar date within one coverage
+profile. The sole primary outcome is unrounded daily high-low range divided by
+the configured EUR/USD pip size.
+
+**Exact variable definitions:** Daily open and close are the earliest and
+latest contributing eligible M15 observations; daily high and low are the
+maximum and minimum contributing prices. `daily_range_price = daily_high -
+daily_low`; `daily_range_pips = daily_range_price / 0.0001`. No return,
+direction, true range, ATR, ADR, signal, or profitability variable is defined.
+
+**Timezone, calendar, and boundary rules:** Dates and weekdays use UTC calendar
+boundaries only. Monday through Thursday require the complete 00:00-23:45 M15
+grid. Friday's expected grid ends at the applicable audited RAW-DQ-001
+likely-weekly-closure endpoint; this avoids assuming 96 Friday candles or a
+fixed UTC close. Saturday and Sunday remain traceable but are excluded from the
+weekday comparison. The first and final observed dates are retained and
+explicitly excluded from inference.
+
+**Inclusion and exclusion rules:** The primary analysis requires Monday-Friday,
+complete daily coverage, both expected boundary intervals, no missing expected
+interval, and contributing `DEFAULT_RESEARCH` rows. Outliers remain in the
+primary population. Partial dates, weekend dates, and boundary dates remain in
+daily metadata with reasons. Coverage profiles are applied at row level before
+daily aggregation.
+
+**Missing/invalid observation policy:** Do not insert, interpolate, repair,
+delete, or silently omit observations. Every observed UTC date is reconciled.
+Incomplete profile-date records are excluded only by the registered complete-day
+rule and remain reversible in metadata.
+
+**Statistical estimand and method:** Compare Monday-Friday
+`daily_range_pips` distributions with a primary Kruskal-Wallis test. Run all
+ten Dunn pairwise rank comparisons with Holm family-wise correction. Report
+epsilon-squared, Cliff's delta, mean and median differences, deterministic
+bootstrap intervals, one-way ANOVA, Welch ANOVA, Brown-Forsythe variance
+diagnostics, skewness, excess kurtosis, and Q-Q correlation. Parametric tests
+are complementary and cannot replace the primary result.
+
+**Confidence level and multiplicity policy:** Alpha 0.05; 95% deterministic
+percentile-bootstrap intervals with 2,000 resamples and seed 20260727. Holm
+correction applies to the ten pairwise comparisons within each analysis
+population.
+
+**Robustness checks planned before results:** Required coverage profiles;
+pre-2020, 2020-2021, and post-2021 periods; ordered 70/30
+development-validation split; year-by-year summaries with at least 20
+observations per weekday for inferential interpretation; past-only lagged
+60-day volatility regimes with 120 prior regime measures; 1st/99th percentile
+winsorisation; and exclusion of the largest 1% of daily ranges.
+
+**Outputs:** After the separately authorized anchor commit, deterministic
+machine-readable study artifacts, date-level
+volatility-regime lineage, and eight static figures under
+`reports/research/task04_daily_range_weekday_v2.3/`, as enumerated in the
+machine-readable registration and immutable receipt.
+
+**Known limitations:** UTC dates are not local trading sessions; timestamp
+open/close semantics remain unresolved; serial dependence, volatility
+clustering, unequal variance, changing regimes, and calendar imbalance can
+affect inference; sensitivity-only profiles are diagnostic populations; daily
+range does not establish direction, profitability, or a trading rule.
+
+**Supersedes / superseded by:** v2.3 supersedes the v2.2 control architecture
+without changing the registered numerical methodology.
+
+**Results access status at definition time:** The original Task 04 analysis had
+already been developed, generated, and independently reviewed before
+registration version 2.3 was prepared. The original mutable completion record
+is preserved in `task04_development_baseline.json` but is not accepted as
+proven preregistration evidence. Version 2.3 is therefore a correctively
+registered replication, not a pristine first-look preregistration.
+
+**Registration version 2.3 control:** The exact registered design, executable
+configuration, complete declared source/script closure, environment lock, Task
+02 evidence, Task 03 row/date membership digests, expected output inventory,
+and registered path inventory are prepared before anchoring. A receipt may be
+created only after these files are committed in a dedicated preregistration
+anchor. Validation accepts the anchor and descendants, rejects non-descendants
+or missing objects, and requires every registered worktree path to match its
+anchor blob. Design B rebuilds Task 03 masks but requires exact row- and
+date-membership digests before Task 04 aggregation. Same-version deviations are
+forbidden; any post-anchor scientific change requires v2.4 or later.
+
+**Historical registration version 2.2 control:** Before corrected production
+regeneration,
+the `PREREGISTERED` semantic design, executable configuration, raw/manifest/
+Task 02/Task 03 fingerprints, production source, Git HEAD/dirty disclosure,
+development baseline, and exact output inventory are bound by
+`task04_daily_range_weekday.v2.2.receipt.json`. Completion is bound by the
+sibling lifecycle record. A later adversarial review demonstrated that
+current-HEAD equality, replaceable local control files, incomplete live-source
+coverage, and a non-operational deviation ledger prevented v2.2 from being the
+final institutional anchor. Its files remain historical control evidence and
+are not overwritten. The preserved
+`task04_daily_range_weekday.v2.0.failed.receipt.json` anchored an aborted
+attempt: live dependency validation rejected a Task 03 artifact whose volatile
+repository-state field had been regenerated. No Task 04 aggregation or
+weekday-level result was calculated in that attempt. The authoritative tracked
+Task 02 and Task 03 outputs were restored byte-for-byte before v2.1 anchoring,
+and receipt construction now validates live dependencies before writing.
+The completed v2.1 run is preserved in
+`task04_v2.1_completed_baseline.json`; its scientific results were correct, but
+the exported `method_version` lineage field contained the implementation
+version. Version 2.2 corrects only that lineage mapping before a new receipt.
+
+**Timestamp assumption:** Authoritative candle-open-versus-candle-close
+semantics remain unresolved. Version 2.3 assigns each timestamp label to its
+supplied UTC date, discloses the possible one-bar boundary consequence, and
+caps evidence at `MODERATE`.
+
+**Completion record:** Not yet created. Phase A stops before the v2.3 anchor
+commit and before any v2.3 production output. The reviewed development and
+historical v2.2 reference values were 4,127 primary dates, H=80.522732,
+p=1.349753e-16, and epsilon-squared=0.018564; these are comparison evidence,
+not registration inputs.

@@ -1,0 +1,55 @@
+{
+  "branch": "main",
+  "classification": "reviewed development implementation; not proven preregistration evidence",
+  "evidence_rating": "MODERATE",
+  "head": "5773f7b28fc53e972bf77eb015187620a32ab2ec",
+  "output_fingerprints": {
+    "chronological_split_results.csv": "d59dfad410c651e3bf5e1a14b6ea501ec86fed82805db63caeecc3549f0a2db9",
+    "coverage_profile_comparison.csv": "0e4fcf83dad0d2b36570edb9ee0730b25d93875b73173546fe31aa4a9d0d67ad",
+    "daily_observations.csv": "142c3022b88e54a5a069761de6a15b3993bc53b03b12bee2a733e33b0f469bf0",
+    "effect_sizes.csv": "55877f83d257d29a341c606ae0516add1c02b47845c6455a2c7e8f68fcb9fcb6e",
+    "extreme_event_sensitivity.csv": "40b70d0043488b975ae347614f1f2705e2cd2b91bd4170aa8d366eee28d9b779",
+    "figures/01_weekday_boxplot.png": "be7a22393fac06df2300cb56d43af3f9bbb016738faa859b68a1eb75b2053b9f",
+    "figures/02_weekday_violin_or_distribution.png": "75297b01f808e3940b3007cdd4c2cbc0fd938b3db7d0a7c4aa0255305c50b3c4",
+    "figures/03_weekday_ecdf.png": "416dd45bb553f57dab5cd31f46a851afd7c90126431b72617c0d1d2861d92eba",
+    "figures/04_weekday_mean_median_ci.png": "76478ed1b387e7daa7618e7d7af814f0d4c1080a0fa06f709141f9185e81757d",
+    "figures/05_yearly_weekday_medians.png": "90620b78edeca0ad6b52a88c426f4c5a8769a85de23ecc83a68352c397d0ddaf",
+    "figures/06_coverage_profile_comparison.png": "a6ae54682e5fa19de42b1abecfba8822f47a4025d989cef5105b57586281459d",
+    "figures/07_chronological_stability.png": "ef9c62e038ff4b464e4c99e0d753c6512338192a314ed74f5198df6eb4009062",
+    "figures/08_volatility_regime_comparison.png": "9fe47d33309667e015618b9bf91b2dae6e58c5022f742623b4c496ff268789df",
+    "omnibus_tests.csv": "360f5a24efa3d36e49c58a41652a5cd6fb966ba8b9c479265a929449b20e607b",
+    "pairwise_tests.csv": "899a6189612e79fd93a49519c75cbfc40dbd300215a2ec1a079b5c2f00383f6e",
+    "period_robustness.csv": "bd32e28f6bc30d8ef72fe91bbdd356e4927336444f644490a421025490764128",
+    "population_reconciliation.csv": "07ffd6c32f33642c5054d51f6780e4e9ed03a910276298d5958ab6f9111217f3",
+    "preregistration_deviations.csv": "b4332afabe450453e63212729843226795f0fe908446d6488c4beb6088b3e648",
+    "study_registry_record.json": "71d6c8c2685edb01eee9952a843d5904f5b84e2c3460ebb182afbd57aca93145",
+    "study_summary.json": "01ff3d8b767991f369af9d480ad5ff4d51c765547ad812c60133cc4a9dd8da45",
+    "study_summary.md": "861d93886d6f8a3d41194aa75750dd87611d75fa0775f4abd8e93890cd853a1e",
+    "volatility_regime_statistics.csv": "fe2aa794bb98b9dcafb3973e247b383ba59e6724178d68ec9fd0de004cdc302f",
+    "volatility_regime_tests.csv": "3784abef9620f642a44867952cffb83aca7c27afed4f36b7d6652307da7c1feb",
+    "weekday_statistics.csv": "f1cf9617bbe39bb66eec0d827fff72b0f9e0c8c176aef377dd0f6ca1741339f0",
+    "yearly_omnibus_tests.csv": "6e1eefff1a3554859a6dcc03ffcc33789fe9cc2fe66c7d5e1e4afd9eb197e011",
+    "yearly_statistics.csv": "0fb4fcadbca5ac61fa047ccdd052091e527dcd2cc7997f2ad4f7a9973243f7bb"
+  },
+  "population": {
+    "observed_utc_dates": 5146,
+    "primary_eligible_dates": 4127,
+    "raw_rows": 406945
+  },
+  "primary_result": {
+    "alpha": 0.05,
+    "epsilon_squared": 0.018564466831704395,
+    "kruskal_p_value": 1.3497534759654482e-16,
+    "kruskal_statistic": 80.52273228028551,
+    "significant_at_alpha": true,
+    "weekday_order_high_to_low": "Thursday|Friday|Wednesday|Tuesday|Monday"
+  },
+  "raw": {
+    "mtime_ns": 1784573781016669944,
+    "sha256": "b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c",
+    "size_bytes": 32180041
+  },
+  "reviewed_registration_fingerprint": "d7545662b271af0d2bb23851f21116058c868e6e729aafa8e8a3cf9786be4f54",
+  "schema_version": "task04-development-baseline-v1",
+  "task04_config_fingerprint": "104a66bcf9d6505a64404ff76295389866c07d6d2408aea0020fa36e36eca7d9"
+}

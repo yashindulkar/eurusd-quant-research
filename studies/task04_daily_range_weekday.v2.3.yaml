@@ -1,0 +1,482 @@
+study_id: TASK-04
+registration_version: '2.3'
+method_id: RANGE-WEEKDAY-001
+method_version: range-weekday-registered-replication-v2.3
+title: Daily Range Behaviour by Weekday
+status: PREREGISTERED
+registration_classification: correctively registered replication of the developed
+  Task 04 analysis
+registration_disclosure: The study design was locked before the corrected production
+  regeneration. However, the underlying analysis had already been developed and its
+  results reviewed. The corrected production run is therefore treated as a registered
+  replication of the development analysis, not as a pristine first-look preregistration.
+research_question: Does the distribution of EUR/USD daily high-low range differ across
+  UTC weekdays?
+primary_null_hypothesis: The distribution of EUR/USD daily high-low range is identical
+  across Monday, Tuesday, Wednesday, Thursday, and Friday under the preregistered
+  daily and eligibility definitions.
+primary_alternative_hypothesis: At least one weekday has a different daily high-low
+  range distribution.
+secondary_hypotheses:
+- Estimate which of the ten weekday pairs differ.
+- Estimate the direction and magnitude of pairwise differences.
+- Assess whether weekday ordering is stable across time and coverage profiles.
+primary_outcome:
+  name: daily_range_pips
+  definition: (daily_high - daily_low) / configured EUR/USD pip size
+  reporting_unit: pips
+  pip_size: 0.0001
+unit_of_analysis: one observed UTC calendar date within one coverage profile
+calendar_definition:
+  timezone: UTC
+  utc_day_start_inclusive: 00:00:00
+  utc_day_end_inclusive: '23:59:59.999999'
+  local_session_or_rollover_used: false
+weekday_definition:
+  source: UTC calendar date
+  primary_weekdays:
+  - Monday
+  - Tuesday
+  - Wednesday
+  - Thursday
+  - Friday
+  excluded_weekdays:
+  - Saturday
+  - Sunday
+  weekend_dates_remain_traceable: true
+timestamp_semantics:
+  authoritative_status: UNRESOLVED
+  operational_assumption: AS_SUPPLIED_TIMESTAMP_LABEL_DATE
+  interpretation: timestamp_utc is assigned to the UTC calendar date exactly as supplied.
+    This is a label-date aggregation assumption and is not a claim that the source
+    timestamp denotes candle open or candle close.
+  possible_boundary_consequence: If timestamp_utc denotes candle close rather than
+    candle open, one M15 interval at a UTC-date or audited weekly boundary may belong
+    to the preceding interval date.
+  evidence_rating_cap: MODERATE
+  source_evidence: reports/audits/raw_data_quality_report.md
+primary_coverage_profile: DEFAULT_RESEARCH
+sensitivity_profiles:
+  required:
+  - STRICT_CONTINUITY
+  diagnostic:
+  - SENSITIVITY_FULL
+  - SENSITIVITY_2023
+daily_completeness_rule:
+  row_population_built_before_aggregation: true
+  minimum_coverage_ratio: 1.0
+  minimum_daily_rows: 1
+  require_first_expected_interval: true
+  require_last_expected_interval: true
+  require_all_expected_intervals: true
+  monday_through_thursday_expected_grid: 00:00 through 23:45 UTC at M15 cadence
+  friday_expected_grid: 00:00 UTC through the observed timestamp_before endpoint of
+    the applicable RAW-DQ-001 likely_weekly_closure interval, at M15 cadence
+  sunday_expected_grid: The observed timestamp_after endpoint of the applicable RAW-DQ-001
+    likely_weekly_closure interval through 23:45 UTC, retained for accounting but
+    excluded from weekday inference
+  saturday_policy: Retain any observed date for accounting; no Saturday is eligible
+    for the primary weekday comparison.
+  unresolved_weekly_boundary_policy: A Friday without an applicable audited weekly
+    endpoint is incomplete; a Sunday without an applicable audited weekly endpoint
+    remains weekend-only.
+  partial_days_in_primary_analysis: false
+  partial_days_in_sensitivity_analysis: false
+  exclude_dataset_boundary_dates: true
+boundary_period_policy:
+  first_observed_utc_date: retained and explicitly excluded from inference
+  final_observed_utc_date: retained and explicitly excluded from inference
+  partial_boundary_years: retained under DEFAULT_RESEARCH and assessed through coverage
+    sensitivity
+descriptive_statistics:
+- sample_size
+- missing_count
+- mean
+- median
+- standard_deviation
+- variance
+- minimum
+- maximum
+- percentile_1
+- percentile_5
+- percentile_10
+- percentile_25
+- percentile_75
+- percentile_90
+- percentile_95
+- percentile_99
+- interquartile_range
+- median_absolute_deviation
+- coefficient_of_variation
+- skewness
+- excess_kurtosis
+- mean_confidence_interval_95
+- median_confidence_interval_95
+- proportion_above_full_sample_median
+statistical_conventions:
+  quantile_method: numpy_linear
+  variance_convention: sample_ddof_1
+  mad_convention: unscaled_median_absolute_deviation
+primary_statistical_test:
+  name: Kruskal-Wallis
+  implementation_id: kruskal_wallis
+  groups:
+  - Monday
+  - Tuesday
+  - Wednesday
+  - Thursday
+  - Friday
+  alpha: 0.05
+post_hoc_test:
+  name: Dunn pairwise rank comparison
+  implementation_id: dunn
+  comparisons: all_ten_weekday_pairs
+multiple_testing_correction:
+  method: Holm
+  implementation_id: holm
+  family: ten_weekday_pairwise_comparisons_within_each_analysis_population
+effect_size_measures:
+  implementation_ids:
+  - epsilon_squared
+  - eta_squared
+  - omega_squared
+  - cliffs_delta
+  omnibus_nonparametric: epsilon_squared
+  omnibus_parametric:
+  - eta_squared
+  - omega_squared
+  pairwise: cliffs_delta
+  magnitude_conventions:
+    negligible: '[0.00, 0.147)'
+    small: '[0.147, 0.330)'
+    medium: '[0.330, 0.474)'
+    large: '[0.474, 1.00]'
+  interpretation_note: descriptive conventions, not universal or trading thresholds
+confidence_interval_method:
+  mean: deterministic percentile bootstrap
+  median: deterministic percentile bootstrap
+  pairwise_median_difference: deterministic percentile bootstrap
+  confidence_level: 0.95
+  seed: 20260727
+  resamples: 2000
+  dependence_limitation: iid resampling does not remove serial dependence or volatility
+    clustering
+normality_diagnostic:
+  methods:
+  - skewness
+  - excess_kurtosis
+  - qq_plot_correlation
+  mechanical_pass_fail_gate: false
+variance_diagnostic:
+  method: Brown-Forsythe Levene test centered on median
+  complementary_tests:
+  - one_way_anova
+  - welch_anova
+robustness_analyses:
+- strict_continuity_coverage
+- sensitivity_full_coverage
+- sensitivity_2023_coverage
+- winsorise_at_1st_and_99th_full_sample_percentiles
+- exclude_largest_1_percent_of_full_sample_daily_ranges
+- chronological_periods
+- chronological_70_30_split
+- year_by_year
+- past_only_volatility_regimes
+volatility_regime_definition:
+  base_measure: trailing median daily_range_pips
+  lookback_eligible_weekdays: 60
+  current_date_excluded: true
+  future_information_used: false
+  threshold_history: expanding prior trailing-median measures only
+  minimum_prior_regime_measures: 120
+  low_quantile: 0.33
+  high_quantile: 0.67
+  labels:
+  - LOW
+  - MEDIUM
+  - HIGH
+  warmup_label: UNCLASSIFIED
+chronological_stability_design:
+  periods:
+    full_eligible_sample: all eligible dates
+    pre_2020: dates before 2020-01-01
+    covid_era: 2020-01-01 through 2021-12-31 inclusive
+    post_2021: dates from 2022-01-01 onward
+  period_boundaries:
+    pre_2020_end_exclusive: '2020-01-01'
+    covid_start_inclusive: '2020-01-01'
+    covid_end_inclusive: '2021-12-31'
+    post_2021_start_inclusive: '2022-01-01'
+  development_fraction: 0.7
+  split_basis: ordered eligible UTC dates
+  shuffle: false
+  validation_may_change_design: false
+  minimum_per_weekday_per_year: 20
+missing_data_policy: Do not impute, insert, interpolate, or repair observations. Retain
+  every observed UTC date in daily metadata, report missing expected intervals, and
+  exclude incomplete dates from inferential populations under an explicit reason.
+exclusion_policy:
+  primary:
+  - weekend UTC date
+  - incomplete daily observation
+  - first or final observed dataset date
+  - no contributing DEFAULT_RESEARCH rows
+  outliers: retained in primary analysis
+  reversible_sensitivity_only:
+  - winsorisation
+  - largest_one_percent_exclusion
+  winsorisation_limits:
+  - 0.01
+  - 0.99
+  largest_tail_exclusion_fraction: 0.01
+deterministic_seed_policy:
+  seed: 20260727
+  algorithm: numpy Generator PCG64
+  parallel_random_resampling: false
+dataset_version: sha256:b2a41310927aa9a9
+raw_checksum: b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c
+raw_manifest_sha256: dce975d2e769e6201e89010cc77be7011a3e18b5782f7ae4a8ece6abb803e2e1
+task_02_dependency:
+  method_version: raw-data-quality-audit-v2
+  normalized_result_fingerprint: 670968cbfcf018abc59bbb64a4b2b3912bae9df44988542765748328caf9c61f
+  gap_table_fingerprint: 60b48e06c107b5c676f200392db6002ca4f678ed4a6c31bb3f0439ebbf6e06c9
+  monthly_table_fingerprint: 16a7bcc38addf98892b532b4386f59cc5833bd6cf4ecc423e7b9e286027c495a
+task_03_dependency:
+  method_id: COVERAGE-001
+  method_version: research-coverage-v1
+  coverage_config_fingerprint: 5681a86eb0c79fc5e45bbe164f321ef3f9e8deb438e6723bb2078c602148acb0
+  coverage_summary_file_fingerprint: 3bc8a6d9c44e9801dfddb625bad92839d3a7d64b582642d413087bdb4866c096
+  architecture: DESIGN_B_REBUILD_AND_RECONCILE_EXACTLY
+  row_membership_evidence_path: studies/task03_task04_v2.3_mask_evidence.json
+  row_membership_evidence_fingerprint: 323e74582c87a4f02f881e76c736587a0bd3260e5beb73bac702073d5b4c2320
+implementation_version: task04-daily-range-weekday-v2.3
+expected_outputs:
+  directory: reports/research/task04_daily_range_weekday_v2.3
+  files:
+  - study_summary.json
+  - study_summary.md
+  - study_registry_record.json
+  - population_reconciliation.csv
+  - daily_observations.csv
+  - weekday_statistics.csv
+  - omnibus_tests.csv
+  - pairwise_tests.csv
+  - effect_sizes.csv
+  - coverage_profile_comparison.csv
+  - chronological_split_results.csv
+  - period_robustness.csv
+  - yearly_statistics.csv
+  - yearly_omnibus_tests.csv
+  - volatility_regime_statistics.csv
+  - volatility_regime_tests.csv
+  - volatility_regime_lineage.csv
+  - extreme_event_sensitivity.csv
+  - preregistration_deviations.csv
+  figures:
+  - 01_weekday_boxplot.png
+  - 02_weekday_violin_or_distribution.png
+  - 03_weekday_ecdf.png
+  - 04_weekday_mean_median_ci.png
+  - 05_yearly_weekday_medians.png
+  - 06_coverage_profile_comparison.png
+  - 07_chronological_stability.png
+  - 08_volatility_regime_comparison.png
+  figure_settings:
+    dpi: 160
+    width_inches: 10.0
+    height_inches: 6.0
+    palette:
+    - black
+    - '#2F5D7C'
+    - '#A77B00'
+    - '#6E7781'
+    - '#8B5E83'
+    violin_bandwidth_method: scott
+evidence_rating:
+  scale:
+  - INSUFFICIENT
+  - WEAK
+  - MODERATE
+  - STRONG
+  dimensions:
+  - chronological_validation
+  - year_by_year_stability
+  - volatility_regime_stability
+  - coverage_profile_stability
+  - effect_size_magnitude
+  - confidence_interval_precision
+  - statistical_significance
+  - extreme_event_sensitivity
+  thresholds:
+    moderate_minimum_epsilon_squared: 0.01
+    strong_minimum_epsilon_squared: 0.06
+    minimum_rank_correlation: 0.6
+    strong_minimum_stable_year_fraction: 0.75
+    moderate_maximum_median_ci_relative_width: 0.25
+    strong_maximum_median_ci_relative_width: 0.15
+    minimum_primary_weekday_sample: 100
+    diagnostic_profile_disagreement_blocks_strong: false
+    unresolved_timestamp_semantics_maximum_rating: MODERATE
+    minimum_regime_sample: 100
+    high_regime_significance_role: contextual_only
+  required_profiles:
+  - DEFAULT_RESEARCH
+  - STRICT_CONTINUITY
+  diagnostic_profiles:
+  - SENSITIVITY_FULL
+  - SENSITIVITY_2023
+  contradictory_evidence_policy: Assign the highest tier for which every gate is satisfied
+    and retain every failed gate in the output. Missing required robustness populations
+    produce INSUFFICIENT. Diagnostic-profile disagreement is reported but does not
+    by itself block STRONG. Unresolved timestamp semantics caps the rating at MODERATE.
+  logic: INSUFFICIENT if the primary test, required lineage, population reconciliation,
+    or a required robustness population is unavailable. Otherwise start at WEAK. MODERATE
+    requires primary significance, epsilon-squared at least 0.01, at least 100 observations
+    per primary weekday, maximum primary median-CI relative width no greater than
+    0.25, development/validation ordering correlation at least 0.60, STRICT_CONTINUITY
+    ordering correlation at least 0.60, and no ordering reversal in either extreme-event
+    sensitivity. STRONG additionally requires epsilon-squared at least 0.06, development
+    and validation significance, maximum primary median-CI relative width no greater
+    than 0.15, at least 75 percent of sufficient years and every fixed period and
+    classified volatility regime to have rank correlation at least 0.60, all required
+    profiles to be concordant, and resolved timestamp semantics. Diagnostic profiles
+    are reported qualifications rather than required gates. A small p-value alone
+    cannot produce STRONG. Every required evidence artifact must be present, structurally
+    complete, finite, and sample-sufficient. HIGH-regime significance is contextual
+    evidence only; its finite omnibus result and population are nevertheless required
+    for a rating above INSUFFICIENT.
+  required_periods:
+  - full_eligible_sample
+  - pre_2020
+  - covid_era
+  - post_2021
+  - development_70
+  - validation_30
+  required_regimes:
+  - LOW
+  - MEDIUM
+  - HIGH
+  required_evidence_artifacts:
+  - coverage_profile_comparison.csv
+  - weekday_statistics.csv
+  - period_robustness.csv
+  - yearly_omnibus_tests.csv
+  - volatility_regime_statistics.csv
+  - volatility_regime_tests.csv
+  - extreme_event_sensitivity.csv
+  missing_evidence_policy: Any missing, empty, malformed, non-finite, contradictory,
+    or sample-insufficient required evidence produces INSUFFICIENT.
+known_limitations:
+- Raw timestamp open-versus-close convention is unresolved.
+- Daily observations may be serially dependent and volatility-clustered.
+- UTC calendar days are descriptive and are not local trading sessions.
+- Task 02 coverage categories do not establish market-calendar causes.
+- Complete-day filtering can alter the represented date population.
+- Sensitivity-only profiles are diagnostic populations, not substitutes for the primary
+  population.
+- Range behaviour does not establish direction, profitability, or a trading rule.
+prohibited_analyses:
+- returns
+- direction
+- session_analysis
+- ATR
+- ADR
+- volatility_forecasting
+- range_forecasting
+- weekly_levels
+- liquidity_sweeps
+- market_structure
+- trading_signals
+- profitability
+- position_sizing
+repository_lineage:
+  baseline_head: 5773f7b28fc53e972bf77eb015187620a32ab2ec
+  development_baseline_path: studies/task04_development_baseline.json
+  registration_receipt_path: studies/task04_daily_range_weekday.v2.3.receipt.json
+  registration_lifecycle_path: studies/task04_daily_range_weekday.v2.3.lifecycle.json
+  source_manifest_path: studies/task04_v2.3_source_manifest.json
+  environment_lock_path: studies/task04_v2.3_environment_lock.json
+  raw_path: data/raw/EURUSD_M15_UTC.csv
+  manifest_path: reports/audits/raw_dataset_manifest.json
+  task_02_result_path: reports/audits/raw_data_quality_audit.json
+  task_03_result_path: reports/coverage/coverage_summary.json
+  registered_path_inventory:
+  - configs/coverage.yaml
+  - configs/data.yaml
+  - configs/project.yaml
+  - configs/sessions.yaml
+  - configs/task04_daily_range_weekday.yaml
+  - pyproject.toml
+  - reports/audits/monthly_coverage.csv
+  - reports/audits/raw_data_quality_audit.json
+  - reports/audits/raw_dataset_manifest.json
+  - reports/audits/timestamp_gaps.csv
+  - reports/coverage/coverage_profiles.csv
+  - reports/coverage/coverage_summary.json
+  - reports/coverage/coverage_summary.md
+  - reports/coverage/date_flag_counts.csv
+  - reports/coverage/month_flag_counts.csv
+  - reports/coverage/row_flag_counts.csv
+  - scripts/create_task04_registration_receipt.py
+  - scripts/prepare_task04_v23_integrity_evidence.py
+  - scripts/prepare_task04_v23_registration.py
+  - scripts/register_raw_dataset.py
+  - scripts/validate_environment.py
+  - scripts/validate_task04_preregistration.py
+  - scripts/validate_task04_registration_receipt.py
+  - src/eurusd_research/__init__.py
+  - src/eurusd_research/calendars/__init__.py
+  - src/eurusd_research/config.py
+  - src/eurusd_research/data/__init__.py
+  - src/eurusd_research/data/__main__.py
+  - src/eurusd_research/data/audit.py
+  - src/eurusd_research/data/gaps.py
+  - src/eurusd_research/data/quality_models.py
+  - src/eurusd_research/data/registry.py
+  - src/eurusd_research/data/reporting.py
+  - src/eurusd_research/data/schemas.py
+  - src/eurusd_research/data/validation.py
+  - src/eurusd_research/features/__init__.py
+  - src/eurusd_research/logging_utils.py
+  - src/eurusd_research/paths.py
+  - src/eurusd_research/reporting/__init__.py
+  - src/eurusd_research/research/__init__.py
+  - src/eurusd_research/research/__main__.py
+  - src/eurusd_research/research/coverage.py
+  - src/eurusd_research/research/eligibility.py
+  - src/eurusd_research/research/models.py
+  - src/eurusd_research/research/registry.py
+  - src/eurusd_research/statistics/__init__.py
+  - src/eurusd_research/studies/__init__.py
+  - src/eurusd_research/studies/__main__.py
+  - src/eurusd_research/studies/configuration.py
+  - src/eurusd_research/studies/daily_aggregation.py
+  - src/eurusd_research/studies/dependencies.py
+  - src/eurusd_research/studies/git_anchor.py
+  - src/eurusd_research/studies/integrity.py
+  - src/eurusd_research/studies/plotting.py
+  - src/eurusd_research/studies/registration_models.py
+  - src/eurusd_research/studies/registry.py
+  - src/eurusd_research/studies/robustness.py
+  - src/eurusd_research/studies/statistics.py
+  - src/eurusd_research/studies/task04.py
+  - studies/task03_task04_v2.3_mask_evidence.json
+  - studies/task04_daily_range_weekday.v2.3.yaml
+  - studies/task04_development_baseline.json
+  - studies/task04_v2.3_environment_lock.json
+  - studies/task04_v2.3_source_manifest.json
+  dirty_state_policy: Every registered path must be tracked and byte-identical to
+    the anchor blob before generation. Additional files inside the declared source
+    scope are forbidden by manifest reconciliation. Generated v2.3 outputs and the
+    post-anchor receipt/lifecycle are outside the anchor tree; unrelated documentation-only
+    dirt is permitted and reported by Git.
+preregistration_deviations: []
+source_dependency_manifest_fingerprint: 2db5398deecd2e0ccc6ad5195681b8757fa81f6936106dd1c2ebd15ecf14c8c9
+environment_lock_fingerprint: d86dfda6a59cef33ce21a90a4c56e5bd8d45067c800abc4dfeafe781d75f3f43
+deviation_policy:
+  model: NEW_REGISTRATION_VERSION_REQUIRED
+  post_anchor_scientific_changes_permitted: false
+  same_version_append_only_ledger_supported: false
+  rule: Any post-anchor scientific or interpretive change requires a new registration
+    version and a new Git anchor. The v2.3 deviation list is locked empty and is not
+    appendable.

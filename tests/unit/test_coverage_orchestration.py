@@ -332,13 +332,15 @@ def test_coverage_config_validation_and_portability() -> None:
     )
     assert len(config.coverage.required_audit_result_content_sha256) == 64
     assert "STRICT_CONTINUITY" in config.coverage.profiles
+    invalid_profile = config.coverage.profiles["FULL_DATASET"].model_dump(mode="python")
+    invalid_profile.update(
+        {
+            "require_all": ("raw_available",),
+            "exclude_any": ("raw_available",),
+        }
+    )
     with pytest.raises(ValueError, match="must not repeat"):
-        config.coverage.profiles["FULL_DATASET"].model_copy(
-            update={
-                "require_all": ("raw_available",),
-                "exclude_any": ("raw_available",),
-            }
-        ).validate_profile()
+        type(config.coverage.profiles["FULL_DATASET"]).model_validate(invalid_profile)
 
     values = config.coverage.model_dump(mode="python")
     values["output_directory"] = Path("/absolute/output")

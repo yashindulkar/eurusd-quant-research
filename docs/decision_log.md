@@ -186,3 +186,141 @@ stale table substitution, and a dirty Task 03 worktree must not be represented
 as the clean committed HEAD. Generated outputs are consequences of that state,
 not source inputs, and including them would make clean-lineage regeneration
 self-referential and non-deterministic.
+
+## 2026-07-28 — Lock the first behavioural study before outcome calculation
+
+**Decision:** Register RANGE-WEEKDAY-001 in machine-readable YAML before
+calculating weekday daily ranges. Lock the null/alternative hypotheses, sole
+outcome, UTC calendar, complete-day policy, primary Kruskal-Wallis test, Dunn
+post-hoc procedure, Holm correction, effect sizes, deterministic bootstrap,
+robustness populations, past-only volatility regime, and evidence-rating logic.
+Permit only the `PREREGISTERED` to `COMPLETED` status transition without a
+locked-design fingerprint change.
+
+**Rationale:** The first behavioural result must not choose definitions,
+exclusions, periods, or tests after inspecting weekday differences.
+
+**Subsequent correction:** Independent adversarial review found that this
+development registration had no immutable pre-result receipt, omitted semantic
+fields from its lock, and could be rewritten after completion. It is retained
+as development history but is not accepted as proven preregistration evidence.
+The registered-replication decision below supersedes its lifecycle claim.
+
+## 2026-07-28 — Derive daily completeness from UTC grids and audited boundaries
+
+**Decision:** Require full 00:00-23:45 UTC grids Monday through Thursday. For
+Friday, require 00:00 through the applicable RAW-DQ-001
+likely-weekly-closure endpoint. Retain Sunday and weekend dates for accounting,
+but exclude them from the Monday-Friday comparison. Apply each COVERAGE-001
+profile at M15 row level before aggregating its daily observation.
+
+**Rationale:** Assuming 96 observations for Friday would systematically reject
+the normal FX weekly close. Reusing audited endpoints avoids a fixed UTC
+offset, a New York trading-day boundary, and duplicated Task 02 classification
+logic.
+
+## 2026-07-28 — Grade weekday-range evidence conservatively
+
+**Decision:** Assign RANGE-WEEKDAY-001 `MODERATE` evidence. The primary
+Kruskal-Wallis result is statistically significant and chronological
+validation persists, but epsilon-squared is small, the HIGH past-only
+volatility regime is not significant, year ordering is not uniformly stable,
+and diagnostic sensitivity-only populations are directionally inconsistent.
+
+**Rationale:** Statistical significance alone does not establish practical
+magnitude, temporal stability, coverage robustness, or trading usefulness.
+
+## 2026-07-28 — Track bounded one-row-per-date Task 04 evidence
+
+**Decision:** Version the 5,146-row `daily_observations.csv` requested by the
+study contract. Keep it to daily OHLC/range, completeness, profile membership,
+contributing-row digests, and lineage fields; do not write a duplicate
+row-level M15 dataset.
+
+**Rationale:** The approximately 4.8 MB file is bounded at one record per
+observed UTC date and is the direct reproduction bridge between profile masks
+and every Task 04 result. The repository has no policy excluding a derived
+artifact of this size.
+
+## 2026-07-28 — Correctively register Task 04 replication under receipt v1
+
+**Decision:** Treat the reviewed Task 04 result as development evidence and
+create registration version 2.2 as a correctively registered replication.
+Before corrected production regeneration, bind every semantic design field,
+the complete executable configuration, raw/manifest/Task 02/Task 03 identity,
+production-source fingerprint, baseline development record, Git HEAD/dirty
+disclosure, and exact output inventory into a deterministic receipt. Pin that
+receipt fingerprint in configuration. Persist a separate completion lifecycle
+record so a completed registration cannot be reverted to `PREREGISTERED`.
+
+**Rationale:** A mutable `COMPLETED` YAML and freshly calculated fingerprint do
+not prove what was fixed before results. Receipt and lifecycle validation make
+post-anchor changes fail closed without pretending the already reviewed
+analysis is a pristine first look.
+
+The first corrective receipt, registration version 2.0, is retained as
+`task04_daily_range_weekday.v2.0.failed.receipt.json`. Its first generation
+attempt stopped in dependency validation before Task 04 aggregation because a
+fresh Task 03 run had changed only the coverage artifact's repository-state
+field. The authoritative tracked Task 02 and Task 03 artifacts were restored
+byte-for-byte. Version 2.1 was then required rather than replacing the v2.0
+receipt. Receipt construction now validates the live raw, manifest, Task 02,
+and Task 03 dependencies before it can persist a new anchor.
+
+The completed v2.1 gate subsequently exposed a lineage-only defect:
+`method_version` output columns carried `implementation_version`. Preserve its
+receipt, lifecycle, and all output hashes in
+`task04_v2.1_completed_baseline.json`. Correct the mapping without changing any
+scientific definition or known result, and require a new v2.2 receipt before
+regeneration.
+
+## 2026-07-28 — Preserve unresolved timestamp semantics as an assumption
+
+**Decision:** Do not infer candle-open or candle-close semantics from market
+custom. Aggregate by the UTC timestamp label exactly as supplied, disclose that
+a close-time convention could move one M15 interval at date/weekly boundaries,
+and cap evidence at `MODERATE` while the convention remains unresolved.
+
+**Rationale:** Source evidence does not resolve the convention. A transparent
+label-date assumption is narrower than claiming certainty or selecting the
+interpretation that best preserves the known result.
+
+## 2026-07-28 — Close Task 04 reconciliation and reporting control gaps
+
+**Decision:** Represent all 5,146 observed raw dates in every coverage profile,
+using nullable OHLC and explicit zero-contribution reasons. Export date-level
+past-only regime lineage. Derive chronological figures from the canonical
+period table, report numerator and denominator degrees of freedom, propagate
+the registered deviation ledger, and enforce the exact output inventory.
+
+**Rationale:** Exclusions, robustness labels, and figures must be independently
+auditable rather than inferred from absent rows or reconstructed by plotting
+code.
+
+## 2026-07-29 — Prepare Git-anchored Task 04 registration version 2.3
+
+**Decision:** Retain v2.2 as historical control evidence and prepare v2.3
+without generating v2.3 results. Replace current-HEAD equality with a dedicated
+Git commit/tree anchor whose registered blobs must remain unchanged in every
+completion descendant. Bind the complete declared source closure and exact
+environment lock. Rebuild Task 03 masks only under Design B: row- and
+date-membership digests, row order, boundary classifications, profile algebra,
+and coverage-output fingerprints must match pinned evidence before Task 04
+aggregation.
+
+Use strict nested registration models with finite standards-compliant numbers.
+Treat every required evidence artifact as unavailable when missing, empty,
+malformed, non-finite, contradictory, or sample-insufficient; the rating is
+then `INSUFFICIENT`. HIGH-regime significance is contextual rather than a tier
+gate, but its finite omnibus evidence is required. Reject linked or non-regular
+outputs. Report zero-contribution and nonzero-partial dates separately.
+
+**Deviation policy:** v2.3 has no same-version append-only deviation ledger.
+Any post-anchor scientific or interpretive change requires a new registration
+version and new anchor.
+
+**Rationale:** A Git object supplies durable, auditable identity and ancestry,
+while path/tree and dependency reconciliation detect scientific replacement.
+It does not make local files undeletable. Keeping the preregistration file
+unchanged and recording completion only in a descendant lifecycle preserves
+the anchor semantics.

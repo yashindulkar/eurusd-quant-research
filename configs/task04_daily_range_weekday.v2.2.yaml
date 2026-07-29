@@ -1,0 +1,98 @@
+study_id: TASK-04
+registration_version: "2.2"
+method_id: RANGE-WEEKDAY-001
+method_version: range-weekday-registered-replication-v2.2
+implementation_version: task04-daily-range-weekday-v2.2
+receipt_schema_version: task04-registration-receipt-v1
+timezone: UTC
+pip_size: 0.0001
+weekday_inclusion: [Monday, Tuesday, Wednesday, Thursday, Friday]
+primary_coverage_profile: DEFAULT_RESEARCH
+sensitivity_profiles: [STRICT_CONTINUITY, SENSITIVITY_FULL, SENSITIVITY_2023]
+daily_completeness:
+  minimum_coverage_ratio: 1.0
+  minimum_daily_rows: 1
+  require_first_expected_interval: true
+  require_last_expected_interval: true
+  exclude_partial_days: true
+  exclude_dataset_boundary_dates: true
+minimum_yearly_weekday_sample: 20
+alpha: 0.05
+multiple_testing_method: holm
+primary_omnibus_test: kruskal_wallis
+post_hoc_test: dunn
+effect_size_methods: [epsilon_squared, eta_squared, omega_squared, cliffs_delta]
+confidence_level: 0.95
+bootstrap_seed: 20260727
+bootstrap_resamples: 2000
+chronological_split_fraction: 0.70
+period_boundaries:
+  pre_2020_end_exclusive: "2020-01-01"
+  covid_start_inclusive: "2020-01-01"
+  covid_end_inclusive: "2021-12-31"
+  post_2021_start_inclusive: "2022-01-01"
+volatility_lookback: 60
+volatility_minimum_history: 120
+regime_quantiles: [0.33, 0.67]
+winsorisation_limits: [0.01, 0.99]
+largest_tail_exclusion_fraction: 0.01
+quantile_method: numpy_linear
+variance_convention: sample_ddof_1
+mad_convention: unscaled_median_absolute_deviation
+timestamp_semantics_status: UNRESOLVED
+timestamp_operational_assumption: AS_SUPPLIED_TIMESTAMP_LABEL_DATE
+preregistration_path: studies/task04_daily_range_weekday.yaml
+registration_receipt_path: studies/task04_daily_range_weekday.v2.2.receipt.json
+registration_lifecycle_path: studies/task04_daily_range_weekday.v2.2.lifecycle.json
+coverage_summary_path: reports/coverage/coverage_summary.json
+output_directory: reports/research/task04_daily_range_weekday
+required_raw_sha256: b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c
+required_raw_manifest_sha256: dce975d2e769e6201e89010cc77be7011a3e18b5782f7ae4a8ece6abb803e2e1
+required_task02_audit_fingerprint: 670968cbfcf018abc59bbb64a4b2b3912bae9df44988542765748328caf9c61f
+required_coverage_summary_sha256: 3bc8a6d9c44e9801dfddb625bad92839d3a7d64b582642d413087bdb4866c096
+required_registration_receipt_fingerprint: f5d5f3f784f6cdcdee1ece8969dfb4c1ae208ec323ddb7fe792e9667b0650973
+expected_output_files:
+  - study_summary.json
+  - study_summary.md
+  - study_registry_record.json
+  - population_reconciliation.csv
+  - daily_observations.csv
+  - weekday_statistics.csv
+  - omnibus_tests.csv
+  - pairwise_tests.csv
+  - effect_sizes.csv
+  - coverage_profile_comparison.csv
+  - chronological_split_results.csv
+  - period_robustness.csv
+  - yearly_statistics.csv
+  - yearly_omnibus_tests.csv
+  - volatility_regime_statistics.csv
+  - volatility_regime_tests.csv
+  - volatility_regime_lineage.csv
+  - extreme_event_sensitivity.csv
+  - preregistration_deviations.csv
+expected_figure_files:
+  - 01_weekday_boxplot.png
+  - 02_weekday_violin_or_distribution.png
+  - 03_weekday_ecdf.png
+  - 04_weekday_mean_median_ci.png
+  - 05_yearly_weekday_medians.png
+  - 06_coverage_profile_comparison.png
+  - 07_chronological_stability.png
+  - 08_volatility_regime_comparison.png
+evidence_rating:
+  moderate_minimum_epsilon_squared: 0.01
+  strong_minimum_epsilon_squared: 0.06
+  minimum_rank_correlation: 0.60
+  strong_minimum_stable_year_fraction: 0.75
+  moderate_maximum_median_ci_relative_width: 0.25
+  strong_maximum_median_ci_relative_width: 0.15
+  minimum_primary_weekday_sample: 100
+  diagnostic_profile_disagreement_blocks_strong: false
+  unresolved_timestamp_semantics_maximum_rating: MODERATE
+figure_settings:
+  dpi: 160
+  width_inches: 10.0
+  height_inches: 6.0
+  palette: [black, "#2F5D7C", "#A77B00", "#6E7781", "#8B5E83"]
+  violin_bandwidth_method: scott

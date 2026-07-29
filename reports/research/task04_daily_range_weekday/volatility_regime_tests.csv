@@ -1,0 +1,13 @@
+profile,analysis_scope,test_name,test_role,statistic,p_value,numerator_degrees_of_freedom,denominator_degrees_of_freedom,sample_size,group_count,groups_present,significant,volatility_regime
+DEFAULT_RESEARCH,volatility_regime_low,kruskal_wallis,primary,77.358566781094979,6.3148709485745053e-16,4,,2684,5,Monday|Tuesday|Wednesday|Thursday|Friday,True,LOW
+DEFAULT_RESEARCH,volatility_regime_low,one_way_anova,complementary,16.994468216447917,9.0432522155932002e-14,4,2679,2684,5,Monday|Tuesday|Wednesday|Thursday|Friday,True,LOW
+DEFAULT_RESEARCH,volatility_regime_low,welch_anova,complementary,18.208880461347878,1.4150919063673432e-14,4,1335.6826841018003,2684,5,Monday|Tuesday|Wednesday|Thursday|Friday,True,LOW
+DEFAULT_RESEARCH,volatility_regime_low,brown_forsythe_levene,diagnostic,5.3914276009357112,0.00025344203752033346,4,2679,2684,5,Monday|Tuesday|Wednesday|Thursday|Friday,True,LOW
+DEFAULT_RESEARCH,volatility_regime_medium,kruskal_wallis,primary,18.185350359623754,0.0011352921630525521,4,,855,5,Monday|Tuesday|Wednesday|Thursday|Friday,True,MEDIUM
+DEFAULT_RESEARCH,volatility_regime_medium,one_way_anova,complementary,4.0703307083815918,0.0028290196034842226,4,850,855,5,Monday|Tuesday|Wednesday|Thursday|Friday,True,MEDIUM
+DEFAULT_RESEARCH,volatility_regime_medium,welch_anova,complementary,4.2389186999551027,0.002246866260718741,4,422.20823165336975,855,5,Monday|Tuesday|Wednesday|Thursday|Friday,True,MEDIUM
+DEFAULT_RESEARCH,volatility_regime_medium,brown_forsythe_levene,diagnostic,3.0595361605343721,0.016164507612819252,4,850,855,5,Monday|Tuesday|Wednesday|Thursday|Friday,True,MEDIUM
+DEFAULT_RESEARCH,volatility_regime_high,kruskal_wallis,primary,3.9633951670758467,0.41098244170564457,4,,408,5,Monday|Tuesday|Wednesday|Thursday|Friday,False,HIGH
+DEFAULT_RESEARCH,volatility_regime_high,one_way_anova,complementary,0.65110579247757672,0.6263849352381925,4,403,408,5,Monday|Tuesday|Wednesday|Thursday|Friday,False,HIGH
+DEFAULT_RESEARCH,volatility_regime_high,welch_anova,complementary,0.66806380584054514,0.61485926161772075,4,201.06598742087419,408,5,Monday|Tuesday|Wednesday|Thursday|Friday,False,HIGH
+DEFAULT_RESEARCH,volatility_regime_high,brown_forsythe_levene,diagnostic,0.36916585142131686,0.83059889668422326,4,403,408,5,Monday|Tuesday|Wednesday|Thursday|Friday,False,HIGH

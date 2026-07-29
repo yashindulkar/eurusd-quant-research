@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
-from tests.conftest import EXPECTED_COLUMNS
+from tests.helpers import EXPECTED_COLUMNS
 
 from eurusd_research.data.registry import (
     read_manifest,

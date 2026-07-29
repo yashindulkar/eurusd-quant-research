@@ -1,0 +1,17 @@
+profile,analysis_scope,test_name,test_role,statistic,p_value,numerator_degrees_of_freedom,denominator_degrees_of_freedom,sample_size,group_count,groups_present,significant
+DEFAULT_RESEARCH,complete_weekday_dates,kruskal_wallis,primary,80.52273228028551,1.3497534759654482e-16,4,,4127,5,Monday|Tuesday|Wednesday|Thursday|Friday,True
+DEFAULT_RESEARCH,complete_weekday_dates,one_way_anova,complementary,16.187241090835329,3.6819402453195519e-13,4,4122,4127,5,Monday|Tuesday|Wednesday|Thursday|Friday,True
+DEFAULT_RESEARCH,complete_weekday_dates,welch_anova,complementary,16.129667474758371,5.1749427728921042e-13,4,2058.874889489764,4127,5,Monday|Tuesday|Wednesday|Thursday|Friday,True
+DEFAULT_RESEARCH,complete_weekday_dates,brown_forsythe_levene,diagnostic,4.073156965985655,0.0026840767562643941,4,4122,4127,5,Monday|Tuesday|Wednesday|Thursday|Friday,True
+STRICT_CONTINUITY,complete_weekday_dates,kruskal_wallis,primary,84.78150624726797,1.6878234745264013e-17,4,,3720,5,Monday|Tuesday|Wednesday|Thursday|Friday,True
+STRICT_CONTINUITY,complete_weekday_dates,one_way_anova,complementary,17.99204030220395,1.2068882419709636e-14,4,3715,3720,5,Monday|Tuesday|Wednesday|Thursday|Friday,True
+STRICT_CONTINUITY,complete_weekday_dates,welch_anova,complementary,17.580812421509584,3.5860080683617649e-14,4,1853.3740873012821,3720,5,Monday|Tuesday|Wednesday|Thursday|Friday,True
+STRICT_CONTINUITY,complete_weekday_dates,brown_forsythe_levene,diagnostic,5.5625238855363177,0.00018372527484552148,4,3715,3720,5,Monday|Tuesday|Wednesday|Thursday|Friday,True
+SENSITIVITY_FULL,complete_weekday_dates,kruskal_wallis,primary,7.2289737152155107,0.12427155030423041,4,,398,5,Monday|Tuesday|Wednesday|Thursday|Friday,False
+SENSITIVITY_FULL,complete_weekday_dates,one_way_anova,complementary,1.8435206410191025,0.11971159064365515,4,393,398,5,Monday|Tuesday|Wednesday|Thursday|Friday,False
+SENSITIVITY_FULL,complete_weekday_dates,welch_anova,complementary,1.7018950017195704,0.15109014763043527,4,196.28298248064365,398,5,Monday|Tuesday|Wednesday|Thursday|Friday,False
+SENSITIVITY_FULL,complete_weekday_dates,brown_forsythe_levene,diagnostic,1.4858903643856738,0.20566059202749098,4,393,398,5,Monday|Tuesday|Wednesday|Thursday|Friday,False
+SENSITIVITY_2023,complete_weekday_dates,kruskal_wallis,primary,2.132352941176471,0.71143111196460551,4,,16,5,Monday|Tuesday|Wednesday|Thursday|Friday,False
+SENSITIVITY_2023,complete_weekday_dates,one_way_anova,complementary,0.28503212284723917,0.88162098092154961,4,11,16,5,Monday|Tuesday|Wednesday|Thursday|Friday,False
+SENSITIVITY_2023,complete_weekday_dates,welch_anova,complementary,0.45277443600831546,0.76867358137663289,4,4.950672672829211,16,5,Monday|Tuesday|Wednesday|Thursday|Friday,False
+SENSITIVITY_2023,complete_weekday_dates,brown_forsythe_levene,diagnostic,0.75315223310046786,0.57643659646580636,4,11,16,5,Monday|Tuesday|Wednesday|Thursday|Friday,False

@@ -7,7 +7,8 @@ definitions, tests, and generated evidence.
 
 This is a behavioural research project. It is **not** a trading strategy,
 execution system, parameter-optimisation framework, dashboard, or machine
-learning project. No market-behaviour conclusions are included at this stage.
+learning project. Behavioural conclusions appear only in completed,
+preregistered study reports with their lineage, uncertainty, and limitations.
 
 ## Repository layout
 
@@ -78,6 +79,12 @@ make test                 # all tests with coverage thresholds
 make check                # lint, typecheck, tests, and environment validation
 make audit-raw-data       # read-only registered raw-data quality audit
 make generate-coverage    # Task 02-backed research eligibility metadata
+make prepare-task04-v23-integrity
+make prepare-task04-v23-registration
+make validate-task04-preregistration  # Phase A; no v2.3 results
+make create-task04-registration-receipt  # Phase B, after anchor commit
+make validate-task04-registration-receipt
+make generate-task04      # generate the UTC-weekday daily-range study
 ```
 
 `make audit-raw-data` verifies the registered identity, loads the CSV once for
@@ -135,6 +142,35 @@ The bounded outputs under `reports/coverage/` contain deterministic flag and
 profile counts. The package API builds the full masks on demand; no row is
 deleted and no row-level copy of the raw dataset is written.
 
+## Daily range by UTC weekday
+
+Task 04 remains a correctively registered replication of the reviewed
+development analysis. Version 2.2 is retained as historical control evidence;
+the corrected pre-anchor design is version 2.3 at
+`studies/task04_daily_range_weekday.v2.3.yaml`, method
+`RANGE-WEEKDAY-001`. It asks whether the distribution of unrounded EUR/USD
+daily high-low range in pips differs across Monday-Friday UTC calendar dates.
+
+The primary analysis uses complete `DEFAULT_RESEARCH` dates. Task 03 profile
+masks are applied to M15 rows before each profile is aggregated; the study does
+not recreate audit or coverage classifications. Monday-Thursday completeness
+requires the full UTC M15 grid. Friday completeness ends at the applicable
+audited RAW-DQ-001 weekly-boundary endpoint rather than assuming 96 candles or
+a fixed UTC market close.
+
+Kruskal-Wallis is the primary omnibus test. Dunn pairwise comparisons use Holm
+correction; one-way and Welch ANOVA are complementary. The outputs include
+effect sizes, deterministic bootstrap intervals, chronological and yearly
+stability, past-only volatility regimes, coverage-profile comparisons, and
+reversible extreme-event sensitivities under
+`reports/research/task04_daily_range_weekday_v2.3/` only after the separately
+authorized anchor commit. The existing unversioned directory remains
+historical v2.2 output.
+
+The completed study finds distributional differences with a small omnibus
+effect and a conservative `MODERATE` evidence rating. This is descriptive
+market behaviour, not evidence of direction, profitability, or a trading rule.
+
 ## Research workflow
 
 1. Register and verify immutable source data.
@@ -150,14 +186,13 @@ outputs must be reproducible from registered inputs and versioned definitions.
 
 ## Current status
 
-Repository infrastructure, registration, RAW-DQ-001, and the canonical
-COVERAGE-001 eligibility framework are established. No market-behaviour
-analysis has been performed. All 406,945 rows are structurally eligible under
-`DEFAULT_RESEARCH`; coverage limitations remain explicit and 46,468 rows carry
-at least one sensitivity condition.
+Repository infrastructure, registration, RAW-DQ-001, COVERAGE-001, and the
+registered-replication RANGE-WEEKDAY-001 study are established. All 406,945 rows are
+structurally eligible under `DEFAULT_RESEARCH`; coverage limitations remain
+explicit and 46,468 rows carry at least one sensitivity condition.
 
 ## Next planned task
 
-Pre-register and implement the first bounded behavioural research study. It
-must declare its coverage profile and compare the default population with the
-relevant sensitivity populations.
+Design a separately preregistered follow-up that tests one bounded mechanism or
+external calendar explanation. Do not convert Task 04 into a trading strategy
+or extend its locked hypotheses retrospectively.

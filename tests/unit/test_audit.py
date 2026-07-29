@@ -9,7 +9,7 @@ from typing import Any
 
 import pandas as pd
 import pytest
-from tests.conftest import EXPECTED_COLUMNS
+from tests.helpers import EXPECTED_COLUMNS
 
 from eurusd_research.config import DataConfig, load_config
 from eurusd_research.data.audit import (
@@ -79,8 +79,8 @@ def _config(root: Path, path: Path, rows: list[list[str]]) -> tuple[DataConfig, 
         detected_columns=tuple(
             next(csv.reader(path.open(encoding="utf-8", newline="")))
         ),
-        first_timestamp=rows[0][0] if rows else None,
-        last_timestamp=rows[-1][0] if rows else None,
+        first_timestamp=rows[0][0] if rows else "",
+        last_timestamp=rows[-1][0] if rows else "",
         registration_timestamp_utc="2026-01-01T00:00:00Z",
         dataset_version=f"sha256:{checksum[:16]}",
     )

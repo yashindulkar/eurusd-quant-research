@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 import yaml
-from tests.conftest import EXPECTED_COLUMNS
+from tests.helpers import EXPECTED_COLUMNS
 
 from eurusd_research.config import load_config
 from eurusd_research.data.audit import run_raw_data_audit

@@ -1,0 +1,4 @@
+analysis_variant,sample_size,excluded_observation_count,lower_threshold_pips,upper_threshold_pips,weekday_order_high_to_low,rank_correlation_with_primary,kruskal_statistic,kruskal_p_value,epsilon_squared,significant
+primary_raw_distribution,4127,0,,,Thursday|Friday|Wednesday|Tuesday|Monday,0.99999999999999989,80.52273228028551,1.3497534759654482e-16,0.018564466831704395,True
+winsorised_1_99,4127,0,26.425999999999348,272.99999999999881,Thursday|Friday|Wednesday|Tuesday|Monday,0.99999999999999989,80.538421436735504,1.339461259927707e-16,0.018568273031716521,True
+exclude_largest_1_percent,4086,41,,272.99999999999881,Thursday|Friday|Wednesday|Tuesday|Monday,0.99999999999999989,74.901388269424402,2.0906165216361893e-15,0.017373533023627642,True

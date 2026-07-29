@@ -8,15 +8,7 @@ from pathlib import Path
 
 import pytest
 
-EXPECTED_COLUMNS = (
-    "timestamp_utc",
-    "open",
-    "high",
-    "low",
-    "close",
-    "volume_or_tick_count",
-    "source",
-)
+from tests.helpers import EXPECTED_COLUMNS
 
 
 @pytest.fixture
