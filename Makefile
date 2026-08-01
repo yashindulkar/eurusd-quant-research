@@ -2,7 +2,7 @@ PYTHON_BOOTSTRAP ?= python3.12
 VENV ?= .venv
 PYTHON := $(VENV)/bin/python
 
-.PHONY: setup validate-environment format lint typecheck test test-unit test-integration coverage check register-data audit-raw-data generate-coverage prepare-task04-v23-integrity prepare-task04-v23-registration create-task04-registration-receipt validate-task04-registration-receipt validate-task04-preregistration generate-task04
+.PHONY: setup validate-environment format lint typecheck test test-unit test-integration coverage check register-data audit-raw-data generate-coverage prepare-task04-v24-integrity prepare-task04-v24-registration validate-task04-v24-schemas create-task04-registration-receipt validate-task04-registration-receipt validate-task04-preregistration generate-task04-candidate
 
 setup:
 	$(PYTHON_BOOTSTRAP) -m venv $(VENV)
@@ -45,11 +45,14 @@ audit-raw-data:
 generate-coverage:
 	$(PYTHON) -m eurusd_research.research
 
-prepare-task04-v23-integrity:
-	$(PYTHON) scripts/prepare_task04_v23_integrity_evidence.py
+prepare-task04-v24-integrity:
+	$(PYTHON) scripts/prepare_task04_v24_integrity_evidence.py
 
-prepare-task04-v23-registration:
-	$(PYTHON) scripts/prepare_task04_v23_registration.py
+prepare-task04-v24-registration:
+	$(PYTHON) scripts/prepare_task04_v24_registration.py
+
+validate-task04-v24-schemas:
+	$(PYTHON) scripts/validate_task04_v24_schemas.py
 
 create-task04-registration-receipt:
 	$(PYTHON) scripts/create_task04_registration_receipt.py
@@ -60,5 +63,5 @@ validate-task04-registration-receipt:
 validate-task04-preregistration:
 	$(PYTHON) scripts/validate_task04_preregistration.py
 
-generate-task04:
+generate-task04-candidate:
 	$(PYTHON) -m eurusd_research.studies

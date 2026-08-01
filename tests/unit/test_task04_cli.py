@@ -15,7 +15,7 @@ def test_task04_cli_receipt(
 ) -> None:
     result = SimpleNamespace(
         summary={
-            "study": {"status": "COMPLETED"},
+            "study": {"status": "CANDIDATE"},
             "population": {"primary_eligible_dates": 10},
             "primary_result": {"kruskal_p_value": 0.012345},
             "evidence_rating": {"rating": "WEAK"},
@@ -25,5 +25,5 @@ def test_task04_cli_receipt(
     monkeypatch.setattr(task04_main, "generate_task04_study", lambda *_: result)
     assert task04_main.main(["--root", str(tmp_path)]) == 0
     output = capsys.readouterr().out
-    assert "Task 04: COMPLETED | dates=10" in output
+    assert "Task 04: CANDIDATE | dates=10" in output
     assert "evidence=WEAK" in output

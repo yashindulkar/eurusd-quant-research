@@ -153,9 +153,9 @@ requires an explicit review of a newly generated Task 02 audit.
 The historical v2.2 file
 `reports/research/task04_daily_range_weekday/daily_observations.csv` contains
 one row per observed UTC date. It is a daily lineage and eligibility table, not
-a duplicate M15 dataset. After the authorized v2.3 anchor, the same registered
+a duplicate M15 dataset. After the authorized v2.4 anchor, the same registered
 schema will be generated under
-`reports/research/task04_daily_range_weekday_v2.3/`.
+`reports/research/task04_daily_range_weekday_v2.4/`.
 
 | Field | Definition |
 |---|---|
@@ -193,7 +193,7 @@ reasons in the internal long-form per-profile aggregation. The public wide
 daily CSV exports primary OHLC plus profile-prefixed contribution, range,
 eligibility, and digest fields; it does not export secondary-profile OHLC.
 
-The v2.3 population reconciliation reports `zero_contribution_dates`,
+The v2.4 population reconciliation reports `zero_contribution_dates`,
 `nonzero_partial_dates`, `complete_dates`, `incomplete_dates`, and
 `dates_included_in_analysis`. For every profile:
 

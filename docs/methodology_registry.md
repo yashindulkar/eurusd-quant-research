@@ -208,7 +208,7 @@ commit.
 
 **Method ID:** RANGE-WEEKDAY-001
 
-**Status:** correctively registered replication, registration version 2.3
+**Status:** correctively registered replication, registration version 2.4
 prepared; preregistration anchor commit required
 
 **Created (UTC):** 2026-07-28
@@ -227,7 +227,7 @@ uses complete `DEFAULT_RESEARCH` dates. The registered dataset bounds are
 **Input dataset version(s):** `sha256:b2a41310927aa9a9`; full SHA-256
 `b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c`.
 The exact RAW-DQ-001 and COVERAGE-001 dependency fingerprints are locked in
-`studies/task04_daily_range_weekday.v2.3.yaml`. Historical v2.2 registration
+`studies/task04_daily_range_weekday.v2.4.yaml`. Historical v2.2 registration
 and control files remain alongside it without being rewritten.
 
 **Unit of observation:** One observed UTC calendar date within one coverage
@@ -283,7 +283,7 @@ winsorisation; and exclusion of the largest 1% of daily ranges.
 **Outputs:** After the separately authorized anchor commit, deterministic
 machine-readable study artifacts, date-level
 volatility-regime lineage, and eight static figures under
-`reports/research/task04_daily_range_weekday_v2.3/`, as enumerated in the
+`reports/research/task04_daily_range_weekday_v2.4/`, as enumerated in the
 machine-readable registration and immutable receipt.
 
 **Known limitations:** UTC dates are not local trading sessions; timestamp
@@ -292,17 +292,17 @@ clustering, unequal variance, changing regimes, and calendar imbalance can
 affect inference; sensitivity-only profiles are diagnostic populations; daily
 range does not establish direction, profitability, or a trading rule.
 
-**Supersedes / superseded by:** v2.3 supersedes the v2.2 control architecture
-without changing the registered numerical methodology.
+**Supersedes / superseded by:** v2.4 supersedes the incomplete v2.3 production
+governance contract without changing the registered numerical methodology.
 
 **Results access status at definition time:** The original Task 04 analysis had
 already been developed, generated, and independently reviewed before
-registration version 2.3 was prepared. The original mutable completion record
+registration version 2.4 was prepared. The original mutable completion record
 is preserved in `task04_development_baseline.json` but is not accepted as
-proven preregistration evidence. Version 2.3 is therefore a correctively
+proven preregistration evidence. Version 2.4 is therefore a correctively
 registered replication, not a pristine first-look preregistration.
 
-**Registration version 2.3 control:** The exact registered design, executable
+**Registration version 2.4 control:** The exact registered design, executable
 configuration, complete declared source/script closure, environment lock, Task
 02 evidence, Task 03 row/date membership digests, expected output inventory,
 and registered path inventory are prepared before anchoring. A receipt may be
@@ -311,7 +311,25 @@ anchor. Validation accepts the anchor and descendants, rejects non-descendants
 or missing objects, and requires every registered worktree path to match its
 anchor blob. Design B rebuilds Task 03 masks but requires exact row- and
 date-membership digests before Task 04 aggregation. Same-version deviations are
-forbidden; any post-anchor scientific change requires v2.4 or later.
+forbidden; any post-anchor scientific change requires v2.5 or later.
+
+Version 2.4 preregisters a strict fourteen-stage production sequence, including
+an explicit final-output promotion stage before lifecycle construction.
+Generation writes only to `reports/research/.task04_v2.4_candidate/` and never
+creates a completed lifecycle. Exact inventory and containment, independent
+population and statistical reproduction, two isolated deterministic
+regenerations, figure validation, and every enumerated quality gate must pass
+before atomic promotion to the final directory and construction of a terminal
+lifecycle. The canonical digest `task04-path-length-bytes-sha256-v1` streams,
+for each sorted registered relative path, UTF-8 path bytes, NUL, ASCII decimal
+file length, NUL, file bytes, and NUL into SHA-256. The registered absolute
+numerical tolerance is `1e-10`; branch-aware coverage must be at least 90%.
+
+**Historical v2.3 attempt:** v2.3 established a valid pre-result Git anchor at
+`d409938b6b528a7acd17404320255a71f9729b6c`. Its anchored production-governance
+schema was incomplete, so Phase B stopped before receipt creation, lifecycle
+creation, or calculation. It is an abandoned preregistration attempt, not a
+completed study and not altered history.
 
 **Historical registration version 2.2 control:** Before corrected production
 regeneration,
@@ -336,12 +354,12 @@ the exported `method_version` lineage field contained the implementation
 version. Version 2.2 corrects only that lineage mapping before a new receipt.
 
 **Timestamp assumption:** Authoritative candle-open-versus-candle-close
-semantics remain unresolved. Version 2.3 assigns each timestamp label to its
+semantics remain unresolved. Version 2.4 assigns each timestamp label to its
 supplied UTC date, discloses the possible one-bar boundary consequence, and
 caps evidence at `MODERATE`.
 
-**Completion record:** Not yet created. Phase A stops before the v2.3 anchor
-commit and before any v2.3 production output. The reviewed development and
+**Completion record:** Not yet created. Phase A stops before the v2.4 anchor
+commit and before any v2.4 production output. The reviewed development and
 historical v2.2 reference values were 4,127 primary dates, H=80.522732,
 p=1.349753e-16, and epsilon-squared=0.018564; these are comparison evidence,
 not registration inputs.

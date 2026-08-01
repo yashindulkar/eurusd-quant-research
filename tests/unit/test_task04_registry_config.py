@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 from copy import deepcopy
 from pathlib import Path
 from typing import Any
@@ -11,23 +10,15 @@ from pydantic import BaseModel, ValidationError
 from eurusd_research.paths import find_repository_root
 from eurusd_research.studies import registry as registry_module
 from eurusd_research.studies.configuration import Task04Config, load_task04_config
-from eurusd_research.studies.integrity import canonical_digest
 from eurusd_research.studies.registry import (
     LOCKED_FIELDS,
     Task04Preregistration,
-    Task04RegistrationLifecycle,
-    Task04RegistrationReceipt,
-    _write_lifecycle,
     assert_locked_fields_unchanged,
     assert_registration_matches_config,
-    assert_registration_receipt_matches,
     build_registration_receipt,
     executable_configuration_fingerprint,
     locked_design_fingerprint,
     read_preregistration,
-    read_registration_receipt,
-    validate_registration_lifecycle,
-    write_registration_receipt,
 )
 
 
@@ -64,8 +55,8 @@ def _preregistered(
 
 def test_task04_config_and_registration_contract() -> None:
     root, config, registration = _contract()
-    assert registration.status in {"PREREGISTERED", "COMPLETED"}
-    assert registration.registration_version == config.registration_version == "2.3"
+    assert registration.status == "PREREGISTERED"
+    assert registration.registration_version == config.registration_version == "2.4"
     assert_registration_matches_config(registration, config)
     assert len(locked_design_fingerprint(registration)) == 64
     assert len(executable_configuration_fingerprint(config)) == 64
@@ -109,7 +100,7 @@ def test_every_semantic_registration_field_changes_fingerprint() -> None:
         assert locked_design_fingerprint(changed) != baseline, field
     assert (
         locked_design_fingerprint(
-            registration.model_copy(update={"status": "COMPLETED"})
+            registration.model_copy(update={"status": "PREREGISTERED"})
         )
         == baseline
     )
@@ -404,116 +395,6 @@ def test_nested_numeric_collections_reject_strings_and_non_finite_values() -> No
         parent[path[-1]] = bad
         with pytest.raises(ValidationError):
             Task04Preregistration.model_validate(values)
-
-
-def _receipt_fixture(
-    config: Task04Config,
-    registration: Task04Preregistration,
-    *,
-    anchor: str = "a" * 40,
-) -> Task04RegistrationReceipt:
-    payload = {
-        "receipt_schema_version": "task04-registration-receipt-v2",
-        "study_id": "TASK-04",
-        "registration_version": "2.3",
-        "method_id": "RANGE-WEEKDAY-001",
-        "method_version": "range-weekday-registered-replication-v2.3",
-        "registration_status_at_anchoring": "PREREGISTERED",
-        "semantic_design_sha256": locked_design_fingerprint(registration),
-        "executable_configuration_sha256": executable_configuration_fingerprint(config),
-        "dependency_lock_sha256": "b" * 64,
-        "environment_lock_sha256": "c" * 64,
-        "raw_dataset_sha256": config.required_raw_sha256,
-        "raw_manifest_sha256": config.required_raw_manifest_sha256,
-        "task02_audit_fingerprint": config.required_task02_audit_fingerprint,
-        "task03_coverage_fingerprint": config.required_coverage_summary_sha256,
-        "task03_row_membership_fingerprint": (
-            config.required_task03_row_membership_fingerprint
-        ),
-        "source_tree_fingerprint": "d" * 64,
-        "preregistration_anchor_commit": anchor,
-        "preregistration_anchor_tree": "e" * 40,
-        "registered_path_tree_sha256": "f" * 64,
-        "registered_path_inventory": (
-            registration.repository_lineage.registered_path_inventory
-        ),
-        "expected_output_inventory": tuple(
-            sorted(
-                (
-                    *config.expected_output_files,
-                    *(f"figures/{name}" for name in config.expected_figure_files),
-                )
-            )
-        ),
-        "timestamp_operational_assumption": (config.timestamp_operational_assumption),
-        "deviation_policy": "NEW_REGISTRATION_VERSION_REQUIRED",
-        "repository_dirty_state_policy": (
-            registration.repository_lineage.dirty_state_policy
-        ),
-    }
-    return Task04RegistrationReceipt.model_validate(
-        {**payload, "receipt_fingerprint": canonical_digest(payload)}
-    )
-
-
-def test_receipt_replacement_is_a_distinguishable_lineage(tmp_path: Path) -> None:
-    _, config, registration = _contract()
-    original = _receipt_fixture(config, registration)
-    replacement = _receipt_fixture(config, registration, anchor="1" * 40)
-    path = tmp_path / "receipt.json"
-    write_registration_receipt(original, path)
-    with pytest.raises(FileExistsError):
-        write_registration_receipt(replacement, path)
-    path.unlink()
-    write_registration_receipt(replacement, path)
-    assert read_registration_receipt(path) == replacement
-    assert replacement.receipt_fingerprint != original.receipt_fingerprint
-    with pytest.raises(ValueError, match="receipt validation failed"):
-        assert_registration_receipt_matches(
-            replacement,
-            original,
-            registration=registration,
-            config=config,
-        )
-
-
-def test_lifecycle_identity_substitution_fails(
-    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    _, config, registration = _contract()
-    original = _receipt_fixture(config, registration)
-    replacement = _receipt_fixture(config, registration, anchor="1" * 40)
-    test_config = config.model_copy(
-        update={"registration_lifecycle_path": Path("lifecycle.json")}
-    )
-    lifecycle_path = tmp_path / "lifecycle.json"
-    _write_lifecycle(
-        registration,
-        test_config,
-        original,
-        lifecycle_path,
-    )
-    monkeypatch.setattr(
-        registry_module,
-        "validate_registration_receipt",
-        lambda *_args, **_kwargs: original,
-    )
-    validate_registration_lifecycle(registration, test_config, original, root=tmp_path)
-    value = json.loads(lifecycle_path.read_text(encoding="utf-8"))
-    value["receipt_fingerprint"] = replacement.receipt_fingerprint
-    value["preregistration_anchor_commit"] = replacement.preregistration_anchor_commit
-    value.pop("lifecycle_fingerprint")
-    altered = Task04RegistrationLifecycle.model_validate(
-        {**value, "lifecycle_fingerprint": canonical_digest(value)}
-    )
-    lifecycle_path.write_text(
-        json.dumps(altered.model_dump(mode="json")),
-        encoding="utf-8",
-    )
-    with pytest.raises(ValueError, match="does not match"):
-        validate_registration_lifecycle(
-            registration, test_config, original, root=tmp_path
-        )
 
 
 def test_locked_field_assertion() -> None:

@@ -324,3 +324,24 @@ while path/tree and dependency reconciliation detect scientific replacement.
 It does not make local files undeletable. Keeping the preregistration file
 unchanged and recording completion only in a descendant lifecycle preserves
 the anchor semantics.
+
+## 2026-08-01 — Supersede incomplete v2.3 production governance with v2.4
+
+**Decision:** Preserve commit
+`d409938b6b528a7acd17404320255a71f9729b6c` as the genuine pre-result v2.3
+Git anchor, but abandon that registration attempt before receipt creation or
+calculation. Version 2.3 established a valid pre-result Git anchor, but the
+anchored production-governance schema was incomplete. Its receipt and lifecycle
+could not bind every mandatory anchor, production, output, reconciliation,
+determinism, rating, limitation, and quality-gate field, and generation itself
+would have completed the lifecycle too early. No v2.3 receipt, lifecycle, or
+production result was created.
+
+Prepare v2.4 with the scientific design unchanged. Candidate generation is not
+completion. A separately constructed terminal lifecycle requires every strict
+completion gate, independent CSV-based reproduction evidence, and the
+documented `task04-path-length-bytes-sha256-v1` digest before final promotion.
+
+**Rationale:** A valid Git anchor proves which design preceded calculation, but
+cannot compensate for an incomplete production-completion contract. A new
+version preserves the honest history without rewriting v2.3.

@@ -17,7 +17,7 @@ from eurusd_research.studies.task04 import generate_task04_study
 
 
 @pytest.mark.integration
-def test_task04_v23_stops_before_calculation_without_anchor_receipt(
+def test_task04_v24_stops_before_calculation_without_anchor_receipt(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:

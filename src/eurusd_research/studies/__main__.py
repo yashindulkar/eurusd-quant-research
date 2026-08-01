@@ -10,9 +10,9 @@ from eurusd_research.studies.task04 import generate_task04_study
 
 
 def main(argv: list[str] | None = None) -> int:
-    """Generate Task 04 outputs."""
+    """Generate Task 04 candidate outputs without completing the lifecycle."""
     parser = argparse.ArgumentParser(
-        description="Generate the registered-replication UTC-weekday daily-range study"
+        description="Generate candidate UTC-weekday daily-range evidence"
     )
     parser.add_argument("--root", type=Path, help="repository root")
     parser.add_argument("--output-directory", type=Path)

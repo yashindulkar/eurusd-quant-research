@@ -5,14 +5,21 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import subprocess
 from copy import deepcopy
 from pathlib import Path
 from typing import Any, Literal, cast
 
 import yaml
-from pydantic import ConfigDict, Field, model_validator
+from pydantic import ConfigDict, Field, StrictInt, model_validator
 
 from eurusd_research.config import StrictModel
+from eurusd_research.studies.completion import (
+    CompletionGateEvidence,
+    IndependentReconciliationEvidence,
+    OutputDigestEvidence,
+    build_output_digest,
+)
 from eurusd_research.studies.configuration import Task04Config
 from eurusd_research.studies.dependencies import validate_task04_dependencies
 from eurusd_research.studies.git_anchor import (
@@ -21,12 +28,16 @@ from eurusd_research.studies.git_anchor import (
     registered_path_tree_fingerprint,
     resolve_commit,
 )
-from eurusd_research.studies.integrity import validate_source_dependency_manifest
-from eurusd_research.studies.registration_models import Task04PreregistrationV23
+from eurusd_research.studies.integrity import (
+    read_task03_row_membership_evidence,
+    validate_source_dependency_manifest,
+)
+from eurusd_research.studies.registration_models import Task04PreregistrationV24
 
 MUTABLE_REGISTRATION_FIELDS = ("status",)
-RECEIPT_SCHEMA_VERSION = "task04-registration-receipt-v2"
-LIFECYCLE_SCHEMA_VERSION = "task04-registration-lifecycle-v2"
+RECEIPT_SCHEMA_VERSION = "task04-registration-receipt-v3"
+LIFECYCLE_SCHEMA_VERSION = "task04-registration-lifecycle-v3"
+CANONICALIZATION_VERSION = "task04-canonical-json-v1"
 
 
 class PreregistrationDeviation(StrictModel):
@@ -66,7 +77,7 @@ class PreregistrationDeviation(StrictModel):
         return self
 
 
-Task04Preregistration = Task04PreregistrationV23
+Task04Preregistration = Task04PreregistrationV24
 
 
 LOCKED_FIELDS = tuple(
@@ -76,52 +87,223 @@ LOCKED_FIELDS = tuple(
 )
 
 
+class ReceiptSection(StrictModel):
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+
+class RegisteredBlobIdentity(ReceiptSection):
+    path: str = Field(min_length=1)
+    git_blob_id: str = Field(pattern=r"^[0-9a-f]{40}$")
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class ReceiptIdentity(ReceiptSection):
+    receipt_schema_version: Literal["task04-registration-receipt-v3"]
+    study_id: Literal["TASK-04"]
+    registration_version: Literal["2.4"]
+    method_id: Literal["RANGE-WEEKDAY-001"]
+    method_version: Literal["range-weekday-registered-replication-v2.4"]
+    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.4.yaml"]
+    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.4.receipt.json"]
+    registration_classification: Literal[
+        "correctively registered replication of the developed Task 04 analysis"
+    ]
+    non_first_look_disclosure: str = Field(min_length=1)
+    registration_status_at_anchoring: Literal["PREREGISTERED"]
+
+
+class ReceiptGitAnchor(ReceiptSection):
+    anchor_commit_id: str = Field(pattern=r"^[0-9a-f]{40}$")
+    anchor_tree_id: str = Field(pattern=r"^[0-9a-f]{40}$")
+    anchor_parent_commit_id: str = Field(pattern=r"^[0-9a-f]{40}$")
+    branch_at_registration: str = Field(min_length=1)
+    anchor_reachability_policy: Literal["ANCHOR_MUST_REMAIN_REACHABLE"]
+    descendant_validation_policy: Literal[
+        "CURRENT_STATE_MUST_EQUAL_OR_DESCEND_FROM_ANCHOR"
+    ]
+    registered_path_tree_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    registered_path_inventory: tuple[str, ...] = Field(min_length=1)
+    registered_blob_identities: tuple[RegisteredBlobIdentity, ...] = Field(min_length=1)
+    repository_dirty_state_policy: str = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def validate_inventory(self) -> ReceiptGitAnchor:
+        paths = tuple(self.registered_path_inventory)
+        blobs = tuple(item.path for item in self.registered_blob_identities)
+        if paths != tuple(sorted(paths)) or len(paths) != len(set(paths)):
+            raise ValueError("Registered receipt paths must be unique and sorted")
+        if blobs != paths:
+            raise ValueError("Registered blobs must exactly match path inventory")
+        return self
+
+
+class ReceiptScientificExecutableDesign(ReceiptSection):
+    semantic_design_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    executable_configuration_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    source_manifest_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    source_tree_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    environment_lock_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    package_dependency_lock_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    timestamp_assumption: Literal["AS_SUPPLIED_TIMESTAMP_LABEL_DATE"]
+    unresolved_timestamp_limitation: str = Field(min_length=1)
+    maximum_evidence_rating_cap: Literal["MODERATE"]
+    deviation_policy: Literal["NEW_REGISTRATION_VERSION_REQUIRED"]
+    expected_production_output_inventory: tuple[str, ...] = Field(min_length=1)
+    expected_figure_inventory: tuple[str, ...] = Field(min_length=8, max_length=8)
+
+
+class ReceiptRawEvidence(ReceiptSection):
+    path: Literal["data/raw/EURUSD_M15_UTC.csv"]
+    dataset_version: Literal["sha256:b2a41310927aa9a9"]
+    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    manifest_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class ReceiptTask02Evidence(ReceiptSection):
+    schema_version: Literal["raw-data-quality-audit-v2"]
+    audit_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    readiness_status: Literal["PASS, CONDITIONALLY_READY"]
+
+
+class ReceiptTask03ProfileCounts(ReceiptSection):
+    default_research_rows: StrictInt = Field(gt=0)
+    strict_continuity_rows: StrictInt = Field(gt=0)
+    sensitivity_full_rows: StrictInt = Field(gt=0)
+    sensitivity_2023_rows: StrictInt = Field(gt=0)
+    observed_dates: StrictInt = Field(gt=0)
+    default_research_dates: StrictInt = Field(gt=0)
+    strict_continuity_dates: StrictInt = Field(gt=0)
+    sensitivity_full_dates: StrictInt = Field(gt=0)
+    sensitivity_2023_dates: StrictInt = Field(gt=0)
+
+
+class ReceiptTask03Evidence(ReceiptSection):
+    schema_version: Literal["task03-row-membership-evidence-v1"]
+    method_version: Literal["research-coverage-v1"]
+    coverage_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    exact_evidence_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    exact_row_membership_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    exact_date_membership_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    profile_counts: ReceiptTask03ProfileCounts
+    algebra_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class ReceiptUpstreamEvidence(ReceiptSection):
+    raw_dataset: ReceiptRawEvidence
+    task02: ReceiptTask02Evidence
+    task03: ReceiptTask03Evidence
+
+
+class ReceiptIntegrity(ReceiptSection):
+    canonicalization_version: Literal["task04-canonical-json-v1"]
+    field_inventory: tuple[str, ...] = Field(min_length=1)
+    schema_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    allowed_mutable_fields_after_anchoring: tuple[str, ...] = Field(max_length=0)
+
+
 class Task04RegistrationReceipt(StrictModel):
-    """Immutable pre-result identity of the registered replication."""
+    """Immutable pre-result identity of the v2.4 registered replication."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    receipt_schema_version: Literal["task04-registration-receipt-v2"]
-    study_id: Literal["TASK-04"]
-    registration_version: Literal["2.3"]
-    method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.3"]
-    registration_status_at_anchoring: Literal["PREREGISTERED"]
-    semantic_design_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    executable_configuration_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    dependency_lock_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    environment_lock_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    raw_dataset_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    raw_manifest_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    task02_audit_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
-    task03_coverage_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
-    task03_row_membership_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
-    source_tree_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
-    preregistration_anchor_commit: str = Field(pattern=r"^[0-9a-f]{40}$")
-    preregistration_anchor_tree: str = Field(pattern=r"^[0-9a-f]{40}$")
-    registered_path_tree_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    registered_path_inventory: tuple[str, ...] = Field(min_length=1)
-    expected_output_inventory: tuple[str, ...] = Field(min_length=1)
-    timestamp_operational_assumption: Literal["AS_SUPPLIED_TIMESTAMP_LABEL_DATE"]
-    deviation_policy: Literal["NEW_REGISTRATION_VERSION_REQUIRED"]
-    repository_dirty_state_policy: str = Field(min_length=1)
+    identity: ReceiptIdentity
+    git_anchor: ReceiptGitAnchor
+    scientific_and_executable_design: ReceiptScientificExecutableDesign
+    upstream_evidence: ReceiptUpstreamEvidence
+    integrity: ReceiptIntegrity
     receipt_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class LifecycleIdentity(ReceiptSection):
+    lifecycle_schema_version: Literal["task04-registration-lifecycle-v3"]
+    study_id: Literal["TASK-04"]
+    registration_version: Literal["2.4"]
+    method_id: Literal["RANGE-WEEKDAY-001"]
+    method_version: Literal["range-weekday-registered-replication-v2.4"]
+    lifecycle_file_path: Literal[
+        "studies/task04_daily_range_weekday.v2.4.lifecycle.json"
+    ]
+    status: Literal["COMPLETED"]
+    receipt_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    anchor_commit_id: str = Field(pattern=r"^[0-9a-f]{40}$")
+    anchor_tree_id: str = Field(pattern=r"^[0-9a-f]{40}$")
+    anchor_parent_commit_id: str = Field(pattern=r"^[0-9a-f]{40}$")
+    registration_classification: Literal[
+        "correctively registered replication of the developed Task 04 analysis"
+    ]
+
+
+class LifecycleProductionState(ReceiptSection):
+    production_state_identifier: str = Field(min_length=1)
+    production_source_tree_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    descendant_commit_or_working_state: str = Field(min_length=1)
+    descends_from_anchor: Literal[True]
+    registered_anchor_paths_unchanged: Literal[True]
+    raw_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    task02_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    task03_evidence_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    executable_configuration_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+
+class LifecycleOutputEvidence(ReceiptSection):
+    production_output_inventory: tuple[str, ...] = Field(min_length=1)
+    exact_output_paths: tuple[str, ...] = Field(min_length=1)
+    output_digest: OutputDigestEvidence
+    figure_inventory: tuple[str, ...] = Field(min_length=8, max_length=8)
+    no_extra_output_validation_passed: Literal[True]
+    output_containment_validation_passed: Literal[True]
+
+    @model_validator(mode="after")
+    def validate_output_identity(self) -> LifecycleOutputEvidence:
+        expected = tuple(sorted(self.production_output_inventory))
+        if self.exact_output_paths != expected:
+            raise ValueError("Lifecycle exact output paths disagree with inventory")
+        if tuple(item.relative_path for item in self.output_digest.files) != expected:
+            raise ValueError("Lifecycle file hashes disagree with inventory")
+        if not set(self.figure_inventory).issubset(set(expected)):
+            raise ValueError("Lifecycle figure inventory is not an output subset")
+        return self
+
+
+class LifecycleScientificCompletion(ReceiptSection):
+    primary_population: StrictInt = Field(gt=0)
+    primary_statistic: float = Field(strict=True, allow_inf_nan=False, ge=0.0)
+    primary_p_value: float = Field(strict=True, allow_inf_nan=False, ge=0.0, le=1.0)
+    primary_effect_size: float = Field(strict=True, allow_inf_nan=False)
+    final_evidence_rating: Literal["INSUFFICIENT", "WEAK", "MODERATE", "STRONG"]
+    rating_cap: Literal["MODERATE"]
+    timestamp_limitation: str = Field(min_length=1)
+    required_robustness_evidence_status: Literal["PASS"]
+    independent_reconciliation: IndependentReconciliationEvidence
+    deterministic_regeneration_status: Literal["PASS"]
+    deterministic_regeneration_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+    figure_validation_status: Literal["PASS"]
+    population_reconciliation_status: Literal["PASS"]
+
+
+class LifecycleGovernance(ReceiptSection):
+    final_deviation_policy: Literal["NEW_REGISTRATION_VERSION_REQUIRED"]
+    final_deviation_count: Literal[0]
+    zero_deviation_declaration: Literal["NO_DEVIATIONS"]
+    deviation_ledger_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    limitations: tuple[str, ...] = Field(min_length=1)
+    completion_gates: CompletionGateEvidence
+    quality_gate_status: Literal["PASS"]
+    permitted_future_transition_policy: Literal[
+        "COMPLETED_IS_TERMINAL;_CHANGES_REQUIRE_NEW_REGISTRATION_VERSION"
+    ]
 
 
 class Task04RegistrationLifecycle(StrictModel):
-    """Persisted lifecycle history binding completion to the original receipt."""
+    """Terminal completion evidence bound to the original v2.4 receipt."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    lifecycle_schema_version: Literal["task04-registration-lifecycle-v2"]
-    study_id: Literal["TASK-04"]
-    registration_version: Literal["2.3"]
-    receipt_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
-    preregistration_anchor_commit: str = Field(pattern=r"^[0-9a-f]{40}$")
-    semantic_design_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    executable_configuration_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
-    status_history: tuple[Literal["PREREGISTERED", "COMPLETED"], ...]
-    current_status: Literal["COMPLETED"]
+    identity: LifecycleIdentity
+    production_state: LifecycleProductionState
+    output_evidence: LifecycleOutputEvidence
+    scientific_completion: LifecycleScientificCompletion
+    governance: LifecycleGovernance
     lifecycle_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
@@ -252,6 +434,28 @@ def executable_configuration_contract(config: Task04Config) -> dict[str, Any]:
             "figures": sorted(config.expected_figure_files),
         },
         "figures": config.figure_settings.model_dump(mode="json"),
+        "production_governance": {
+            "receipt_schema_version": config.receipt_schema_version,
+            "lifecycle_schema_version": config.lifecycle_schema_version,
+            "candidate_output_directory": config.candidate_output_directory.as_posix(),
+            "final_output_directory": config.output_directory.as_posix(),
+            "completion_sequence": list(config.completion_sequence),
+            "candidate_outputs_are_completed_evidence": (
+                config.candidate_outputs_are_completed_evidence
+            ),
+            "output_digest_algorithm": config.output_digest_algorithm,
+            "independent_reconciliation_implementation": (
+                config.independent_reconciliation_implementation
+            ),
+            "maximum_numerical_discrepancy_tolerance": (
+                config.maximum_numerical_discrepancy_tolerance
+            ),
+            "minimum_branch_coverage_percent": (config.minimum_branch_coverage_percent),
+            "failure_policy": config.candidate_failure_policy,
+            "promotion_policy": config.promotion_policy,
+            "required_completion_gates": list(config.required_completion_gates),
+            "anchor_ancestry_policy": config.anchor_ancestry_policy,
+        },
     }
 
 
@@ -371,6 +575,9 @@ def registration_execution_contract(
             "figures": sorted(outputs.figures),
         },
         "figures": outputs.figure_settings.model_dump(mode="json"),
+        "production_governance": (
+            registration.production_governance.model_dump(mode="json")
+        ),
     }
 
 
@@ -418,12 +625,67 @@ def _lifecycle_payload(lifecycle: Task04RegistrationLifecycle) -> dict[str, Any]
     return value
 
 
+def _git(root: Path, *args: str) -> str:
+    result = subprocess.run(
+        ["git", *args],
+        cwd=root,
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+    return result.stdout.strip()
+
+
+def _registered_blob_identities(
+    root: Path, anchor: str, paths: tuple[str, ...]
+) -> tuple[RegisteredBlobIdentity, ...]:
+    records: list[RegisteredBlobIdentity] = []
+    for path in paths:
+        line = _git(root, "ls-tree", anchor, "--", path)
+        parts = line.split()
+        if len(parts) < 4 or parts[1] != "blob":
+            raise ValueError(f"Registered anchor path is not a blob: {path}")
+        content = subprocess.run(
+            ["git", "show", f"{anchor}:{path}"],
+            cwd=root,
+            check=True,
+            capture_output=True,
+        ).stdout
+        records.append(
+            RegisteredBlobIdentity(
+                path=path,
+                git_blob_id=parts[2],
+                sha256=hashlib.sha256(content).hexdigest(),
+            )
+        )
+    return tuple(records)
+
+
+RECEIPT_FIELD_INVENTORY = tuple(
+    sorted(
+        (
+            "identity.*",
+            "git_anchor.*",
+            "scientific_and_executable_design.*",
+            "upstream_evidence.raw_dataset.*",
+            "upstream_evidence.task02.*",
+            "upstream_evidence.task03.*",
+            "integrity.canonicalization_version",
+            "integrity.field_inventory",
+            "integrity.schema_fingerprint",
+            "integrity.allowed_mutable_fields_after_anchoring",
+        )
+    )
+)
+
+
 def build_registration_receipt(
     registration: Task04Preregistration,
     config: Task04Config,
     *,
     root: Path,
     anchor_commit: str | None = None,
+    branch_at_registration: str | None = None,
 ) -> Task04RegistrationReceipt:
     """Build a deterministic receipt for an already committed design anchor."""
     if registration.status != "PREREGISTERED":
@@ -448,37 +710,139 @@ def build_registration_receipt(
         paths=registered_paths,
         registered_tree_fingerprint=registered_tree,
     )
+    anchor_parent = resolve_commit(root, f"{anchor}^")
+    branch = branch_at_registration or _git(root, "branch", "--show-current")
+    task03 = read_task03_row_membership_evidence(
+        root / config.task03_row_membership_evidence_path
+    )
+    row_membership = _canonical_digest(
+        [
+            {"profile": item.profile, "sha256": item.row_membership_sha256}
+            for item in task03.profiles
+        ]
+    )
+    date_membership = _canonical_digest(
+        [
+            {"profile": item.profile, "sha256": item.date_membership_sha256}
+            for item in task03.profiles
+        ]
+    )
+    algebra = _canonical_digest(
+        {
+            "strict_subset_default": task03.strict_subset_default,
+            "strict_disjoint_sensitivity_full": (
+                task03.strict_disjoint_sensitivity_full
+            ),
+            "strict_union_sensitivity_full_equals_default": (
+                task03.strict_union_sensitivity_full_equals_default
+            ),
+            "sensitivity_2023_subset_sensitivity_full": (
+                task03.sensitivity_2023_subset_sensitivity_full
+            ),
+        }
+    )
+    counts = {item.profile: item.row_included for item in task03.profiles}
+    date_counts = {item.profile: item.date_included for item in task03.profiles}
+    timestamp_limitation = (
+        registration.timestamp_semantics.possible_boundary_consequence
+    )
+    output_inventory = _expected_inventory(config)
+    figures = tuple(sorted(f"figures/{x}" for x in config.expected_figure_files))
     payload: dict[str, Any] = {
-        "receipt_schema_version": RECEIPT_SCHEMA_VERSION,
-        "study_id": registration.study_id,
-        "registration_version": registration.registration_version,
-        "method_id": registration.method_id,
-        "method_version": registration.method_version,
-        "registration_status_at_anchoring": registration.status,
-        "semantic_design_sha256": locked_design_fingerprint(registration),
-        "executable_configuration_sha256": executable_configuration_fingerprint(config),
-        "dependency_lock_sha256": (
-            config.required_source_dependency_manifest_fingerprint
-        ),
-        "environment_lock_sha256": environment_sha256,
-        "raw_dataset_sha256": config.required_raw_sha256,
-        "raw_manifest_sha256": config.required_raw_manifest_sha256,
-        "task02_audit_fingerprint": config.required_task02_audit_fingerprint,
-        "task03_coverage_fingerprint": config.required_coverage_summary_sha256,
-        "task03_row_membership_fingerprint": (
-            config.required_task03_row_membership_fingerprint
-        ),
-        "source_tree_fingerprint": source_manifest.source_tree_fingerprint,
-        "preregistration_anchor_commit": anchor,
-        "preregistration_anchor_tree": tree_id,
-        "registered_path_tree_sha256": registered_tree,
-        "registered_path_inventory": registered_paths,
-        "expected_output_inventory": _expected_inventory(config),
-        "timestamp_operational_assumption": (config.timestamp_operational_assumption),
-        "deviation_policy": registration.deviation_policy.model,
-        "repository_dirty_state_policy": (
-            registration.repository_lineage.dirty_state_policy
-        ),
+        "identity": {
+            "receipt_schema_version": RECEIPT_SCHEMA_VERSION,
+            "study_id": registration.study_id,
+            "registration_version": registration.registration_version,
+            "method_id": registration.method_id,
+            "method_version": registration.method_version,
+            "registration_file_path": config.preregistration_path.as_posix(),
+            "receipt_file_path": config.registration_receipt_path.as_posix(),
+            "registration_classification": registration.registration_classification,
+            "non_first_look_disclosure": registration.registration_disclosure,
+            "registration_status_at_anchoring": registration.status,
+        },
+        "git_anchor": {
+            "anchor_commit_id": anchor,
+            "anchor_tree_id": tree_id,
+            "anchor_parent_commit_id": anchor_parent,
+            "branch_at_registration": branch,
+            "anchor_reachability_policy": "ANCHOR_MUST_REMAIN_REACHABLE",
+            "descendant_validation_policy": (
+                "CURRENT_STATE_MUST_EQUAL_OR_DESCEND_FROM_ANCHOR"
+            ),
+            "registered_path_tree_fingerprint": registered_tree,
+            "registered_path_inventory": registered_paths,
+            "registered_blob_identities": [
+                item.model_dump(mode="json")
+                for item in _registered_blob_identities(root, anchor, registered_paths)
+            ],
+            "repository_dirty_state_policy": (
+                registration.repository_lineage.dirty_state_policy
+            ),
+        },
+        "scientific_and_executable_design": {
+            "semantic_design_fingerprint": locked_design_fingerprint(registration),
+            "executable_configuration_fingerprint": (
+                executable_configuration_fingerprint(config)
+            ),
+            "source_manifest_fingerprint": (
+                source_manifest.dependency_manifest_fingerprint
+            ),
+            "source_tree_fingerprint": source_manifest.source_tree_fingerprint,
+            "environment_lock_fingerprint": environment_sha256,
+            "package_dependency_lock_fingerprint": _sha256_file(
+                root / "pyproject.toml"
+            ),
+            "timestamp_assumption": config.timestamp_operational_assumption,
+            "unresolved_timestamp_limitation": timestamp_limitation,
+            "maximum_evidence_rating_cap": (
+                registration.timestamp_semantics.evidence_rating_cap
+            ),
+            "deviation_policy": registration.deviation_policy.model,
+            "expected_production_output_inventory": output_inventory,
+            "expected_figure_inventory": figures,
+        },
+        "upstream_evidence": {
+            "raw_dataset": {
+                "path": registration.repository_lineage.raw_path,
+                "dataset_version": registration.dataset_version,
+                "sha256": config.required_raw_sha256,
+                "manifest_fingerprint": config.required_raw_manifest_sha256,
+            },
+            "task02": {
+                "schema_version": registration.task_02_dependency.method_version,
+                "audit_fingerprint": config.required_task02_audit_fingerprint,
+                "readiness_status": "PASS, CONDITIONALLY_READY",
+            },
+            "task03": {
+                "schema_version": task03.schema_version,
+                "method_version": task03.task03_method_version,
+                "coverage_fingerprint": config.required_coverage_summary_sha256,
+                "exact_evidence_fingerprint": task03.evidence_fingerprint,
+                "exact_row_membership_fingerprint": row_membership,
+                "exact_date_membership_fingerprint": date_membership,
+                "profile_counts": {
+                    "default_research_rows": counts["DEFAULT_RESEARCH"],
+                    "strict_continuity_rows": counts["STRICT_CONTINUITY"],
+                    "sensitivity_full_rows": counts["SENSITIVITY_FULL"],
+                    "sensitivity_2023_rows": counts["SENSITIVITY_2023"],
+                    "observed_dates": task03.observed_date_count,
+                    "default_research_dates": date_counts["DEFAULT_RESEARCH"],
+                    "strict_continuity_dates": date_counts["STRICT_CONTINUITY"],
+                    "sensitivity_full_dates": date_counts["SENSITIVITY_FULL"],
+                    "sensitivity_2023_dates": date_counts["SENSITIVITY_2023"],
+                },
+                "algebra_fingerprint": algebra,
+            },
+        },
+        "integrity": {
+            "canonicalization_version": CANONICALIZATION_VERSION,
+            "field_inventory": RECEIPT_FIELD_INVENTORY,
+            "schema_fingerprint": _canonical_digest(
+                Task04RegistrationReceipt.model_json_schema()
+            ),
+            "allowed_mutable_fields_after_anchoring": (),
+        },
     }
     return Task04RegistrationReceipt.model_validate(
         {**payload, "receipt_fingerprint": _canonical_digest(payload)}
@@ -535,7 +899,8 @@ def validate_registration_receipt(
         registration,
         config,
         root=root,
-        anchor_commit=receipt.preregistration_anchor_commit,
+        anchor_commit=receipt.git_anchor.anchor_commit_id,
+        branch_at_registration=receipt.git_anchor.branch_at_registration,
     )
     assert_registration_receipt_matches(
         receipt, expected, registration=registration, config=config
@@ -552,50 +917,22 @@ def assert_registration_receipt_matches(
 ) -> None:
     """Validate receipt content independently of its storage location."""
     checks = {
-        "receipt schema": receipt.receipt_schema_version
+        "receipt schema": receipt.identity.receipt_schema_version
         == config.receipt_schema_version,
-        "study": receipt.study_id == registration.study_id,
-        "registration version": receipt.registration_version
+        "study": receipt.identity.study_id == registration.study_id,
+        "registration version": receipt.identity.registration_version
         == registration.registration_version,
-        "method": (
-            receipt.method_id == registration.method_id
-            and receipt.method_version == registration.method_version
-        ),
-        "semantic design": receipt.semantic_design_sha256
-        == expected.semantic_design_sha256,
-        "executable configuration": receipt.executable_configuration_sha256
-        == expected.executable_configuration_sha256,
-        "dependency lock": receipt.dependency_lock_sha256
-        == expected.dependency_lock_sha256,
-        "environment lock": receipt.environment_lock_sha256
-        == expected.environment_lock_sha256,
-        "raw dataset": receipt.raw_dataset_sha256 == config.required_raw_sha256,
-        "raw manifest": receipt.raw_manifest_sha256
-        == config.required_raw_manifest_sha256,
-        "Task 02": receipt.task02_audit_fingerprint
-        == config.required_task02_audit_fingerprint,
-        "Task 03": receipt.task03_coverage_fingerprint
-        == config.required_coverage_summary_sha256,
-        "Task 03 row membership": receipt.task03_row_membership_fingerprint
-        == config.required_task03_row_membership_fingerprint,
-        "source tree": receipt.source_tree_fingerprint
-        == expected.source_tree_fingerprint,
-        "anchor commit": receipt.preregistration_anchor_commit
-        == expected.preregistration_anchor_commit,
-        "anchor tree": receipt.preregistration_anchor_tree
-        == expected.preregistration_anchor_tree,
-        "registered path tree": receipt.registered_path_tree_sha256
-        == expected.registered_path_tree_sha256,
-        "registered path inventory": receipt.registered_path_inventory
-        == expected.registered_path_inventory,
-        "output inventory": receipt.expected_output_inventory
-        == _expected_inventory(config),
-        "timestamp assumption": receipt.timestamp_operational_assumption
-        == config.timestamp_operational_assumption,
-        "deviation policy": receipt.deviation_policy
-        == registration.deviation_policy.model,
-        "dirty-state policy": receipt.repository_dirty_state_policy
-        == registration.repository_lineage.dirty_state_policy,
+        "method": receipt.identity.method_id == registration.method_id
+        and receipt.identity.method_version == registration.method_version,
+        "registration path": receipt.identity.registration_file_path
+        == config.preregistration_path.as_posix(),
+        "receipt path": receipt.identity.receipt_file_path
+        == config.registration_receipt_path.as_posix(),
+        "semantic design": receipt.scientific_and_executable_design
+        == expected.scientific_and_executable_design,
+        "Git anchor": receipt.git_anchor == expected.git_anchor,
+        "upstream evidence": receipt.upstream_evidence == expected.upstream_evidence,
+        "receipt integrity": receipt.integrity == expected.integrity,
         "receipt fingerprint": receipt.receipt_fingerprint
         == expected.receipt_fingerprint,
     }
@@ -606,42 +943,136 @@ def assert_registration_receipt_matches(
         )
 
 
-def _write_lifecycle(
+def build_completed_lifecycle(
     registration: Task04Preregistration,
     config: Task04Config,
     receipt: Task04RegistrationReceipt,
-    path: Path,
+    *,
+    production_state_identifier: str,
+    descendant_commit_or_working_state: str,
+    output_evidence: LifecycleOutputEvidence,
+    independent_reconciliation: IndependentReconciliationEvidence,
+    completion_gates: CompletionGateEvidence,
+    primary_population: int,
+    primary_statistic: float,
+    primary_p_value: float,
+    primary_effect_size: float,
+    final_evidence_rating: Literal["INSUFFICIENT", "WEAK", "MODERATE", "STRONG"],
+    limitations: tuple[str, ...],
 ) -> Task04RegistrationLifecycle:
-    if path.exists():
-        raise FileExistsError("Task 04 registration lifecycle already exists")
+    """Construct terminal lifecycle evidence only after every gate has passed."""
+    if not independent_reconciliation.passed:
+        raise ValueError("Independent reconciliation did not pass")
+    if completion_gates.maximum_numerical_discrepancy != (
+        independent_reconciliation.maximum_numerical_discrepancy
+    ):
+        raise ValueError("Completion and reconciliation discrepancies disagree")
+    if final_evidence_rating == "STRONG":
+        raise ValueError("Unresolved timestamp semantics cap Task 04 at MODERATE")
+    anchor = receipt.git_anchor
+    registered_outputs = tuple(
+        sorted(
+            receipt.scientific_and_executable_design.expected_production_output_inventory
+        )
+    )
+    if output_evidence.exact_output_paths != registered_outputs:
+        raise ValueError("Completion output evidence differs from receipt inventory")
+    if output_evidence.figure_inventory != tuple(
+        sorted(receipt.scientific_and_executable_design.expected_figure_inventory)
+    ):
+        raise ValueError("Completion figure evidence differs from receipt inventory")
+    output_digest = output_evidence.output_digest.path_plus_bytes_digest
     payload: dict[str, Any] = {
-        "lifecycle_schema_version": LIFECYCLE_SCHEMA_VERSION,
-        "study_id": registration.study_id,
-        "registration_version": registration.registration_version,
-        "receipt_fingerprint": receipt.receipt_fingerprint,
-        "preregistration_anchor_commit": receipt.preregistration_anchor_commit,
-        "semantic_design_sha256": locked_design_fingerprint(registration),
-        "executable_configuration_sha256": executable_configuration_fingerprint(config),
-        "status_history": ["PREREGISTERED", "COMPLETED"],
-        "current_status": "COMPLETED",
+        "identity": {
+            "lifecycle_schema_version": LIFECYCLE_SCHEMA_VERSION,
+            "study_id": registration.study_id,
+            "registration_version": registration.registration_version,
+            "method_id": registration.method_id,
+            "method_version": registration.method_version,
+            "lifecycle_file_path": config.registration_lifecycle_path.as_posix(),
+            "status": "COMPLETED",
+            "receipt_fingerprint": receipt.receipt_fingerprint,
+            "anchor_commit_id": anchor.anchor_commit_id,
+            "anchor_tree_id": anchor.anchor_tree_id,
+            "anchor_parent_commit_id": anchor.anchor_parent_commit_id,
+            "registration_classification": registration.registration_classification,
+        },
+        "production_state": {
+            "production_state_identifier": production_state_identifier,
+            "production_source_tree_fingerprint": (
+                receipt.scientific_and_executable_design.source_tree_fingerprint
+            ),
+            "descendant_commit_or_working_state": descendant_commit_or_working_state,
+            "descends_from_anchor": True,
+            "registered_anchor_paths_unchanged": True,
+            "raw_sha256": receipt.upstream_evidence.raw_dataset.sha256,
+            "task02_fingerprint": receipt.upstream_evidence.task02.audit_fingerprint,
+            "task03_evidence_fingerprint": (
+                receipt.upstream_evidence.task03.exact_evidence_fingerprint
+            ),
+            "executable_configuration_fingerprint": (
+                receipt.scientific_and_executable_design.executable_configuration_fingerprint
+            ),
+        },
+        "output_evidence": output_evidence.model_dump(mode="json"),
+        "scientific_completion": {
+            "primary_population": primary_population,
+            "primary_statistic": primary_statistic,
+            "primary_p_value": primary_p_value,
+            "primary_effect_size": primary_effect_size,
+            "final_evidence_rating": final_evidence_rating,
+            "rating_cap": "MODERATE",
+            "timestamp_limitation": (
+                receipt.scientific_and_executable_design.unresolved_timestamp_limitation
+            ),
+            "required_robustness_evidence_status": "PASS",
+            "independent_reconciliation": independent_reconciliation.model_dump(
+                mode="json"
+            ),
+            "deterministic_regeneration_status": "PASS",
+            "deterministic_regeneration_digest": output_digest,
+            "figure_validation_status": "PASS",
+            "population_reconciliation_status": "PASS",
+        },
+        "governance": {
+            "final_deviation_policy": "NEW_REGISTRATION_VERSION_REQUIRED",
+            "final_deviation_count": 0,
+            "zero_deviation_declaration": "NO_DEVIATIONS",
+            "deviation_ledger_fingerprint": deviation_fingerprint(registration),
+            "limitations": limitations,
+            "completion_gates": completion_gates.model_dump(mode="json"),
+            "quality_gate_status": "PASS",
+            "permitted_future_transition_policy": (
+                "COMPLETED_IS_TERMINAL;_CHANGES_REQUIRE_NEW_REGISTRATION_VERSION"
+            ),
+        },
     }
-    lifecycle = Task04RegistrationLifecycle.model_validate(
+    return Task04RegistrationLifecycle.model_validate(
         {**payload, "lifecycle_fingerprint": _canonical_digest(payload)}
     )
+
+
+def write_completed_lifecycle(
+    lifecycle: Task04RegistrationLifecycle, path: Path
+) -> None:
+    """Persist one terminal lifecycle; replacement and reversal are forbidden."""
+    if path.exists():
+        raise FileExistsError("Task 04 registration lifecycle already exists")
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_suffix(f"{path.suffix}.tmp")
-    temporary.write_text(
-        json.dumps(
-            lifecycle.model_dump(mode="json"),
-            indent=2,
-            sort_keys=True,
-            allow_nan=False,
+    with temporary.open("x", encoding="utf-8", newline="\n") as handle:
+        handle.write(
+            json.dumps(
+                lifecycle.model_dump(mode="json"),
+                indent=2,
+                sort_keys=True,
+                allow_nan=False,
+            )
+            + "\n"
         )
-        + "\n",
-        encoding="utf-8",
-    )
+        handle.flush()
+        os.fsync(handle.fileno())
     temporary.replace(path)
-    return lifecycle
 
 
 def validate_registration_lifecycle(
@@ -665,19 +1096,62 @@ def validate_registration_lifecycle(
         lifecycle.lifecycle_fingerprint
     ):
         raise ValueError("Task 04 registration lifecycle fingerprint is invalid")
+    expected_paths = _expected_inventory(config)
+    actual_output = build_output_digest(
+        root / config.output_directory,
+        expected_paths,
+        figure_paths=(f"figures/{name}" for name in config.expected_figure_files),
+    )
+    assert_completed_lifecycle_matches(
+        lifecycle,
+        registration=registration,
+        config=config,
+        receipt=receipt,
+    )
     checks = (
-        lifecycle.receipt_fingerprint == receipt.receipt_fingerprint,
-        lifecycle.preregistration_anchor_commit
-        == receipt.preregistration_anchor_commit,
-        lifecycle.semantic_design_sha256 == locked_design_fingerprint(registration),
-        lifecycle.executable_configuration_sha256
+        lifecycle.output_evidence.output_digest == actual_output,
+        lifecycle.output_evidence.exact_output_paths == expected_paths,
+    )
+    if not all(checks):
+        raise ValueError("Task 04 completed lifecycle output evidence changed")
+    return lifecycle
+
+
+def assert_completed_lifecycle_matches(
+    lifecycle: Task04RegistrationLifecycle,
+    *,
+    registration: Task04Preregistration,
+    config: Task04Config,
+    receipt: Task04RegistrationReceipt,
+) -> None:
+    """Validate terminal identity independently of lifecycle storage and outputs."""
+    checks = (
+        lifecycle.identity.receipt_fingerprint == receipt.receipt_fingerprint,
+        lifecycle.identity.anchor_commit_id == receipt.git_anchor.anchor_commit_id,
+        lifecycle.identity.anchor_tree_id == receipt.git_anchor.anchor_tree_id,
+        lifecycle.identity.anchor_parent_commit_id
+        == receipt.git_anchor.anchor_parent_commit_id,
+        lifecycle.identity.registration_version == registration.registration_version,
+        lifecycle.identity.method_version == registration.method_version,
+        lifecycle.identity.status == "COMPLETED",
+        lifecycle.production_state.production_source_tree_fingerprint
+        == receipt.scientific_and_executable_design.source_tree_fingerprint,
+        lifecycle.production_state.executable_configuration_fingerprint
         == executable_configuration_fingerprint(config),
-        lifecycle.status_history == ("PREREGISTERED", "COMPLETED"),
-        lifecycle.current_status == "COMPLETED",
+        lifecycle.production_state.registered_anchor_paths_unchanged,
+        lifecycle.production_state.descends_from_anchor,
+        lifecycle.governance.final_deviation_count == 0,
+        lifecycle.governance.limitations == registration.known_limitations,
+        lifecycle.scientific_completion.independent_reconciliation.passed,
+        lifecycle.governance.completion_gates.maximum_numerical_discrepancy
+        == (
+            lifecycle.scientific_completion.independent_reconciliation.maximum_numerical_discrepancy
+        ),
+        lifecycle.scientific_completion.deterministic_regeneration_digest
+        == lifecycle.output_evidence.output_digest.path_plus_bytes_digest,
     )
     if not all(checks):
         raise ValueError("Task 04 completed lifecycle does not match registration")
-    return lifecycle
 
 
 def preregistration_record(
@@ -699,7 +1173,7 @@ def preregistration_record(
         "method_id": registration.method_id,
         "method_version": registration.method_version,
         "title": registration.title,
-        "status": "COMPLETED" if completed else "PREREGISTERED",
+        "status": "COMPLETED" if completed else "CANDIDATE",
         "registration_classification": registration.registration_classification,
         "preregistration_file_sha256": hashlib.sha256(raw).hexdigest(),
         "locked_design_sha256": locked_design_fingerprint(registration),
@@ -722,21 +1196,3 @@ def assert_locked_fields_unchanged(
     """Reject mutation of any semantic field across lifecycle transition."""
     if locked_design_fingerprint(before) != locked_design_fingerprint(after):
         raise ValueError("Locked preregistration fields changed after registration")
-
-
-def transition_to_completed(
-    path: Path,
-    *,
-    config: Task04Config,
-    root: Path,
-) -> Task04Preregistration:
-    """Persist completion without rewriting the committed registration."""
-    before, _raw = read_preregistration(path)
-    receipt = validate_registration_receipt(before, config, root=root)
-    lifecycle_path = root / config.registration_lifecycle_path
-    if lifecycle_path.exists():
-        validate_registration_lifecycle(before, config, receipt, root=root)
-        return before
-    _write_lifecycle(before, config, receipt, lifecycle_path)
-    validate_registration_lifecycle(before, config, receipt, root=root)
-    return before

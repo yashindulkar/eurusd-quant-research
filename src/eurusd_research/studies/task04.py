@@ -37,7 +37,6 @@ from eurusd_research.studies.plotting import plot_all_figures
 from eurusd_research.studies.registry import (
     preregistration_record,
     read_preregistration,
-    transition_to_completed,
 )
 from eurusd_research.studies.robustness import (
     chronological_outputs,
@@ -90,7 +89,11 @@ def _lineage(
         "method_id": config.method_id,
         "method_version": config.method_version,
         "repository_version": _repository_version(
-            root, ignored_generated_paths=(config.output_directory,)
+            root,
+            ignored_generated_paths=(
+                config.output_directory,
+                config.candidate_output_directory,
+            ),
         ),
     }
 
@@ -929,9 +932,11 @@ def _validate_existing_output_scope(
 def generate_task04_study(
     root: Path | None = None, output_directory: Path | None = None
 ) -> Task04Result:
-    """Generate, validate, and complete the registered weekday-range replication."""
+    """Generate candidate evidence without completing the registered lifecycle."""
     repository_root = (root or find_repository_root()).resolve()
     task_config = load_task04_config(repository_root)
+    if project_path(task_config.registration_lifecycle_path, repository_root).exists():
+        raise RuntimeError("Completed Task 04 lifecycle forbids candidate regeneration")
     repository_config = load_config(repository_root)
     coverage_summary, manifest = _validate_dependencies(repository_root, task_config)
     preregistration_path = project_path(
@@ -946,7 +951,10 @@ def generate_task04_study(
         config=repository_config,
         repository_version=_repository_version(
             repository_root,
-            ignored_generated_paths=(task_config.output_directory,),
+            ignored_generated_paths=(
+                task_config.output_directory,
+                task_config.candidate_output_directory,
+            ),
         ),
     )
     validate_task03_row_membership(
@@ -1058,13 +1066,13 @@ def generate_task04_study(
             "method_id": task_config.method_id,
             "method_version": task_config.method_version,
             "title": registration.title,
-            "status": "COMPLETED",
+            "status": "CANDIDATE",
             "implementation_version": task_config.implementation_version,
         },
         "lineage": lineage,
         "registration_classification": registration.registration_classification,
         "registration_disclosure": registration.registration_disclosure,
-        "registry": {**registry, "status": "COMPLETED"},
+        "registry": {**registry, "status": "CANDIDATE"},
         "hypotheses": {
             "null": registration.primary_null_hypothesis,
             "alternative": registration.primary_alternative_hypothesis,
@@ -1190,7 +1198,7 @@ def generate_task04_study(
         "preregistration_deviations.csv": deviations,
     }
     destination = output_directory or project_path(
-        task_config.output_directory, repository_root
+        task_config.candidate_output_directory, repository_root
     )
     _validate_existing_output_scope(destination, task_config)
     destination.mkdir(parents=True, exist_ok=True)
@@ -1215,7 +1223,7 @@ def generate_task04_study(
     _atomic_text(
         destination / "study_registry_record.json",
         json.dumps(
-            json_safe({**registry, "status": "COMPLETED"}),
+            json_safe({**registry, "status": "CANDIDATE"}),
             indent=2,
             sort_keys=True,
             allow_nan=False,
@@ -1228,33 +1236,5 @@ def generate_task04_study(
             "Task 04 plotting did not return the registered figure order"
         )
     _validate_written_outputs(destination, task_config)
-    completed = transition_to_completed(
-        preregistration_path,
-        config=task_config,
-        root=repository_root,
-    )
-    completed_raw = preregistration_path.read_bytes()
-    completed_registry = preregistration_record(
-        completed,
-        completed_raw,
-        task_config,
-        root=repository_root,
-    )
-    summary["registry"] = completed_registry
-    _atomic_text(
-        destination / "study_summary.json",
-        json.dumps(json_safe(summary), indent=2, sort_keys=True, allow_nan=False)
-        + "\n",
-    )
-    _atomic_text(
-        destination / "study_registry_record.json",
-        json.dumps(
-            json_safe(completed_registry),
-            indent=2,
-            sort_keys=True,
-            allow_nan=False,
-        )
-        + "\n",
-    )
     _validate_written_outputs(destination, task_config)
     return Task04Result(summary, tables, figure_paths, destination)

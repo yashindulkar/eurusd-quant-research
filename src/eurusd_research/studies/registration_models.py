@@ -1,4 +1,4 @@
-"""Strict v2.3 semantic registration models for Task 04."""
+"""Strict v2.4 semantic registration models for Task 04."""
 
 from __future__ import annotations
 
@@ -245,7 +245,7 @@ class Task03Dependency(FrozenSection):
     coverage_config_fingerprint: Sha256
     coverage_summary_file_fingerprint: Sha256
     row_membership_evidence_path: Literal[
-        "studies/task03_task04_v2.3_mask_evidence.json"
+        "studies/task03_task04_v2.4_mask_evidence.json"
     ]
     row_membership_evidence_fingerprint: Sha256
 
@@ -259,7 +259,7 @@ class FigureSettings(FrozenSection):
 
 
 class ExpectedOutputs(FrozenSection):
-    directory: Literal["reports/research/task04_daily_range_weekday_v2.3"]
+    directory: Literal["reports/research/task04_daily_range_weekday_v2.4"]
     files: tuple[str, ...] = Field(min_length=19, max_length=19)
     figures: tuple[str, ...] = Field(min_length=8, max_length=8)
     figure_settings: FigureSettings
@@ -319,13 +319,13 @@ class RepositoryLineage(FrozenSection):
     baseline_head: GitCommit
     development_baseline_path: Literal["studies/task04_development_baseline.json"]
     registration_receipt_path: Literal[
-        "studies/task04_daily_range_weekday.v2.3.receipt.json"
+        "studies/task04_daily_range_weekday.v2.4.receipt.json"
     ]
     registration_lifecycle_path: Literal[
-        "studies/task04_daily_range_weekday.v2.3.lifecycle.json"
+        "studies/task04_daily_range_weekday.v2.4.lifecycle.json"
     ]
-    source_manifest_path: Literal["studies/task04_v2.3_source_manifest.json"]
-    environment_lock_path: Literal["studies/task04_v2.3_environment_lock.json"]
+    source_manifest_path: Literal["studies/task04_v2.4_source_manifest.json"]
+    environment_lock_path: Literal["studies/task04_v2.4_environment_lock.json"]
     raw_path: Literal["data/raw/EURUSD_M15_UTC.csv"]
     manifest_path: Literal["reports/audits/raw_dataset_manifest.json"]
     task_02_result_path: Literal["reports/audits/raw_data_quality_audit.json"]
@@ -341,13 +341,61 @@ class DeviationPolicy(FrozenSection):
     rule: NonEmpty
 
 
-class Task04PreregistrationV23(FrozenSection):
-    """Complete v2.3 registration; lifecycle status remains external."""
+class ProductionGovernance(FrozenSection):
+    """Pre-result v2.4 orchestration and completion contract."""
+
+    receipt_schema_version: Literal["task04-registration-receipt-v3"]
+    lifecycle_schema_version: Literal["task04-registration-lifecycle-v3"]
+    completion_sequence: tuple[
+        Literal["validate_anchor"],
+        Literal["create_receipt"],
+        Literal["validate_receipt"],
+        Literal["validate_pre_generation_dependencies"],
+        Literal["generate_candidate_outputs"],
+        Literal["validate_candidate_outputs"],
+        Literal["independent_population_reconciliation"],
+        Literal["independent_statistical_reproduction"],
+        Literal["deterministic_regeneration"],
+        Literal["figure_validation"],
+        Literal["run_required_quality_gates"],
+        Literal["promote_final_outputs"],
+        Literal["create_completed_lifecycle"],
+        Literal["validate_completed_lifecycle"],
+    ]
+    candidate_output_directory: Literal["reports/research/.task04_v2.4_candidate"]
+    final_output_directory: Literal["reports/research/task04_daily_range_weekday_v2.4"]
+    candidate_outputs_are_completed_evidence: Literal[False]
+    output_digest_algorithm: Literal["task04-path-length-bytes-sha256-v1"]
+    independent_reconciliation_implementation: Literal[
+        "task04-independent-csv-reproduction-v1"
+    ]
+    maximum_numerical_discrepancy_tolerance: FiniteFloat = Field(ge=0.0)
+    minimum_branch_coverage_percent: FiniteFloat = Field(ge=90.0, le=100.0)
+    required_completion_gates: tuple[str, ...] = Field(min_length=25)
+    promotion_policy: Literal[
+        "VALIDATE_CANDIDATE_THEN_ATOMICALLY_PROMOTE_ON_ONE_FILESYSTEM"
+    ]
+    failure_policy: Literal["FAILED_CANDIDATES_NEVER_CREATE_A_COMPLETED_LIFECYCLE"]
+    anchor_ancestry_policy: Literal[
+        "COMPLETION_STATE_MUST_EQUAL_OR_DESCEND_FROM_ANCHOR"
+    ]
+
+    @model_validator(mode="after")
+    def validate_gates(self) -> ProductionGovernance:
+        if len(self.required_completion_gates) != len(
+            set(self.required_completion_gates)
+        ):
+            raise ValueError("Completion gate inventory contains duplicates")
+        return self
+
+
+class Task04PreregistrationV24(FrozenSection):
+    """Complete v2.4 registration; lifecycle status remains external."""
 
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.3"]
+    registration_version: Literal["2.4"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.3"]
+    method_version: Literal["range-weekday-registered-replication-v2.4"]
     title: Literal["Daily Range Behaviour by Weekday"]
     status: Literal["PREREGISTERED"]
     registration_classification: Literal[
@@ -387,7 +435,7 @@ class Task04PreregistrationV23(FrozenSection):
     raw_manifest_sha256: Sha256
     task_02_dependency: Task02Dependency
     task_03_dependency: Task03Dependency
-    implementation_version: Literal["task04-daily-range-weekday-v2.3"]
+    implementation_version: Literal["task04-daily-range-weekday-v2.4"]
     source_dependency_manifest_fingerprint: Sha256
     environment_lock_fingerprint: Sha256
     expected_outputs: ExpectedOutputs
@@ -396,10 +444,11 @@ class Task04PreregistrationV23(FrozenSection):
     prohibited_analyses: tuple[str, ...] = Field(min_length=1)
     repository_lineage: RepositoryLineage
     deviation_policy: DeviationPolicy
+    production_governance: ProductionGovernance
     preregistration_deviations: tuple[Any, ...] = Field(max_length=0)
 
     @model_validator(mode="after")
-    def validate_design(self) -> Task04PreregistrationV23:
+    def validate_design(self) -> Task04PreregistrationV24:
         if len(set(self.descriptive_statistics)) != len(self.descriptive_statistics):
             raise ValueError("Descriptive method identifiers contain duplicates")
         if len(set(self.prohibited_analyses)) != len(self.prohibited_analyses):
@@ -413,9 +462,9 @@ class Task04PreregistrationV23(FrozenSection):
         ):
             raise ValueError("The corrective-registration disclosure is locked")
         if self.deviation_policy.post_anchor_scientific_changes_permitted:
-            raise ValueError("v2.3 post-anchor scientific changes are forbidden")
+            raise ValueError("v2.4 post-anchor scientific changes are forbidden")
         if self.deviation_policy.same_version_append_only_ledger_supported:
-            raise ValueError("v2.3 has no same-version append-only deviation ledger")
+            raise ValueError("v2.4 has no same-version append-only deviation ledger")
         try:
             json.dumps(
                 self.model_dump(mode="json"),

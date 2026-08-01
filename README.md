@@ -79,12 +79,12 @@ make test                 # all tests with coverage thresholds
 make check                # lint, typecheck, tests, and environment validation
 make audit-raw-data       # read-only registered raw-data quality audit
 make generate-coverage    # Task 02-backed research eligibility metadata
-make prepare-task04-v23-integrity
-make prepare-task04-v23-registration
-make validate-task04-preregistration  # Phase A; no v2.3 results
+make prepare-task04-v24-integrity
+make prepare-task04-v24-registration
+make validate-task04-preregistration  # Phase A; no v2.4 results
 make create-task04-registration-receipt  # Phase B, after anchor commit
 make validate-task04-registration-receipt
-make generate-task04      # generate the UTC-weekday daily-range study
+make generate-task04-candidate  # Phase B candidate generation; never completion
 ```
 
 `make audit-raw-data` verifies the registered identity, loads the CSV once for
@@ -146,8 +146,8 @@ deleted and no row-level copy of the raw dataset is written.
 
 Task 04 remains a correctively registered replication of the reviewed
 development analysis. Version 2.2 is retained as historical control evidence;
-the corrected pre-anchor design is version 2.3 at
-`studies/task04_daily_range_weekday.v2.3.yaml`, method
+the corrected pre-anchor design is version 2.4 at
+`studies/task04_daily_range_weekday.v2.4.yaml`, method
 `RANGE-WEEKDAY-001`. It asks whether the distribution of unrounded EUR/USD
 daily high-low range in pips differs across Monday-Friday UTC calendar dates.
 
@@ -163,7 +163,7 @@ correction; one-way and Welch ANOVA are complementary. The outputs include
 effect sizes, deterministic bootstrap intervals, chronological and yearly
 stability, past-only volatility regimes, coverage-profile comparisons, and
 reversible extreme-event sensitivities under
-`reports/research/task04_daily_range_weekday_v2.3/` only after the separately
+`reports/research/task04_daily_range_weekday_v2.4/` only after the separately
 authorized anchor commit. The existing unversioned directory remains
 historical v2.2 output.
 

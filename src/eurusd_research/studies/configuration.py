@@ -127,11 +127,12 @@ class Task04Config(StrictModel):
     """Complete fail-closed configuration for the weekday-range study."""
 
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.3"]
+    registration_version: Literal["2.4"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.3"]
+    method_version: Literal["range-weekday-registered-replication-v2.4"]
     implementation_version: str = Field(min_length=1)
-    receipt_schema_version: Literal["task04-registration-receipt-v2"]
+    receipt_schema_version: Literal["task04-registration-receipt-v3"]
+    lifecycle_schema_version: Literal["task04-registration-lifecycle-v3"]
     timezone: str
     pip_size: float = Field(gt=0.0, allow_inf_nan=False)
     weekday_inclusion: tuple[str, ...] = Field(min_length=5, max_length=5)
@@ -167,6 +168,27 @@ class Task04Config(StrictModel):
     task03_row_membership_evidence_path: Path
     coverage_summary_path: Path
     output_directory: Path
+    candidate_output_directory: Path
+    completion_sequence: tuple[str, ...] = Field(min_length=14, max_length=14)
+    candidate_outputs_are_completed_evidence: Literal[False]
+    output_digest_algorithm: Literal["task04-path-length-bytes-sha256-v1"]
+    independent_reconciliation_implementation: Literal[
+        "task04-independent-csv-reproduction-v1"
+    ]
+    maximum_numerical_discrepancy_tolerance: float = Field(ge=0.0, allow_inf_nan=False)
+    minimum_branch_coverage_percent: float = Field(
+        ge=90.0, le=100.0, allow_inf_nan=False
+    )
+    candidate_failure_policy: Literal[
+        "FAILED_CANDIDATES_NEVER_CREATE_A_COMPLETED_LIFECYCLE"
+    ]
+    promotion_policy: Literal[
+        "VALIDATE_CANDIDATE_THEN_ATOMICALLY_PROMOTE_ON_ONE_FILESYSTEM"
+    ]
+    required_completion_gates: tuple[str, ...] = Field(min_length=25)
+    anchor_ancestry_policy: Literal[
+        "COMPLETION_STATE_MUST_EQUAL_OR_DESCEND_FROM_ANCHOR"
+    ]
     required_raw_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     required_raw_manifest_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     required_task02_audit_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -199,6 +221,8 @@ class Task04Config(StrictModel):
                 "confidence_level",
                 "chronological_split_fraction",
                 "largest_tail_exclusion_fraction",
+                "maximum_numerical_discrepancy_tolerance",
+                "minimum_branch_coverage_percent",
             ),
         )
         if isinstance(checked, dict):
@@ -246,9 +270,16 @@ class Task04Config(StrictModel):
             self.task03_row_membership_evidence_path,
             self.coverage_summary_path,
             self.output_directory,
+            self.candidate_output_directory,
         )
         if any(path.is_absolute() or ".." in path.parts for path in paths):
             raise ValueError("Task 04 paths must be repository-relative")
+        if self.candidate_output_directory == self.output_directory:
+            raise ValueError("Candidate and final output directories must differ")
+        if len(self.required_completion_gates) != len(
+            set(self.required_completion_gates)
+        ):
+            raise ValueError("Task 04 completion gates contain duplicates")
         if self.volatility_minimum_history < self.volatility_lookback:
             raise ValueError("volatility minimum history must cover the lookback")
         if len(set(self.expected_output_files)) != len(self.expected_output_files):

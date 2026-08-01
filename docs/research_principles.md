@@ -59,7 +59,7 @@ must remain byte-identical to their anchor blobs. Git does not make local files
 undeletable; a replacement scientific design creates a different auditable
 commit lineage.
 
-RANGE-WEEKDAY-001 v2.3 does not support same-version post-anchor deviations.
+RANGE-WEEKDAY-001 v2.4 does not support same-version post-anchor deviations.
 Any scientific, population, threshold, output-contract, or interpretive change
 requires a new registration version and new anchor. Its committed
 preregistration remains `PREREGISTERED`; completion is represented only by the
@@ -79,5 +79,11 @@ RANGE-WEEKDAY-001 uses Kruskal-Wallis as its primary test and reports all ten
 Dunn pairwise comparisons with Holm correction. Parametric tests are
 complementary, outliers remain in the primary analysis, and the evidence rating
 requires stability and effect magnitude rather than relying on a small p-value.
-Registration version 2.3 cannot exceed `MODERATE` while authoritative
+Registration version 2.4 cannot exceed `MODERATE` while authoritative
 candle-open-versus-candle-close timestamp semantics remain unresolved.
+
+Task 04 v2.4 distinguishes candidate evidence from completed evidence.
+Candidate generation cannot create a completed registry or lifecycle.
+Completion requires individually registered integrity, reconciliation,
+determinism, figure, test, typing, lint, coverage, path-safety, and raw-input
+immutability gates; missing or false evidence fails closed.
