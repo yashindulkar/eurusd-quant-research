@@ -1,4 +1,4 @@
-"""Fail-closed Task 04 v2.4 completion evidence and output controls.
+"""Fail-closed Task 04 v2.5 completion evidence and output controls.
 
 This module contains no weekday-result calculation.  It defines the evidence
 that Phase B must obtain before a candidate study may be promoted and marked
@@ -23,13 +23,42 @@ from eurusd_research.studies.integrity import (
 from eurusd_research.studies.orchestration import PHASE_B_SEQUENCE, PhaseBProgress
 
 Sha256 = Annotated[str, Field(pattern=r"^[0-9a-f]{64}$")]
+GitCommit = Annotated[str, Field(pattern=r"^[0-9a-f]{40}$")]
 FiniteFloat = Annotated[float, Field(strict=True, allow_inf_nan=False)]
 NonNegativeFinite = Annotated[float, Field(strict=True, allow_inf_nan=False, ge=0.0)]
+ComponentName = Literal[
+    "source_population",
+    "daily_aggregation",
+    "descriptive_statistics",
+    "primary_inference",
+    "pairwise_analysis",
+    "chronological_analysis",
+    "fixed_period_analysis",
+    "annual_analysis",
+    "volatility_regime_analysis",
+    "extreme_event_analysis",
+    "evidence_rating",
+    "output_inventory",
+]
 
 OUTPUT_DIGEST_ALGORITHM: Literal["task04-path-length-bytes-sha256-v1"] = (
     "task04-path-length-bytes-sha256-v1"
 )
-INDEPENDENT_RECONCILIATION_IMPLEMENTATION = "task04-independent-csv-reproduction-v1"
+INDEPENDENT_RECONCILIATION_IMPLEMENTATION = "task04-independent-full-reproduction-v2"
+RECONCILIATION_COMPONENTS = (
+    "source_population",
+    "daily_aggregation",
+    "descriptive_statistics",
+    "primary_inference",
+    "pairwise_analysis",
+    "chronological_analysis",
+    "fixed_period_analysis",
+    "annual_analysis",
+    "volatility_regime_analysis",
+    "extreme_event_analysis",
+    "evidence_rating",
+    "output_inventory",
+)
 COMPLETION_BOOLEAN_FIELDS = (
     "receipt_validated",
     "anchor_ancestry_validated",
@@ -106,61 +135,99 @@ class OutputDigestEvidence(FrozenEvidence):
         return self
 
 
-class WeekdayIndependentStatistics(FrozenEvidence):
-    """Independently reproduced primary values for one weekday."""
+class ComponentDiscrepancy(FrozenEvidence):
+    """Calculated discrepancy summary for one independently checked component."""
 
-    weekday: Literal["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
-    sample_size: StrictInt = Field(gt=0)
-    contributing_rows: StrictInt = Field(gt=0)
-    mean_pips: FiniteFloat
-    median_pips: FiniteFloat
+    component: ComponentName
+    status: Literal["PASS", "FAIL", "NOT_CHECKED"]
+    checked_row_count: StrictInt = Field(ge=0)
+    checked_field_count: StrictInt = Field(ge=0)
+    absolute_discrepancy_by_field: dict[str, NonNegativeFinite]
+    relative_discrepancy_by_field: dict[str, NonNegativeFinite]
+    maximum_absolute_discrepancy: NonNegativeFinite
+    maximum_relative_discrepancy: NonNegativeFinite
+    categorical_mismatch_count: StrictInt = Field(ge=0)
+    membership_mismatch_count: StrictInt = Field(ge=0)
+    inventory_mismatch_count: StrictInt = Field(ge=0)
+    mismatch_examples: tuple[str, ...]
+    missing_evidence: tuple[str, ...]
+    unsupported_claims: tuple[str, ...]
+    passed: StrictBool
+
+    @model_validator(mode="after")
+    def validate_component(self) -> ComponentDiscrepancy:
+        calculated = self.checked_row_count > 0 and self.checked_field_count > 0
+        contradictions = bool(
+            self.categorical_mismatch_count
+            or self.membership_mismatch_count
+            or self.inventory_mismatch_count
+            or self.missing_evidence
+            or self.unsupported_claims
+        )
+        if self.status == "NOT_CHECKED" and (self.passed or calculated):
+            raise ValueError("Unchecked reconciliation evidence cannot pass")
+        expected_pass = self.status == "PASS" and calculated and not contradictions
+        if self.passed != expected_pass:
+            raise ValueError("Component pass flag contradicts calculated evidence")
+        if self.status == "PASS" and (
+            self.maximum_absolute_discrepancy
+            != max([0.0, *self.absolute_discrepancy_by_field.values()])
+            or self.maximum_relative_discrepancy
+            != max([0.0, *self.relative_discrepancy_by_field.values()])
+        ):
+            raise ValueError("Component maxima do not match field discrepancies")
+        return self
 
 
-class IndependentOmnibusEvidence(FrozenEvidence):
-    """Independently reproduced omnibus statistics."""
+class IndependentRatingDecision(FrozenEvidence):
+    """One independently evaluated registered rating dimension."""
 
-    kruskal_wallis_h: NonNegativeFinite
-    kruskal_wallis_p_value: Annotated[
-        float, Field(strict=True, allow_inf_nan=False, ge=0.0, le=1.0)
-    ]
-    anova_f: NonNegativeFinite
-    anova_p_value: Annotated[
-        float, Field(strict=True, allow_inf_nan=False, ge=0.0, le=1.0)
-    ]
-    welch_f: NonNegativeFinite
-    welch_p_value: Annotated[
-        float, Field(strict=True, allow_inf_nan=False, ge=0.0, le=1.0)
-    ]
-    brown_forsythe_f: NonNegativeFinite
-    brown_forsythe_p_value: Annotated[
-        float, Field(strict=True, allow_inf_nan=False, ge=0.0, le=1.0)
-    ]
-    epsilon_squared: FiniteFloat
-    eta_squared: FiniteFloat
-    omega_squared: FiniteFloat
+    dimension: str = Field(min_length=1)
+    registered_threshold: str = Field(min_length=1)
+    independent_input: str = Field(min_length=1)
+    passed: StrictBool
+    effect_on_rating: str = Field(min_length=1)
+    missing_evidence_rule: Literal["INSUFFICIENT"]
 
 
 class IndependentReconciliationEvidence(FrozenEvidence):
-    """Deterministic evidence from a path independent of production statistics."""
+    """Complete deterministic evidence from an independent raw-to-results path."""
 
-    schema_version: Literal["task04-independent-reconciliation-v1"]
-    implementation_id: Literal["task04-independent-csv-reproduction-v1"]
+    schema_version: Literal["task04-independent-reconciliation-v2"]
+    implementation_id: Literal["task04-independent-full-reproduction-v2"]
+    study_id: Literal["TASK-04"]
+    registration_version: Literal["2.5"]
+    method_version: Literal["range-weekday-registered-replication-v2.5"]
+    anchor_commit: GitCommit
+    receipt_fingerprint: Sha256
     raw_sha256: Sha256
     task03_evidence_fingerprint: Sha256
+    production_output_digest: Sha256
+    tolerance_policy: Literal["ABSOLUTE_AND_RELATIVE_WITH_ZERO_CATEGORICAL_TOLERANCE"]
+    checked_components: tuple[str, ...] = Field(min_length=12, max_length=12)
+    source_population: ComponentDiscrepancy
+    daily_aggregation: ComponentDiscrepancy
+    descriptive_statistics: ComponentDiscrepancy
+    primary_inference: ComponentDiscrepancy
+    pairwise_analysis: ComponentDiscrepancy
+    chronological_analysis: ComponentDiscrepancy
+    fixed_period_analysis: ComponentDiscrepancy
+    annual_analysis: ComponentDiscrepancy
+    volatility_regime_analysis: ComponentDiscrepancy
+    extreme_event_analysis: ComponentDiscrepancy
+    evidence_rating: ComponentDiscrepancy
+    output_inventory: ComponentDiscrepancy
+    independent_rating_decisions: tuple[IndependentRatingDecision, ...] = Field(
+        min_length=1
+    )
     primary_population: StrictInt = Field(gt=0)
-    weekday_statistics: tuple[
-        WeekdayIndependentStatistics,
-        WeekdayIndependentStatistics,
-        WeekdayIndependentStatistics,
-        WeekdayIndependentStatistics,
-        WeekdayIndependentStatistics,
-    ]
-    omnibus: IndependentOmnibusEvidence
-    pairwise_maximum_absolute_discrepancy: NonNegativeFinite
-    bootstrap_maximum_absolute_discrepancy: NonNegativeFinite
-    robustness_population_maximum_absolute_discrepancy: NonNegativeFinite
-    regime_maximum_absolute_discrepancy: NonNegativeFinite
-    output_inventory_reconciled: StrictBool
+    checked_row_count: StrictInt = Field(gt=0)
+    checked_field_count: StrictInt = Field(gt=0)
+    categorical_mismatch_count: StrictInt = Field(ge=0)
+    membership_mismatch_count: StrictInt = Field(ge=0)
+    inventory_mismatch_count: StrictInt = Field(ge=0)
+    missing_evidence: tuple[str, ...]
+    unsupported_claims: tuple[str, ...]
     absolute_tolerance: NonNegativeFinite
     relative_tolerance: NonNegativeFinite
     maximum_numerical_discrepancy: NonNegativeFinite
@@ -169,18 +236,45 @@ class IndependentReconciliationEvidence(FrozenEvidence):
 
     @model_validator(mode="after")
     def validate_reconciliation(self) -> IndependentReconciliationEvidence:
-        expected_weekdays = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
-        if tuple(item.weekday for item in self.weekday_statistics) != expected_weekdays:
-            raise ValueError("Independent weekday evidence must use canonical order")
-        if sum(item.sample_size for item in self.weekday_statistics) != (
-            self.primary_population
+        if self.checked_components != RECONCILIATION_COMPONENTS:
+            raise ValueError(
+                "Independent component inventory is incomplete or reordered"
+            )
+        components = tuple(getattr(self, name) for name in RECONCILIATION_COMPONENTS)
+        if tuple(item.component for item in components) != RECONCILIATION_COMPONENTS:
+            raise ValueError("Independent component evidence is misidentified")
+        if self.checked_row_count != sum(item.checked_row_count for item in components):
+            raise ValueError("Independent checked-row total is invalid")
+        if self.checked_field_count != sum(
+            item.checked_field_count for item in components
         ):
-            raise ValueError("Independent weekday populations do not reconcile")
-        if self.passed and (
-            not self.output_inventory_reconciled
-            or self.maximum_numerical_discrepancy > self.absolute_tolerance
+            raise ValueError("Independent checked-field total is invalid")
+        if self.categorical_mismatch_count != sum(
+            item.categorical_mismatch_count for item in components
         ):
-            raise ValueError("Independent reconciliation pass contradicts evidence")
+            raise ValueError("Categorical mismatch total is invalid")
+        if self.membership_mismatch_count != sum(
+            item.membership_mismatch_count for item in components
+        ):
+            raise ValueError("Membership mismatch total is invalid")
+        if self.inventory_mismatch_count != sum(
+            item.inventory_mismatch_count for item in components
+        ):
+            raise ValueError("Inventory mismatch total is invalid")
+        maximum = max(item.maximum_absolute_discrepancy for item in components)
+        expected_pass = bool(
+            all(item.passed for item in components)
+            and not self.missing_evidence
+            and not self.unsupported_claims
+            and self.categorical_mismatch_count == 0
+            and self.membership_mismatch_count == 0
+            and self.inventory_mismatch_count == 0
+            and maximum <= self.absolute_tolerance
+        )
+        if self.maximum_numerical_discrepancy != maximum:
+            raise ValueError("Overall numerical discrepancy was not calculated")
+        if self.passed != expected_pass:
+            raise ValueError("Independent reconciliation pass contradicts components")
         value = self.model_dump(mode="json")
         fingerprint = value.pop("artifact_fingerprint")
         if canonical_digest(value) != fingerprint:
@@ -264,6 +358,25 @@ class LifecycleCompletionRequest(FrozenEvidence):
             raise ValueError(
                 "Completion request requires every pre-promotion stage in order"
             )
+        if not self.independent_reconciliation.passed:
+            raise ValueError(
+                "Lifecycle completion requires full independent reconciliation"
+            )
+        failed_components = [
+            name
+            for name in RECONCILIATION_COMPONENTS
+            if not getattr(self.independent_reconciliation, name).passed
+        ]
+        if failed_components:
+            raise ValueError(
+                "Lifecycle completion has unchecked or failed reconciliation: "
+                + ", ".join(failed_components)
+            )
+        if (
+            self.completion_gates.maximum_numerical_discrepancy
+            != self.independent_reconciliation.maximum_numerical_discrepancy
+        ):
+            raise ValueError("Completion gate discrepancy differs from reconciliation")
         return self
 
 

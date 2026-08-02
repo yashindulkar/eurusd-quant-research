@@ -142,7 +142,7 @@ def _source_scope(root: Path) -> list[tuple[Path, bool, str]]:
         files.append((root / "configs" / name, False, "runtime_configuration"))
     files.append(
         (
-            root / "studies" / "task04_v2.4_environment_lock.json",
+            root / "studies" / "task04_v2.5_environment_lock.json",
             False,
             "environment_lock",
         )
@@ -233,7 +233,7 @@ def validate_source_dependency_manifest(
     root: Path, expected_fingerprint: str
 ) -> SourceDependencyManifest:
     """Require the current complete source scope to match pinned evidence."""
-    path = root / "studies" / "task04_v2.4_source_manifest.json"
+    path = root / "studies" / "task04_v2.5_source_manifest.json"
     saved = read_source_dependency_manifest(path)
     if saved.dependency_manifest_fingerprint != expected_fingerprint:
         raise ValueError("Task 04 dependency manifest identity is not registered")
@@ -362,7 +362,7 @@ def validate_task03_row_membership(
     expected_fingerprint: str,
 ) -> Task03RowMembershipEvidence:
     """Fail before Task 04 calculation unless live masks match pinned evidence."""
-    path = root / "studies" / "task03_task04_v2.4_mask_evidence.json"
+    path = root / "studies" / "task03_task04_v2.5_mask_evidence.json"
     saved = read_task03_row_membership_evidence(path)
     if saved.evidence_fingerprint != expected_fingerprint:
         raise ValueError("Task 03 row-membership evidence identity is not registered")

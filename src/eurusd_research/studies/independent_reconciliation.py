@@ -1,273 +1,655 @@
-"""Independent CSV-based reproduction for Task 04 lifecycle evidence.
+"""Complete independent raw-to-evidence reconciliation for Task 04 v2.5.
 
-This module deliberately does not import Task 04 production statistics,
-aggregation, robustness, or plotting functions.
+This orchestration module imports no Task 04 production aggregation,
+statistics, robustness, rating, or inventory implementation.
 """
 
 from __future__ import annotations
 
-import hashlib
-import itertools
-import math
+import json
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Literal, cast
+from typing import Any
 
 import numpy as np
 import pandas as pd
-from scipy import stats
-from statsmodels.stats.oneway import anova_oneway
 
 from eurusd_research.studies.completion import (
     INDEPENDENT_RECONCILIATION_IMPLEMENTATION,
-    IndependentOmnibusEvidence,
+    RECONCILIATION_COMPONENTS,
+    ComponentDiscrepancy,
+    ComponentName,
     IndependentReconciliationEvidence,
-    WeekdayIndependentStatistics,
 )
+from eurusd_research.studies.configuration import Task04Config
+from eurusd_research.studies.independent_daily import PROFILES, rebuild_daily_profiles
+from eurusd_research.studies.independent_inventory import inspect_output_inventory
+from eurusd_research.studies.independent_rating import reconstruct_rating
+from eurusd_research.studies.independent_robustness import (
+    annual_tables,
+    chronological_tables,
+    coverage_profile_tables,
+    extreme_table,
+    regime_tables,
+)
+from eurusd_research.studies.independent_statistics import weekday_order
 from eurusd_research.studies.integrity import canonical_digest
 
-WeekdayName = Literal["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"]
 
-WEEKDAYS: tuple[
-    Literal["Monday"],
-    Literal["Tuesday"],
-    Literal["Wednesday"],
-    Literal["Thursday"],
-    Literal["Friday"],
-] = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
+@dataclass(frozen=True, slots=True)
+class FrameComparison:
+    """Calculated field-level comparison evidence."""
+
+    checked_rows: int
+    checked_fields: int
+    absolute: dict[str, float]
+    relative: dict[str, float]
+    categorical_mismatches: int
+    membership_mismatches: int
+    examples: tuple[str, ...]
+    missing: tuple[str, ...]
 
 
-def _seed(base_seed: int, label: str) -> int:
-    digest = hashlib.sha256(f"{base_seed}:{label}".encode()).digest()
-    return int.from_bytes(digest[:8], "big", signed=False)
-
-
-def _bootstrap(
-    values: np.ndarray,
+def compare_frames(
+    expected: pd.DataFrame,
+    actual: pd.DataFrame,
     *,
-    statistic: str,
-    seed: int,
-    confidence_level: float,
-    resamples: int,
-) -> tuple[float, float]:
-    generator = np.random.default_rng(seed)
-    estimates = np.empty(resamples, dtype=float)
-    function = np.mean if statistic == "mean" else np.median
-    for index in range(resamples):
-        sample = values[generator.integers(0, values.size, values.size)]
-        estimates[index] = float(function(sample))
-    tail = (1.0 - confidence_level) / 2.0
-    low, high = np.quantile(estimates, [tail, 1.0 - tail], method="linear")
-    return float(low), float(high)
-
-
-def _anova_effects(groups: list[np.ndarray]) -> tuple[float, float]:
-    pooled = np.concatenate(groups)
-    grand = float(np.mean(pooled))
-    between = sum(len(group) * (float(np.mean(group)) - grand) ** 2 for group in groups)
-    within = sum(float(np.sum((group - np.mean(group)) ** 2)) for group in groups)
-    total = between + within
-    eta = between / total
-    mse = within / (len(pooled) - len(groups))
-    omega = (between - (len(groups) - 1) * mse) / (total + mse)
-    return float(np.clip(eta, 0.0, 1.0)), float(np.clip(omega, 0.0, 1.0))
-
-
-def _holm(values: np.ndarray) -> np.ndarray:
-    order = np.argsort(values, kind="stable")
-    adjusted_sorted = np.empty(len(values), dtype=float)
-    running = 0.0
-    for rank, index in enumerate(order):
-        running = max(running, (len(values) - rank) * values[index])
-        adjusted_sorted[rank] = min(running, 1.0)
-    adjusted = np.empty(len(values), dtype=float)
-    adjusted[order] = adjusted_sorted
-    return adjusted
-
-
-def _pairwise(groups: list[np.ndarray]) -> list[tuple[str, str, float, float, float]]:
-    pooled = np.concatenate(groups)
-    ranks = stats.rankdata(pooled, method="average")
-    counts = np.array([len(group) for group in groups], dtype=int)
-    ends = np.cumsum(counts)
-    starts = np.r_[0, ends[:-1]]
-    mean_ranks = np.array(
-        [
-            float(np.mean(ranks[start:end]))
-            for start, end in zip(starts, ends, strict=True)
-        ]
+    keys: tuple[str, ...],
+    label: str,
+) -> FrameComparison:
+    """Compare all expected columns with stable key and null semantics."""
+    missing_columns = tuple(sorted(set(expected.columns).difference(actual.columns)))
+    if missing_columns:
+        return FrameComparison(0, 0, {}, {}, 0, len(expected), (), missing_columns)
+    expected_ordered = expected.sort_values(list(keys), kind="stable").reset_index(
+        drop=True
     )
-    _, tie_counts = np.unique(pooled, return_counts=True)
-    variance = pooled.size * (pooled.size + 1) / 12.0
-    variance -= float(np.sum(tie_counts**3 - tie_counts)) / (12.0 * (pooled.size - 1))
-    pairs = list(itertools.combinations(range(5), 2))
-    raw: list[float] = []
-    deltas: list[float] = []
-    for first, second in pairs:
-        standard_error = math.sqrt(
-            variance * (1.0 / counts[first] + 1.0 / counts[second])
+    actual_ordered = (
+        actual.loc[:, expected.columns]
+        .sort_values(list(keys), kind="stable")
+        .reset_index(drop=True)
+    )
+    if len(expected_ordered) != len(actual_ordered):
+        return FrameComparison(
+            min(len(expected_ordered), len(actual_ordered)),
+            0,
+            {},
+            {},
+            0,
+            abs(len(expected_ordered) - len(actual_ordered)),
+            (f"{label}:row_count:{len(expected_ordered)}!={len(actual_ordered)}",),
+            (),
         )
-        z_value = (mean_ranks[first] - mean_ranks[second]) / standard_error
-        raw.append(float(2.0 * stats.norm.sf(abs(z_value))))
-        u_statistic = stats.mannwhitneyu(
-            groups[first], groups[second], alternative="two-sided", method="asymptotic"
-        ).statistic
-        deltas.append(float(2.0 * u_statistic / (counts[first] * counts[second]) - 1.0))
-    adjusted = _holm(np.asarray(raw))
-    return [
-        (WEEKDAYS[a], WEEKDAYS[b], raw[index], float(adjusted[index]), deltas[index])
-        for index, (a, b) in enumerate(pairs)
+    examples: list[str] = []
+    membership = 0
+    for key in keys:
+        left = expected_ordered[key].astype(str).fillna("<NULL>")
+        right = actual_ordered[key].astype(str).fillna("<NULL>")
+        count = int((left != right).sum())
+        membership += count
+        if count and len(examples) < 20:
+            examples.append(f"{label}:{key}:membership_mismatches={count}")
+    absolute: dict[str, float] = {}
+    relative: dict[str, float] = {}
+    categorical = 0
+    for column in expected.columns:
+        if column in keys:
+            continue
+        left_numeric = pd.to_numeric(expected_ordered[column], errors="coerce")
+        right_numeric = pd.to_numeric(actual_ordered[column], errors="coerce")
+        numeric = bool(
+            expected_ordered[column].dtype.kind in "iufc"
+            or actual_ordered[column].dtype.kind in "iufc"
+        )
+        if numeric:
+            left_values = left_numeric.to_numpy(float)
+            right_values = right_numeric.to_numpy(float)
+            null_mismatch = np.isnan(left_values) != np.isnan(right_values)
+            finite = np.isfinite(left_values) & np.isfinite(right_values)
+            differences = np.abs(left_values[finite] - right_values[finite])
+            denominators = np.maximum(np.abs(left_values[finite]), np.finfo(float).eps)
+            absolute[f"{label}.{column}"] = float(differences.max(initial=0.0))
+            relative[f"{label}.{column}"] = float(
+                (differences / denominators).max(initial=0.0)
+            )
+            null_count = int(null_mismatch.sum())
+            categorical += null_count
+            if null_count and len(examples) < 20:
+                examples.append(f"{label}:{column}:null_mismatches={null_count}")
+        else:
+            left_values = expected_ordered[column].fillna("<NULL>").astype(str)
+            right_values = actual_ordered[column].fillna("<NULL>").astype(str)
+            count = int((left_values != right_values).sum())
+            categorical += count
+            if count and len(examples) < 20:
+                examples.append(f"{label}:{column}:categorical_mismatches={count}")
+    return FrameComparison(
+        len(expected_ordered),
+        len(expected_ordered) * len(expected.columns),
+        absolute,
+        relative,
+        categorical,
+        membership,
+        tuple(examples),
+        (),
+    )
+
+
+def _merge_comparisons(*values: FrameComparison) -> FrameComparison:
+    return FrameComparison(
+        sum(item.checked_rows for item in values),
+        sum(item.checked_fields for item in values),
+        {key: value for item in values for key, value in item.absolute.items()},
+        {key: value for item in values for key, value in item.relative.items()},
+        sum(item.categorical_mismatches for item in values),
+        sum(item.membership_mismatches for item in values),
+        tuple(example for item in values for example in item.examples)[:20],
+        tuple(missing for item in values for missing in item.missing),
+    )
+
+
+def _component(
+    name: ComponentName,
+    comparison: FrameComparison,
+    *,
+    absolute_tolerance: float,
+    relative_tolerance: float,
+    inventory_mismatches: int = 0,
+    unsupported_claims: tuple[str, ...] = (),
+) -> ComponentDiscrepancy:
+    maximum_absolute = max([0.0, *comparison.absolute.values()])
+    maximum_relative = max([0.0, *comparison.relative.values()])
+    passed = bool(
+        comparison.checked_rows > 0
+        and comparison.checked_fields > 0
+        and maximum_absolute <= absolute_tolerance
+        and maximum_relative <= relative_tolerance
+        and comparison.categorical_mismatches == 0
+        and comparison.membership_mismatches == 0
+        and inventory_mismatches == 0
+        and not comparison.missing
+        and not unsupported_claims
+    )
+    return ComponentDiscrepancy(
+        component=name,
+        status="PASS" if passed else "FAIL",
+        checked_row_count=comparison.checked_rows,
+        checked_field_count=comparison.checked_fields,
+        absolute_discrepancy_by_field=comparison.absolute,
+        relative_discrepancy_by_field=comparison.relative,
+        maximum_absolute_discrepancy=maximum_absolute,
+        maximum_relative_discrepancy=maximum_relative,
+        categorical_mismatch_count=comparison.categorical_mismatches,
+        membership_mismatch_count=comparison.membership_mismatches,
+        inventory_mismatch_count=inventory_mismatches,
+        mismatch_examples=comparison.examples,
+        missing_evidence=comparison.missing,
+        unsupported_claims=unsupported_claims,
+        passed=passed,
+    )
+
+
+def _population_table(
+    frames: dict[str, pd.DataFrame],
+    row_flags: pd.DataFrame,
+    masks: pd.DataFrame,
+    config: Task04Config,
+) -> pd.DataFrame:
+    records: list[dict[str, Any]] = [
+        {
+            "profile": "RAW",
+            "metric": "total_raw_rows",
+            "weekday": "",
+            "value": len(row_flags),
+        }
     ]
+    sensitivity = [
+        "long_nonweekly_gap_boundary",
+        "nonweekend_gap_boundary",
+        "unclassified_gap_boundary",
+        "continuity_impaired_period",
+        "affected_period_2023",
+        "partial_boundary_year",
+        "partial_boundary_month",
+    ]
+    mixed = row_flags.groupby("utc_date")[sensitivity].nunique().gt(1).any(axis=1)
+    audited_dates = set(
+        row_flags.loc[row_flags["affected_period_2023"], "utc_date"].astype(str)
+    )
+    for profile, frame in frames.items():
+        eligible = frame.loc[frame["analysis_eligible"]]
+        metrics = {
+            "profile_source_rows": int(masks[profile].sum()),
+            "total_observed_utc_dates": len(frame),
+            "monday_friday_utc_dates": int(frame["is_weekday"].sum()),
+            "weekend_utc_dates": int(frame["is_weekend_date"].sum()),
+            "complete_dates": int(frame["complete"].sum()),
+            "incomplete_dates": int(frame["incomplete"].sum()),
+            "excluded_boundary_dates": int(frame["is_boundary_date"].sum()),
+            "zero_contribution_dates": int(frame["zero_contribution"].sum()),
+            "task03_profile_ineligible_dates": int(frame["zero_contribution"].sum()),
+            "nonzero_partial_dates": int(frame["nonzero_partial"].sum()),
+            "dates_excluded_for_insufficient_contributing_observations": int(
+                (
+                    frame["observed_m15_rows"]
+                    < config.daily_completeness.minimum_daily_rows
+                ).sum()
+            ),
+            "dates_included_in_analysis": len(eligible),
+            "dates_with_mixed_sensitivity_conditions": int(
+                mixed.loc[mixed.index.isin(frame["utc_date"])].sum()
+            ),
+            "dates_affected_by_audited_2023_interval": int(
+                frame["utc_date"].isin(audited_dates).sum()
+            ),
+        }
+        if (
+            metrics["incomplete_dates"]
+            != metrics["zero_contribution_dates"] + metrics["nonzero_partial_dates"]
+        ):
+            raise ValueError(
+                f"Independent completeness reconciliation failed: {profile}"
+            )
+        records.extend(
+            {"profile": profile, "metric": metric, "weekday": "", "value": value}
+            for metric, value in metrics.items()
+        )
+        for weekday in config.weekday_inclusion:
+            selected = eligible.loc[eligible["weekday_name"].eq(weekday)]
+            records.extend(
+                [
+                    {
+                        "profile": profile,
+                        "metric": "included_dates_by_weekday",
+                        "weekday": weekday,
+                        "value": len(selected),
+                    },
+                    {
+                        "profile": profile,
+                        "metric": "contributing_m15_rows_by_weekday",
+                        "weekday": weekday,
+                        "value": int(selected["observed_m15_rows"].sum()),
+                    },
+                ]
+            )
+    return pd.DataFrame(records)
 
 
 def build_independent_reconciliation(
+    root: Path,
     output_directory: Path,
     *,
-    raw_sha256: str,
-    task03_evidence_fingerprint: str,
-    bootstrap_seed: int,
-    bootstrap_resamples: int,
-    confidence_level: float,
+    config: Task04Config,
+    anchor_commit: str,
+    receipt_fingerprint: str,
+    production_output_digest: str,
     absolute_tolerance: float,
     relative_tolerance: float,
 ) -> IndependentReconciliationEvidence:
-    """Reproduce primary evidence solely from candidate CSV artifacts."""
-    daily = pd.read_csv(output_directory / "daily_observations.csv")
-    primary = daily.loc[daily["primary_profile_eligible"].astype(bool)].copy()
-    primary["daily_range_pips"] = pd.to_numeric(
-        primary["daily_range_pips"], errors="raise"
+    """Reconstruct every registered evidence component and compare outputs."""
+    frames, row_flags, masks, raw_sha, task03_fingerprint = rebuild_daily_profiles(
+        root, config
     )
-    groups = [
-        primary.loc[primary["weekday_name"].eq(day), "daily_range_pips"].to_numpy(
-            dtype=float
-        )
-        for day in WEEKDAYS
-    ]
-    if any(len(group) == 0 or not np.isfinite(group).all() for group in groups):
-        raise ValueError("Independent primary groups are empty or non-finite")
-    weekday_records = tuple(
-        WeekdayIndependentStatistics(
-            weekday=cast(WeekdayName, day),
-            sample_size=len(group),
-            contributing_rows=int(
-                primary.loc[
-                    primary["weekday_name"].eq(day), "contributing_raw_row_count"
-                ].sum()
-            ),
-            mean_pips=float(np.mean(group)),
-            median_pips=float(np.median(group)),
-        )
-        for day, group in zip(WEEKDAYS, groups, strict=True)
+    population_expected = _population_table(frames, row_flags, masks, config)
+    population_actual = pd.read_csv(
+        output_directory / "population_reconciliation.csv", keep_default_na=False
     )
-    kruskal = stats.kruskal(*groups)
-    anova = stats.f_oneway(*groups)
-    welch = anova_oneway(groups, use_var="unequal")
-    brown = stats.levene(*groups, center="median")
-    eta, omega = _anova_effects(groups)
-    epsilon = float(
-        (kruskal.statistic - len(groups) + 1) / (len(primary) - len(groups))
+    source_comparison = compare_frames(
+        population_expected,
+        population_actual,
+        keys=("profile", "metric", "weekday"),
+        label="population",
     )
-    omnibus = IndependentOmnibusEvidence(
-        kruskal_wallis_h=float(kruskal.statistic),
-        kruskal_wallis_p_value=float(kruskal.pvalue),
-        anova_f=float(anova.statistic),
-        anova_p_value=float(anova.pvalue),
-        welch_f=float(welch.statistic),
-        welch_p_value=float(welch.pvalue),
-        brown_forsythe_f=float(brown.statistic),
-        brown_forsythe_p_value=float(brown.pvalue),
-        epsilon_squared=epsilon,
-        eta_squared=eta,
-        omega_squared=omega,
+
+    independent_daily = pd.concat(frames.values(), ignore_index=True)
+    independent_daily["is_partial_daily_observation"] = independent_daily["incomplete"]
+    for column in ("first_timestamp_utc", "last_timestamp_utc"):
+        independent_daily[column] = pd.to_datetime(
+            independent_daily[column], utc=True
+        ).dt.strftime("%Y-%m-%dT%H:%M:%SZ")
+    daily_actual = pd.read_csv(output_directory / "daily_profile_observations.csv")
+    daily_comparison = compare_frames(
+        independent_daily,
+        daily_actual,
+        keys=("profile", "utc_date"),
+        label="daily",
     )
-    published_weekday = pd.read_csv(output_directory / "weekday_statistics.csv")
-    published_weekday = published_weekday.loc[
-        published_weekday["profile"].eq("DEFAULT_RESEARCH")
-        & published_weekday["analysis_scope"].eq("complete_weekday_dates")
-    ].set_index("weekday_name")
-    discrepancies: list[float] = []
-    bootstrap_discrepancies: list[float] = []
-    for record, group in zip(weekday_records, groups, strict=True):
-        row = published_weekday.loc[record.weekday]
-        discrepancies.extend(
-            [
-                abs(record.mean_pips - float(row["mean"])),
-                abs(record.median_pips - float(row["median"])),
-                abs(record.sample_size - int(row["sample_size"])),
-            ]
-        )
-        label = f"DEFAULT_RESEARCH:complete_weekday_dates:{record.weekday}"
-        for bootstrap_statistic, columns in (
-            ("mean", ("mean_ci_lower", "mean_ci_upper")),
-            ("median", ("median_ci_lower", "median_ci_upper")),
-        ):
-            low, high = _bootstrap(
-                group,
-                statistic=bootstrap_statistic,
-                seed=_seed(bootstrap_seed, f"{label}:{bootstrap_statistic}"),
-                confidence_level=confidence_level,
-                resamples=bootstrap_resamples,
-            )
-            bootstrap_discrepancies.extend(
-                [abs(low - float(row[columns[0]])), abs(high - float(row[columns[1]]))]
-            )
-    omnibus_table = pd.read_csv(output_directory / "omnibus_tests.csv")
-    primary_omnibus = omnibus_table.loc[
-        omnibus_table["profile"].eq("DEFAULT_RESEARCH")
-        & omnibus_table["analysis_scope"].eq("complete_weekday_dates")
-    ].set_index("test_name")
-    for name, omnibus_statistic, p_value in (
-        ("kruskal_wallis", omnibus.kruskal_wallis_h, omnibus.kruskal_wallis_p_value),
-        ("one_way_anova", omnibus.anova_f, omnibus.anova_p_value),
-        ("welch_anova", omnibus.welch_f, omnibus.welch_p_value),
-        (
-            "brown_forsythe_levene",
-            omnibus.brown_forsythe_f,
-            omnibus.brown_forsythe_p_value,
+
+    weekday_expected, omnibus_expected, pairwise_expected, effects_expected = (
+        coverage_profile_tables(frames, config)
+    )
+    weekday_actual = pd.read_csv(output_directory / "weekday_statistics.csv")
+    omnibus_actual = pd.read_csv(output_directory / "omnibus_tests.csv")
+    pairwise_actual = pd.read_csv(output_directory / "pairwise_tests.csv")
+    effects_actual = pd.read_csv(output_directory / "effect_sizes.csv")
+    descriptive_comparison = compare_frames(
+        weekday_expected,
+        weekday_actual,
+        keys=("profile", "analysis_scope", "weekday_name"),
+        label="weekday_statistics",
+    )
+    inference_comparison = _merge_comparisons(
+        compare_frames(
+            omnibus_expected,
+            omnibus_actual,
+            keys=("profile", "analysis_scope", "test_name"),
+            label="omnibus",
         ),
-    ):
-        discrepancies.extend(
-            [
-                abs(omnibus_statistic - float(primary_omnibus.loc[name, "statistic"])),
-                abs(p_value - float(primary_omnibus.loc[name, "p_value"])),
-            ]
-        )
-    pairwise_table = pd.read_csv(output_directory / "pairwise_tests.csv")
-    pairwise_table = pairwise_table.loc[
-        pairwise_table["profile"].eq("DEFAULT_RESEARCH")
-        & pairwise_table["analysis_scope"].eq("complete_weekday_dates")
-    ].set_index(["weekday_a", "weekday_b"])
-    pairwise_discrepancies: list[float] = []
-    for first, second, raw_p, adjusted_p, delta in _pairwise(groups):
-        row = pairwise_table.loc[(first, second)]
-        pairwise_discrepancies.extend(
-            [
-                abs(raw_p - float(row["unadjusted_p_value"])),
-                abs(adjusted_p - float(row["holm_adjusted_p_value"])),
-                abs(delta - float(row["cliffs_delta_a_minus_b"])),
-            ]
-        )
-    maximum = max(
-        [0.0, *discrepancies, *bootstrap_discrepancies, *pairwise_discrepancies]
+        compare_frames(
+            effects_expected,
+            effects_actual,
+            keys=(
+                "profile",
+                "analysis_scope",
+                "comparison",
+                "effect_size_method",
+            ),
+            label="effects",
+        ),
     )
-    payload = {
-        "schema_version": "task04-independent-reconciliation-v1",
+    pairwise_comparison = compare_frames(
+        pairwise_expected,
+        pairwise_actual,
+        keys=("profile", "analysis_scope", "weekday_a", "weekday_b"),
+        label="pairwise",
+    )
+
+    primary = frames[config.primary_coverage_profile]
+    periods_expected, split_expected = chronological_tables(primary, config)
+    periods_actual = pd.read_csv(output_directory / "period_robustness.csv")
+    split_actual = pd.read_csv(output_directory / "chronological_split_results.csv")
+    chronological_comparison = compare_frames(
+        split_expected, split_actual, keys=("analysis_period",), label="chronological"
+    )
+    fixed_expected = periods_expected.loc[
+        periods_expected["analysis_period"].isin(
+            ["full_eligible_sample", "pre_2020", "covid_era", "post_2021"]
+        )
+    ]
+    fixed_actual = periods_actual.loc[
+        periods_actual["analysis_period"].isin(fixed_expected["analysis_period"])
+    ]
+    fixed_comparison = compare_frames(
+        fixed_expected, fixed_actual, keys=("analysis_period",), label="fixed_period"
+    )
+
+    annual_statistics_expected, annual_tests_expected = annual_tables(primary, config)
+    annual_comparison = _merge_comparisons(
+        compare_frames(
+            annual_statistics_expected,
+            pd.read_csv(output_directory / "yearly_statistics.csv"),
+            keys=("year", "weekday_name"),
+            label="annual_statistics",
+        ),
+        compare_frames(
+            annual_tests_expected,
+            pd.read_csv(output_directory / "yearly_omnibus_tests.csv"),
+            keys=("year",),
+            label="annual_tests",
+        ),
+    )
+
+    regime_statistics_expected, regime_tests_expected, lineage_expected = regime_tables(
+        primary, config
+    )
+    lineage_actual = pd.read_csv(output_directory / "volatility_regime_lineage.csv")
+    regime_comparison = _merge_comparisons(
+        compare_frames(
+            regime_statistics_expected,
+            pd.read_csv(output_directory / "volatility_regime_statistics.csv"),
+            keys=("volatility_regime", "weekday_name"),
+            label="regime_statistics",
+        ),
+        compare_frames(
+            regime_tests_expected,
+            pd.read_csv(output_directory / "volatility_regime_tests.csv"),
+            keys=("volatility_regime", "test_name"),
+            label="regime_tests",
+        ),
+        compare_frames(
+            lineage_expected,
+            lineage_actual,
+            keys=("utc_date",),
+            label="regime_lineage",
+        ),
+    )
+
+    extreme_expected = extreme_table(primary, config)
+    extreme_actual = pd.read_csv(output_directory / "extreme_event_sensitivity.csv")
+    extreme_comparison = compare_frames(
+        extreme_expected,
+        extreme_actual,
+        keys=("analysis_variant",),
+        label="extreme_event_analysis",
+    )
+
+    primary_order = weekday_order(primary.loc[primary["analysis_eligible"]])
+    comparison_records = []
+    for profile in PROFILES:
+        selected = frames[profile].loc[frames[profile]["analysis_eligible"]]
+        tests = omnibus_expected.loc[
+            omnibus_expected["profile"].eq(profile)
+            & omnibus_expected["test_name"].eq("kruskal_wallis")
+        ].iloc[0]
+        order = weekday_order(selected)
+        from eurusd_research.studies.independent_statistics import rank_correlation
+
+        comparison_records.append(
+            {
+                "profile": profile,
+                "eligible_daily_observations": len(selected),
+                "date_start": selected["utc_date"].min(),
+                "date_end": selected["utc_date"].max(),
+                "weekday_order_high_to_low": "|".join(order),
+                "rank_correlation_with_primary": rank_correlation(primary_order, order),
+                "kruskal_statistic": tests["statistic"],
+                "kruskal_p_value": tests["p_value"],
+                "epsilon_squared": effects_expected.loc[
+                    effects_expected["profile"].eq(profile)
+                    & effects_expected["effect_size_method"].eq("epsilon_squared"),
+                    "effect_size",
+                ].iloc[0],
+                "significant": tests["significant"],
+            }
+        )
+    coverage_expected = pd.DataFrame(comparison_records)
+    rating = reconstruct_rating(
+        coverage=coverage_expected,
+        weekday=weekday_expected,
+        periods=periods_expected,
+        annual=annual_tests_expected,
+        regime_statistics=regime_statistics_expected,
+        regime_tests=regime_tests_expected,
+        extreme=extreme_expected,
+        config=config,
+    )
+    summary = json.loads((output_directory / "study_summary.json").read_text())
+    published_rating = str(summary["evidence_rating"]["rating"])
+    rating_frame = pd.DataFrame([{"dimension": "final_rating", "value": rating.rating}])
+    rating_actual = pd.DataFrame(
+        [{"dimension": "final_rating", "value": published_rating}]
+    )
+    rating_comparison = compare_frames(
+        rating_frame, rating_actual, keys=("dimension",), label="evidence_rating"
+    )
+    if rating.missing_evidence:
+        rating_comparison = FrameComparison(
+            rating_comparison.checked_rows,
+            rating_comparison.checked_fields,
+            rating_comparison.absolute,
+            rating_comparison.relative,
+            rating_comparison.categorical_mismatches,
+            rating_comparison.membership_mismatches,
+            rating_comparison.examples,
+            rating.missing_evidence,
+        )
+
+    inspection = inspect_output_inventory(
+        output_directory,
+        tuple((*config.expected_output_files, *config.expected_figure_files)),
+    )
+    inventory_mismatches = (
+        len(inspection.missing_paths)
+        + len(inspection.extra_paths)
+        + len(inspection.duplicate_normalized_paths)
+        + len(inspection.unsafe_paths)
+    )
+    inventory_comparison = FrameComparison(
+        len(inspection.records),
+        max(1, len(inspection.records) * 7),
+        {},
+        {},
+        0,
+        0,
+        tuple(
+            (
+                *inspection.missing_paths,
+                *inspection.extra_paths,
+                *inspection.unsafe_paths,
+            )
+        )[:20],
+        (),
+    )
+
+    components = {
+        "source_population": _component(
+            "source_population",
+            source_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "daily_aggregation": _component(
+            "daily_aggregation",
+            daily_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "descriptive_statistics": _component(
+            "descriptive_statistics",
+            descriptive_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "primary_inference": _component(
+            "primary_inference",
+            inference_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "pairwise_analysis": _component(
+            "pairwise_analysis",
+            pairwise_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "chronological_analysis": _component(
+            "chronological_analysis",
+            chronological_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "fixed_period_analysis": _component(
+            "fixed_period_analysis",
+            fixed_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "annual_analysis": _component(
+            "annual_analysis",
+            annual_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "volatility_regime_analysis": _component(
+            "volatility_regime_analysis",
+            regime_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "extreme_event_analysis": _component(
+            "extreme_event_analysis",
+            extreme_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "evidence_rating": _component(
+            "evidence_rating",
+            rating_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+        ),
+        "output_inventory": _component(
+            "output_inventory",
+            inventory_comparison,
+            absolute_tolerance=absolute_tolerance,
+            relative_tolerance=relative_tolerance,
+            inventory_mismatches=inventory_mismatches,
+        ),
+    }
+    missing = tuple(
+        value
+        for component in components.values()
+        for value in component.missing_evidence
+    )
+    unsupported = tuple(
+        value
+        for component in components.values()
+        for value in component.unsupported_claims
+    )
+    payload: dict[str, Any] = {
+        "schema_version": "task04-independent-reconciliation-v2",
         "implementation_id": INDEPENDENT_RECONCILIATION_IMPLEMENTATION,
-        "raw_sha256": raw_sha256,
-        "task03_evidence_fingerprint": task03_evidence_fingerprint,
-        "primary_population": len(primary),
-        "weekday_statistics": [
-            item.model_dump(mode="json") for item in weekday_records
+        "study_id": "TASK-04",
+        "registration_version": "2.5",
+        "method_version": "range-weekday-registered-replication-v2.5",
+        "anchor_commit": anchor_commit,
+        "receipt_fingerprint": receipt_fingerprint,
+        "raw_sha256": raw_sha,
+        "task03_evidence_fingerprint": task03_fingerprint,
+        "production_output_digest": production_output_digest,
+        "tolerance_policy": "ABSOLUTE_AND_RELATIVE_WITH_ZERO_CATEGORICAL_TOLERANCE",
+        "checked_components": list(RECONCILIATION_COMPONENTS),
+        **{
+            name: component.model_dump(mode="json")
+            for name, component in components.items()
+        },
+        "independent_rating_decisions": [
+            {
+                "dimension": item.dimension,
+                "registered_threshold": item.registered_threshold,
+                "independent_input": item.independent_input,
+                "passed": item.passed,
+                "effect_on_rating": item.effect_on_rating,
+                "missing_evidence_rule": item.missing_evidence_rule,
+            }
+            for item in rating.decisions
         ],
-        "omnibus": omnibus.model_dump(mode="json"),
-        "pairwise_maximum_absolute_discrepancy": max([0.0, *pairwise_discrepancies]),
-        "bootstrap_maximum_absolute_discrepancy": max([0.0, *bootstrap_discrepancies]),
-        "robustness_population_maximum_absolute_discrepancy": 0.0,
-        "regime_maximum_absolute_discrepancy": 0.0,
-        "output_inventory_reconciled": True,
+        "primary_population": int(primary["analysis_eligible"].sum()),
+        "checked_row_count": sum(
+            item.checked_row_count for item in components.values()
+        ),
+        "checked_field_count": sum(
+            item.checked_field_count for item in components.values()
+        ),
+        "categorical_mismatch_count": sum(
+            item.categorical_mismatch_count for item in components.values()
+        ),
+        "membership_mismatch_count": sum(
+            item.membership_mismatch_count for item in components.values()
+        ),
+        "inventory_mismatch_count": sum(
+            item.inventory_mismatch_count for item in components.values()
+        ),
+        "missing_evidence": list(missing),
+        "unsupported_claims": list(unsupported),
         "absolute_tolerance": absolute_tolerance,
         "relative_tolerance": relative_tolerance,
-        "maximum_numerical_discrepancy": maximum,
-        "passed": maximum <= absolute_tolerance,
+        "maximum_numerical_discrepancy": max(
+            item.maximum_absolute_discrepancy for item in components.values()
+        ),
+        "passed": all(item.passed for item in components.values())
+        and not missing
+        and not unsupported,
     }
     return IndependentReconciliationEvidence.model_validate(
         {**payload, "artifact_fingerprint": canonical_digest(payload)}

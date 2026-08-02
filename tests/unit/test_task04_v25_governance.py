@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+import json
 import os
 from copy import deepcopy
 from pathlib import Path
@@ -13,20 +14,17 @@ from eurusd_research.paths import find_repository_root
 from eurusd_research.studies import registry as registry_module
 from eurusd_research.studies.completion import (
     COMPLETION_BOOLEAN_FIELDS,
+    RECONCILIATION_COMPONENTS,
     CompletionGateEvidence,
-    IndependentOmnibusEvidence,
+    ComponentDiscrepancy,
     IndependentReconciliationEvidence,
     LifecycleCompletionRequest,
     OutputDigestEvidence,
     OutputFileHash,
-    WeekdayIndependentStatistics,
     build_output_digest,
     promote_candidate_outputs,
 )
 from eurusd_research.studies.configuration import load_task04_config
-from eurusd_research.studies.independent_reconciliation import (
-    build_independent_reconciliation,
-)
 from eurusd_research.studies.integrity import (
     canonical_digest,
     read_source_dependency_manifest,
@@ -99,13 +97,13 @@ def _receipt() -> Task04RegistrationReceipt:
     figures = tuple(sorted(f"figures/{x}" for x in config.expected_figure_files))
     payload = {
         "identity": {
-            "receipt_schema_version": "task04-registration-receipt-v3",
+            "receipt_schema_version": "task04-registration-receipt-v4",
             "study_id": "TASK-04",
-            "registration_version": "2.4",
+            "registration_version": "2.5",
             "method_id": "RANGE-WEEKDAY-001",
-            "method_version": "range-weekday-registered-replication-v2.4",
-            "registration_file_path": "studies/task04_daily_range_weekday.v2.4.yaml",
-            "receipt_file_path": "studies/task04_daily_range_weekday.v2.4.receipt.json",
+            "method_version": "range-weekday-registered-replication-v2.5",
+            "registration_file_path": "studies/task04_daily_range_weekday.v2.5.yaml",
+            "receipt_file_path": "studies/task04_daily_range_weekday.v2.5.receipt.json",
             "registration_classification": registration.registration_classification,
             "non_first_look_disclosure": registration.registration_disclosure,
             "registration_status_at_anchoring": "PREREGISTERED",
@@ -199,43 +197,58 @@ def _receipt() -> Task04RegistrationReceipt:
 
 
 def _independent() -> IndependentReconciliationEvidence:
-    weekdays = tuple(
-        WeekdayIndependentStatistics(
-            weekday=weekday,
-            sample_size=10,
-            contributing_rows=960,
-            mean_pips=80.0 + index,
-            median_pips=70.0 + index,
+    components = {
+        name: ComponentDiscrepancy(
+            component=name,
+            status="PASS",
+            checked_row_count=1,
+            checked_field_count=1,
+            absolute_discrepancy_by_field={"value": 1e-12},
+            relative_discrepancy_by_field={"value": 1e-12},
+            maximum_absolute_discrepancy=1e-12,
+            maximum_relative_discrepancy=1e-12,
+            categorical_mismatch_count=0,
+            membership_mismatch_count=0,
+            inventory_mismatch_count=0,
+            mismatch_examples=(),
+            missing_evidence=(),
+            unsupported_claims=(),
+            passed=True,
         )
-        for index, weekday in enumerate(
-            ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
-        )
-    )
+        for name in RECONCILIATION_COMPONENTS
+    }
     payload = {
-        "schema_version": "task04-independent-reconciliation-v1",
-        "implementation_id": "task04-independent-csv-reproduction-v1",
+        "schema_version": "task04-independent-reconciliation-v2",
+        "implementation_id": "task04-independent-full-reproduction-v2",
+        "study_id": "TASK-04",
+        "registration_version": "2.5",
+        "method_version": "range-weekday-registered-replication-v2.5",
+        "anchor_commit": "a" * 40,
+        "receipt_fingerprint": "b" * 64,
         "raw_sha256": "a" * 64,
         "task03_evidence_fingerprint": "b" * 64,
+        "production_output_digest": "c" * 64,
+        "tolerance_policy": ("ABSOLUTE_AND_RELATIVE_WITH_ZERO_CATEGORICAL_TOLERANCE"),
+        "checked_components": list(RECONCILIATION_COMPONENTS),
+        **{name: value.model_dump(mode="json") for name, value in components.items()},
+        "independent_rating_decisions": [
+            {
+                "dimension": "primary_significance",
+                "registered_threshold": "0.05",
+                "independent_input": "0.01",
+                "passed": True,
+                "effect_on_rating": "required for MODERATE",
+                "missing_evidence_rule": "INSUFFICIENT",
+            }
+        ],
         "primary_population": 50,
-        "weekday_statistics": [item.model_dump(mode="json") for item in weekdays],
-        "omnibus": IndependentOmnibusEvidence(
-            kruskal_wallis_h=5.0,
-            kruskal_wallis_p_value=0.1,
-            anova_f=4.0,
-            anova_p_value=0.1,
-            welch_f=4.0,
-            welch_p_value=0.1,
-            brown_forsythe_f=2.0,
-            brown_forsythe_p_value=0.2,
-            epsilon_squared=0.01,
-            eta_squared=0.01,
-            omega_squared=0.01,
-        ).model_dump(mode="json"),
-        "pairwise_maximum_absolute_discrepancy": 1e-12,
-        "bootstrap_maximum_absolute_discrepancy": 1e-12,
-        "robustness_population_maximum_absolute_discrepancy": 0.0,
-        "regime_maximum_absolute_discrepancy": 0.0,
-        "output_inventory_reconciled": True,
+        "checked_row_count": len(components),
+        "checked_field_count": len(components),
+        "categorical_mismatch_count": 0,
+        "membership_mismatch_count": 0,
+        "inventory_mismatch_count": 0,
+        "missing_evidence": [],
+        "unsupported_claims": [],
         "absolute_tolerance": 1e-10,
         "relative_tolerance": 1e-10,
         "maximum_numerical_discrepancy": 1e-12,
@@ -370,10 +383,10 @@ def test_receipt_builder_populates_every_v24_binding(
     root = find_repository_root()
     config, registration = _contract()
     source = read_source_dependency_manifest(
-        root / "studies/task04_v2.4_source_manifest.json"
+        root / "studies/task04_v2.5_source_manifest.json"
     )
     task03 = read_task03_row_membership_evidence(
-        root / "studies/task03_task04_v2.4_mask_evidence.json"
+        root / "studies/task03_task04_v2.5_mask_evidence.json"
     )
     monkeypatch.setattr(
         registry_module, "validate_task04_dependencies", lambda *_: None
@@ -420,7 +433,7 @@ def test_receipt_builder_populates_every_v24_binding(
         root=root,
         anchor_commit="a" * 40,
     )
-    assert receipt.identity.registration_file_path.endswith("v2.4.yaml")
+    assert receipt.identity.registration_file_path.endswith("v2.5.yaml")
     assert receipt.git_anchor.anchor_parent_commit_id == "c" * 40
     assert receipt.git_anchor.registered_blob_identities
     assert receipt.upstream_evidence.task03.exact_evidence_fingerprint == (
@@ -432,22 +445,19 @@ def test_receipt_builder_populates_every_v24_binding(
     assert receipt.integrity.allowed_mutable_fields_after_anchoring == ()
 
 
-def test_independent_reconciliation_reproduces_historical_control() -> None:
+def test_v24_historical_control_records_reconciliation_failure() -> None:
     root = find_repository_root()
-    config, _ = _contract()
-    evidence = build_independent_reconciliation(
-        root / "reports/research/task04_daily_range_weekday",
-        raw_sha256=config.required_raw_sha256,
-        task03_evidence_fingerprint=config.required_task03_row_membership_fingerprint,
-        bootstrap_seed=config.bootstrap_seed,
-        bootstrap_resamples=config.bootstrap_resamples,
-        confidence_level=config.confidence_level,
-        absolute_tolerance=config.maximum_numerical_discrepancy_tolerance,
-        relative_tolerance=config.maximum_numerical_discrepancy_tolerance,
+    record = json.loads(
+        (root / "studies/task04_v2.4_stopped_attempt.json").read_text(encoding="utf-8")
     )
-    assert evidence.passed
-    assert evidence.primary_population == 4_127
-    assert evidence.maximum_numerical_discrepancy < 2e-14
+    assert record["classification"] == "ABANDONED_REGISTERED_ATTEMPT"
+    assert record["lifecycle_existed"] is False
+    assert record["final_output_existed"] is False
+    assert set(record["defective_fields"]) == {
+        "robustness_population_maximum_absolute_discrepancy",
+        "regime_maximum_absolute_discrepancy",
+        "output_inventory_reconciled",
+    }
 
 
 def test_every_completion_gate_is_mandatory_and_finite() -> None:
@@ -565,6 +575,52 @@ def test_completion_request_requires_exact_pre_promotion_sequence() -> None:
     values["phase_b_progress"] = PhaseBProgress()
     with pytest.raises(ValidationError, match="pre-promotion"):
         LifecycleCompletionRequest.model_validate(values)
+
+
+@pytest.mark.parametrize("component", RECONCILIATION_COMPONENTS)
+def test_lifecycle_rejects_each_missing_reconciliation_component(
+    component: str,
+) -> None:
+    values = _independent().model_dump(mode="python")
+    values.pop(component)
+    with pytest.raises(ValidationError):
+        IndependentReconciliationEvidence.model_validate(values)
+
+
+@pytest.mark.parametrize("component", RECONCILIATION_COMPONENTS)
+def test_lifecycle_rejects_each_failed_reconciliation_component(
+    component: str,
+) -> None:
+    evidence_values = _independent().model_dump(mode="python")
+    evidence_values[component]["status"] = "FAIL"
+    evidence_values[component]["passed"] = False
+    evidence_values["passed"] = False
+    evidence_values.pop("artifact_fingerprint")
+    evidence = IndependentReconciliationEvidence.model_validate(
+        {
+            **evidence_values,
+            "artifact_fingerprint": canonical_digest(evidence_values),
+        }
+    )
+    config, registration = _contract()
+    receipt = _receipt()
+    with pytest.raises(ValueError, match="reconciliation"):
+        build_completed_lifecycle(
+            registration,
+            config,
+            receipt,
+            production_state_identifier="candidate",
+            descendant_commit_or_working_state="descendant",
+            output_evidence=_outputs(receipt),
+            independent_reconciliation=evidence,
+            completion_gates=_gates(),
+            primary_population=50,
+            primary_statistic=1.0,
+            primary_p_value=0.5,
+            primary_effect_size=0.01,
+            final_evidence_rating="MODERATE",
+            limitations=registration.known_limitations,
+        )
 
 
 def test_candidate_generator_has_no_completion_transition() -> None:

@@ -1162,9 +1162,29 @@ def generate_task04_study(
         deviations,
         cast(list[dict[str, Any]], summary["preregistration_deviations"]),
     )
+    daily_profile_observations = pd.concat(
+        [aggregation.by_profile[profile] for profile in aggregation.by_profile],
+        ignore_index=True,
+    )
+    daily_profile_observations["zero_contribution"] = daily_profile_observations[
+        "observed_m15_rows"
+    ].eq(0)
+    daily_profile_observations["nonzero_partial"] = (
+        daily_profile_observations["observed_m15_rows"].gt(0)
+        & daily_profile_observations["is_partial_daily_observation"]
+    )
+    daily_profile_observations["incomplete"] = daily_profile_observations[
+        "is_partial_daily_observation"
+    ]
+    daily_profile_observations["complete"] = ~daily_profile_observations[
+        "is_partial_daily_observation"
+    ]
+    for key, value in lineage.items():
+        daily_profile_observations[key] = value
     tables = {
         "population_reconciliation.csv": population,
         "daily_observations.csv": aggregation.wide_observations,
+        "daily_profile_observations.csv": daily_profile_observations,
         "weekday_statistics.csv": weekday_statistics,
         "omnibus_tests.csv": omnibus_tests,
         "pairwise_tests.csv": pairwise_tests,

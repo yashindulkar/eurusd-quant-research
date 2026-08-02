@@ -127,12 +127,12 @@ class Task04Config(StrictModel):
     """Complete fail-closed configuration for the weekday-range study."""
 
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.4"]
+    registration_version: Literal["2.5"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.4"]
+    method_version: Literal["range-weekday-registered-replication-v2.5"]
     implementation_version: str = Field(min_length=1)
-    receipt_schema_version: Literal["task04-registration-receipt-v3"]
-    lifecycle_schema_version: Literal["task04-registration-lifecycle-v3"]
+    receipt_schema_version: Literal["task04-registration-receipt-v4"]
+    lifecycle_schema_version: Literal["task04-registration-lifecycle-v4"]
     timezone: str
     pip_size: float = Field(gt=0.0, allow_inf_nan=False)
     weekday_inclusion: tuple[str, ...] = Field(min_length=5, max_length=5)
@@ -173,8 +173,16 @@ class Task04Config(StrictModel):
     candidate_outputs_are_completed_evidence: Literal[False]
     output_digest_algorithm: Literal["task04-path-length-bytes-sha256-v1"]
     independent_reconciliation_implementation: Literal[
-        "task04-independent-csv-reproduction-v1"
+        "task04-independent-full-reproduction-v2"
     ]
+    independent_reconciliation_components: tuple[str, ...] = Field(
+        min_length=12, max_length=12
+    )
+    categorical_mismatch_tolerance: Literal[0]
+    membership_mismatch_tolerance: Literal[0]
+    inventory_mismatch_tolerance: Literal[0]
+    unchecked_component_policy: Literal["NOT_CHECKED_CAUSES_OVERALL_FAILURE"]
+    independent_rating_reconstruction_required: Literal[True]
     maximum_numerical_discrepancy_tolerance: float = Field(ge=0.0, allow_inf_nan=False)
     minimum_branch_coverage_percent: float = Field(
         ge=90.0, le=100.0, allow_inf_nan=False
@@ -296,6 +304,22 @@ class Task04Config(StrictModel):
             raise ValueError(
                 "Task 04 output inventory filenames must not add directories"
             )
+        expected_components = (
+            "source_population",
+            "daily_aggregation",
+            "descriptive_statistics",
+            "primary_inference",
+            "pairwise_analysis",
+            "chronological_analysis",
+            "fixed_period_analysis",
+            "annual_analysis",
+            "volatility_regime_analysis",
+            "extreme_event_analysis",
+            "evidence_rating",
+            "output_inventory",
+        )
+        if self.independent_reconciliation_components != expected_components:
+            raise ValueError("Independent reconciliation component inventory changed")
         if self.evidence_rating.strong_minimum_epsilon_squared < (
             self.evidence_rating.moderate_minimum_epsilon_squared
         ):

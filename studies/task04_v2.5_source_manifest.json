@@ -1,0 +1,470 @@
+{
+  "dependency_manifest_fingerprint": "47f787d597141428c4a9d2eb6879c59473930fc5b2324004f09fafa1afa4bd68",
+  "entries": [
+    {
+      "executable": false,
+      "file_type": "yaml",
+      "path": "configs/coverage.yaml",
+      "role": "runtime_configuration",
+      "sha256": "cf42122995607f0798d1b52236e3a8a3303b09f4c943dae32dc418fee9b6183e"
+    },
+    {
+      "executable": false,
+      "file_type": "yaml",
+      "path": "configs/data.yaml",
+      "role": "runtime_configuration",
+      "sha256": "9eac485be2b4fec87d78404395d5cf51efa18b02f679124c3e00c2c1944c0fae"
+    },
+    {
+      "executable": false,
+      "file_type": "yaml",
+      "path": "configs/project.yaml",
+      "role": "runtime_configuration",
+      "sha256": "b83aa42c7b43e0a9588c3f9e100d26e09eb8b047102c40eba483eca7d2f9a7bf"
+    },
+    {
+      "executable": false,
+      "file_type": "yaml",
+      "path": "configs/sessions.yaml",
+      "role": "runtime_configuration",
+      "sha256": "42afd10076ae639d0fc23dd12adf5aa6621e2f89510a0e346061c4cf93f15b44"
+    },
+    {
+      "executable": false,
+      "file_type": "toml",
+      "path": "pyproject.toml",
+      "role": "package_contract",
+      "sha256": "3cf522c7b92cea658b12dfe42106e5a826708a04c0108fede2254507747dc078"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/complete_task04_v24.py",
+      "role": "task_script",
+      "sha256": "5e613516111462971a882dcc1326b802ec72455944866f1dbbd03c8a1c390b9f"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/complete_task04_v25.py",
+      "role": "task_script",
+      "sha256": "2afc6e92e12f0a7adfe154a3820b2c5ebf194ac094aae176109eb3b53fd00c45"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/create_task04_registration_receipt.py",
+      "role": "task_script",
+      "sha256": "1e1d818cedfb0f45e185897cd302500a44962d385b0aad0745d12d1f60ffe1f5"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/prepare_task04_v23_integrity_evidence.py",
+      "role": "task_script",
+      "sha256": "143581d8c0903fd20bdc4a55d983c959738b274953cc9493f354f04f73813ce4"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/prepare_task04_v23_registration.py",
+      "role": "task_script",
+      "sha256": "270ca19b3067912acae37537d3ea53da32362d39bbbabfbf3dbf800bea1c5bac"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/prepare_task04_v24_integrity_evidence.py",
+      "role": "task_script",
+      "sha256": "d2f8b1f9d170c5344da22a612defee36ed7c520bfce8fe217e10ecc6669abbc9"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/prepare_task04_v24_registration.py",
+      "role": "task_script",
+      "sha256": "d29dad6dccdcbb21ad6a106283c0bbf4f8fc15b51646fca16533abe7add44a1f"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/prepare_task04_v25_integrity_evidence.py",
+      "role": "task_script",
+      "sha256": "033d66047c988ca8b761e386ba9b60813865b35958379fa2adbfefe3a518ee2a"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/prepare_task04_v25_registration.py",
+      "role": "task_script",
+      "sha256": "b8280a5c990ab4bf12ae308571f4b8663fc2226f0c2c0fb9fe3b68077a8969a7"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/reconcile_task04_v25.py",
+      "role": "task_script",
+      "sha256": "89bc128f904965e46909e9235fa70a461e18c5d350887e76d2221f72ff048e22"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/register_raw_dataset.py",
+      "role": "task_script",
+      "sha256": "32d20eed9edc89af80e6f5167a508c9ecd7e1890793d52d856bb29f02c432313"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/validate_environment.py",
+      "role": "task_script",
+      "sha256": "ee68f2b596dfb01501276adb893c1644377dcfffd46d06cc8f8aef079a2537d8"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/validate_task04_preregistration.py",
+      "role": "task_script",
+      "sha256": "f05d6bcc8125cbd7cb1685503b5c705933ebe495c2c76b13feac91b53416abf7"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/validate_task04_registration_receipt.py",
+      "role": "task_script",
+      "sha256": "fda64b0c2fce47a7f323147387bed2ae17862f7b6cb1677219a0bacac8fad64c"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/validate_task04_v24_schemas.py",
+      "role": "task_script",
+      "sha256": "bfe5aa5a6ee47cf76ad3f53e1786c49378d9da0b1f4aeeebb08870c6534e3a50"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "scripts/validate_task04_v25_schemas.py",
+      "role": "task_script",
+      "sha256": "5d1fc62297b1ca9377940dd77b0a3c67a1acd6d3194cca99e5e317fd0e03c05f"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/__init__.py",
+      "role": "package_source",
+      "sha256": "e5f0d5b111db2416065501debc0fa734d28e104a0133bbaa531821c9e193e332"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/calendars/__init__.py",
+      "role": "package_source",
+      "sha256": "a89bf97a9614d0250359f31c80eaed9b21135f38923be4bf2abb4f006958f891"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/config.py",
+      "role": "package_source",
+      "sha256": "48086f840da1c30425314123021034d66fb674d2cefad6b21330cabeef00f309"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/data/__init__.py",
+      "role": "package_source",
+      "sha256": "e43897431ec486668080d29575d2d2ff3b013ec033e1660d1c52c5457d731842"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/data/__main__.py",
+      "role": "package_source",
+      "sha256": "a9c2fb757dc638fbbe3f4c004157e54b2963966a9a1117a0ce8c788066168236"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/data/audit.py",
+      "role": "package_source",
+      "sha256": "21367eb649590218620c031e9252f405f85238d6becafff6094671694c07e5a4"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/data/gaps.py",
+      "role": "package_source",
+      "sha256": "b69310e5a3c373919375abe44325796dbcb12bfea122550cc24a8065c7777377"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/data/quality_models.py",
+      "role": "package_source",
+      "sha256": "475dbf1fb473fabbcf57e1f9b3d1480cafdda958b0931949402a7a993dac99a0"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/data/registry.py",
+      "role": "package_source",
+      "sha256": "6aa931700c5ad2f5ae065f806746bbfc768145742ab64a4664a7464564669045"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/data/reporting.py",
+      "role": "package_source",
+      "sha256": "729ec82db857ddc76371494e15de49fe9ad6c5a1cfd7d1ededc3cd57144aa89d"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/data/schemas.py",
+      "role": "package_source",
+      "sha256": "c4993db367da4b4939e857cc43b066e3be311a0bba9dc44172e89976910f4f63"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/data/validation.py",
+      "role": "package_source",
+      "sha256": "9c1503e970f62b3a89950b30f6f3b9de9c0ad7168fae76c94c5a629fdaac6376"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/features/__init__.py",
+      "role": "package_source",
+      "sha256": "10e5c668317c1579c9d20574050024d610205a9b20bfd2d7003e7a17a7147bdb"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/logging_utils.py",
+      "role": "package_source",
+      "sha256": "c5685e54f2c92cffb4329b27c6f89f5279b698f794452c885eb458df94c7e15f"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/paths.py",
+      "role": "package_source",
+      "sha256": "397ceacd25995e11e3197ce9e700b37cf575a231861a17f19cc70673963b41a6"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/reporting/__init__.py",
+      "role": "package_source",
+      "sha256": "7ca8c3937387299fa0286c53d920955a3d829049c465c74335622f75a0dee1c2"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/research/__init__.py",
+      "role": "package_source",
+      "sha256": "ce1bf5c2e1cf7229f5ca80a5c933e991cd711462603e0965cdf816ac0de9beb4"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/research/__main__.py",
+      "role": "package_source",
+      "sha256": "192e219ff5acf335b6e49fc909806e15b1841dc115040dd67e55145e20ce46ed"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/research/coverage.py",
+      "role": "package_source",
+      "sha256": "49ee1a58fee8b8d24154cfc3f20a142e5ed4a2e62574873e52a2bac8258e3082"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/research/eligibility.py",
+      "role": "package_source",
+      "sha256": "c6bfadcd50ef4f80e9fb6bc158eef7a62ea8e0edba8ae581d6413178a719637b"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/research/models.py",
+      "role": "package_source",
+      "sha256": "6772be65108da26c66aa923a0ea8be0e2d788b08b011b491dfaf1fc0812dd840"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/research/registry.py",
+      "role": "package_source",
+      "sha256": "6f8372243e5e73607736aceea6802082f504471c17b6e5846397a1852349b285"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/statistics/__init__.py",
+      "role": "package_source",
+      "sha256": "faa05cbff6645b12252353d3c81484153ad1f691cfa0c40028d9c2b5234cb27f"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/__init__.py",
+      "role": "package_source",
+      "sha256": "0fb47f348dc9c1657b0f128436fc40c1792f6dcd0178afde10afea1d03854cfb"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/__main__.py",
+      "role": "package_source",
+      "sha256": "4dc71ace14032d9f006ec6e86f1e5d6dc2466c1133fccbccd785ab5d15d55f29"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/completion.py",
+      "role": "package_source",
+      "sha256": "588f1d4cb2c956f2dbac11951e09ac31d0e6d0fcfe57e14017debcbc236f44db"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/configuration.py",
+      "role": "package_source",
+      "sha256": "5be08850094109a7d56577cd933f5b74fcc1295237a46dc5a7b6e61ba5902c60"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/daily_aggregation.py",
+      "role": "package_source",
+      "sha256": "3e482808f91915a9497d43e92c07ed2f7d6728f27ef879a729a5caf6ec279aaf"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/dependencies.py",
+      "role": "package_source",
+      "sha256": "01f780827af235d2831f1e461f405914d66dd5d29c692699d5079d4e4282a08b"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/git_anchor.py",
+      "role": "package_source",
+      "sha256": "b5a09bcc89c0dfe5cc442bcde9c7fa4f5ecdbda0b45b0f997e387d21ab1fbd1d"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/independent_daily.py",
+      "role": "package_source",
+      "sha256": "743bda0353f844096020a01c5a0e0826a507874b160b2897e22579f7cff444ad"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/independent_inventory.py",
+      "role": "package_source",
+      "sha256": "70d3b5425092e93528fe0189cee85aa40ef1fc9a299b8f1f327a8668eb748264"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/independent_rating.py",
+      "role": "package_source",
+      "sha256": "b688cddb2d4773ea44221dafd5e542c8a1625ee15a755171beff629d9e401658"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/independent_reconciliation.py",
+      "role": "package_source",
+      "sha256": "d5610c281ecfe58ab05c9b772b1b8e9eb0932398737bf8d5ad69c2bd8ea23039"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/independent_robustness.py",
+      "role": "package_source",
+      "sha256": "032225e79c97e1e1ca4da46c0464d9dfbf410b46567370709e15f5e18efbf1eb"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/independent_statistics.py",
+      "role": "package_source",
+      "sha256": "00c1530908cdf211c2adc2b882c3ebe39f4943646595a993a94564620ba8133e"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/integrity.py",
+      "role": "package_source",
+      "sha256": "392175f6704e65b1ebb171e50b91e250225f2dbaad72f1470edbe58abd9d40e2"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/orchestration.py",
+      "role": "package_source",
+      "sha256": "4e5ae6103d46c28f74366a5bbc7deff5e54c40c216fd6aea0c0da229c52b0e5c"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/plotting.py",
+      "role": "package_source",
+      "sha256": "e9d39f69f46b2c6b687a1239c47e3fb6a83b91100096c92cb5246b2da96477b6"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/registration_models.py",
+      "role": "package_source",
+      "sha256": "824ca5f1991f0b424a89c361e1d18167c3b04449f726737f627e1e8703b76f48"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/registry.py",
+      "role": "package_source",
+      "sha256": "598e263820e0515a88e05fdaa3b9bfa2689f3a0b3faae0e517ec7e17a7ff6223"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/robustness.py",
+      "role": "package_source",
+      "sha256": "644c0ba4e54b587c57b5ce56c2850f2344c8c8563c3a9a9aef04300dfab41433"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/statistics.py",
+      "role": "package_source",
+      "sha256": "4e28884fde38ffac8de36f51283d0cbed3ff8e9f150c24e84835d62dd100f8ae"
+    },
+    {
+      "executable": true,
+      "file_type": "python",
+      "path": "src/eurusd_research/studies/task04.py",
+      "role": "package_source",
+      "sha256": "00ae2d4878044ad23b243f4be9777b7ebc33d5a76f2aecc7c0ac2d2092b2bb08"
+    },
+    {
+      "executable": false,
+      "file_type": "json",
+      "path": "studies/task04_v2.5_environment_lock.json",
+      "role": "environment_lock",
+      "sha256": "bdd77c025745b6dcf6673fb2412868c20884e4d32bc58df490bfbc160b4cd5de"
+    }
+  ],
+  "schema_version": "task04-source-dependency-manifest-v1",
+  "scope_policy": "All Python files under src/eurusd_research and scripts, pyproject.toml, project/data/coverage/session runtime configuration, and the exact Task 04 environment lock. Task 04 executable configuration and registration are bound separately by the receipt and Git anchor.",
+  "source_tree_fingerprint": "9308a046e6124ce56e893572bdd377494a08227ca4a03b0dbd1b98f0eb4b1dd4"
+}

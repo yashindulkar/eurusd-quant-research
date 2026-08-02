@@ -345,3 +345,30 @@ documented `task04-path-length-bytes-sha256-v1` digest before final promotion.
 **Rationale:** A valid Git anchor proves which design preceded calculation, but
 cannot compensate for an incomplete production-completion contract. A new
 version preserves the honest history without rewriting v2.3.
+
+## 2026-08-02 — Stop v2.4 and require full independent reconciliation in v2.5
+
+**Decision:** Preserve the v2.4 anchor, receipt, and candidate identities as an
+abandoned registered attempt. v2.4 successfully completed its Git anchor,
+receipt, dependency validation, and candidate generation. Phase B stopped
+before determinism, promotion, lifecycle completion, or final evidence
+acceptance because the anchored independent-reconciliation module assigned
+zero discrepancies to robustness/regime checks and asserted output-inventory
+success without calculating those claims. No final v2.4 output or lifecycle
+exists. The stopped-attempt identity is recorded in
+`studies/task04_v2.4_stopped_attempt.json`; the original untracked receipt and
+candidate directory remain historical runtime evidence.
+
+Prepare v2.5 with unchanged scientific definitions. The independent path must
+rebuild profile-date OHLC/ranges from raw rows after exact Task 03 membership
+reconciliation, calculate every descriptive, inferential, pairwise,
+chronological, fixed-period, annual, past-only regime, extreme-event, and
+rating component without importing Task 04 production implementations, and
+inspect the output inventory directly. Every component carries calculated
+absolute/relative discrepancies, mismatch counts, missing/unsupported claims,
+and a pass state. `NOT_CHECKED`, any mismatch, or any unsupported assertion
+prevents lifecycle completion.
+
+**Rationale:** A second implementation is useful only when it can expose the
+same categories of defects that the production path could contain. Hard-coded
+zero discrepancies and asserted booleans are governance claims, not evidence.

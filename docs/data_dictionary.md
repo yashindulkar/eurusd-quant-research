@@ -153,9 +153,9 @@ requires an explicit review of a newly generated Task 02 audit.
 The historical v2.2 file
 `reports/research/task04_daily_range_weekday/daily_observations.csv` contains
 one row per observed UTC date. It is a daily lineage and eligibility table, not
-a duplicate M15 dataset. After the authorized v2.4 anchor, the same registered
+a duplicate M15 dataset. After the authorized v2.5 anchor, the same registered
 schema will be generated under
-`reports/research/task04_daily_range_weekday_v2.4/`.
+`reports/research/task04_daily_range_weekday_v2.5/`.
 
 | Field | Definition |
 |---|---|
@@ -193,7 +193,7 @@ reasons in the internal long-form per-profile aggregation. The public wide
 daily CSV exports primary OHLC plus profile-prefixed contribution, range,
 eligibility, and digest fields; it does not export secondary-profile OHLC.
 
-The v2.4 population reconciliation reports `zero_contribution_dates`,
+The v2.5 population reconciliation reports `zero_contribution_dates`,
 `nonzero_partial_dates`, `complete_dates`, `incomplete_dates`, and
 `dates_included_in_analysis`. For every profile:
 
@@ -201,6 +201,13 @@ The v2.4 population reconciliation reports `zero_contribution_dates`,
 
 The historical v2.2 label `partial_daily_observations` meant total incomplete
 dates, including zero contribution; it remains historical output only.
+
+Version 2.5 additionally registers `daily_profile_observations.csv`. It is a
+bounded long-form table with one row for every profile/date (4 × 5,146), not a
+copy of M15 prices. It exposes each profile's OHLC, range, first/last timestamp,
+expected/observed rows, completeness states, eligibility, exclusion reasons,
+and contributing-row digest. This closes the v2.4 limitation where
+secondary-profile OHLC existed only in memory.
 
 ## Task 04 volatility-regime lineage
 

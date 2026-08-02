@@ -81,7 +81,7 @@ make audit-raw-data       # read-only registered raw-data quality audit
 make generate-coverage    # Task 02-backed research eligibility metadata
 make prepare-task04-v24-integrity
 make prepare-task04-v24-registration
-make validate-task04-preregistration  # Phase A; no v2.4 results
+make validate-task04-preregistration  # Phase A; no v2.5 results
 make create-task04-registration-receipt  # Phase B, after anchor commit
 make validate-task04-registration-receipt
 make generate-task04-candidate  # Phase B candidate generation; never completion
@@ -146,8 +146,8 @@ deleted and no row-level copy of the raw dataset is written.
 
 Task 04 remains a correctively registered replication of the reviewed
 development analysis. Version 2.2 is retained as historical control evidence;
-the corrected pre-anchor design is version 2.4 at
-`studies/task04_daily_range_weekday.v2.4.yaml`, method
+the corrected pre-anchor design is version 2.5 at
+`studies/task04_daily_range_weekday.v2.5.yaml`, method
 `RANGE-WEEKDAY-001`. It asks whether the distribution of unrounded EUR/USD
 daily high-low range in pips differs across Monday-Friday UTC calendar dates.
 
@@ -163,13 +163,16 @@ correction; one-way and Welch ANOVA are complementary. The outputs include
 effect sizes, deterministic bootstrap intervals, chronological and yearly
 stability, past-only volatility regimes, coverage-profile comparisons, and
 reversible extreme-event sensitivities under
-`reports/research/task04_daily_range_weekday_v2.4/` only after the separately
+`reports/research/task04_daily_range_weekday_v2.5/` only after the separately
 authorized anchor commit. The existing unversioned directory remains
 historical v2.2 output.
 
-The completed study finds distributional differences with a small omnibus
-effect and a conservative `MODERATE` evidence rating. This is descriptive
-market behaviour, not evidence of direction, profitability, or a trading rule.
+Version 2.4 is an abandoned registered attempt: it produced a validated receipt
+and candidate files but stopped before deterministic regeneration, promotion,
+or lifecycle completion because its independent reconciliation asserted
+unchecked outcomes. Version 2.5 is still `PREREGISTERED`; no v2.5 receipt,
+candidate result, production output, or lifecycle exists. Historical estimates
+remain regression controls, not v2.5 observed evidence.
 
 ## Research workflow
 

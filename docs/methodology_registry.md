@@ -358,8 +358,52 @@ semantics remain unresolved. Version 2.4 assigns each timestamp label to its
 supplied UTC date, discloses the possible one-bar boundary consequence, and
 caps evidence at `MODERATE`.
 
-**Completion record:** Not yet created. Phase A stops before the v2.4 anchor
-commit and before any v2.4 production output. The reviewed development and
-historical v2.2 reference values were 4,127 primary dates, H=80.522732,
-p=1.349753e-16, and epsilon-squared=0.018564; these are comparison evidence,
-not registration inputs.
+**Historical v2.4 completion record:** None. v2.4 reached an anchor, receipt,
+dependency gate, and candidate generation, then stopped at independent
+reconciliation. Candidate artifacts were never promoted and no lifecycle was
+created. Historical v2.2 reference values remain regression evidence rather
+than v2.5 registration inputs.
+
+### Registration version 2.5 governance amendment
+
+The scientific definitions above remain unchanged. v2.4 is now classified as
+an abandoned registered attempt: its anchor, receipt, dependency gate, and
+candidate generation succeeded, but Phase B stopped before deterministic
+regeneration, promotion, lifecycle completion, or final acceptance. The
+anchored independent module had asserted zero robustness/regime discrepancies
+and output-inventory success without calculating them. Its exact stopped state
+is recorded in `studies/task04_v2.4_stopped_attempt.json`.
+
+Version 2.5 preregisters
+`task04-independent-full-reproduction-v2`. It independently validates raw and
+Task 03 identities, rebuilds all four profile-date populations before daily
+aggregation, and checks every profile/date field through the registered
+`daily_profile_observations.csv`. It independently calculates the full
+descriptive set, bootstrap intervals, omnibus/effect tests, all pairwise rows,
+chronological split, fixed periods, all calendar years, date-level past-only
+regimes, extreme-event sensitivities, and every evidence-rating dimension. It
+also inspects the filesystem inventory, file types, links, containment,
+per-file SHA-256, and the registered path-length-bytes digest without calling
+the production inventory implementation.
+
+The required component inventory is `source_population`, `daily_aggregation`,
+`descriptive_statistics`, `primary_inference`, `pairwise_analysis`,
+`chronological_analysis`, `fixed_period_analysis`, `annual_analysis`,
+`volatility_regime_analysis`, `extreme_event_analysis`, `evidence_rating`, and
+`output_inventory`. Each component records checked row/field counts,
+field-level absolute and relative discrepancies, categorical/membership/
+inventory mismatch counts, missing evidence, unsupported claims, and pass/fail
+status. Categorical, membership, and inventory tolerances are zero. An absent
+or `NOT_CHECKED` component, a non-finite discrepancy, an unsupported assertion,
+or any component failure prevents lifecycle completion.
+
+Task 03 remains Design B because the authoritative artifact provides exact
+row/date membership digests rather than a row-addressable mask file. The
+independent path may invoke the upstream COVERAGE-001 builder only to obtain
+masks; it must reconcile every row/date membership digest, profile count,
+boundary classification, and subset/disjointness rule before reading an outcome
+into Task 04 aggregation. No Task 04 production aggregation, statistics,
+robustness, rating, or inventory function is a permitted dependency.
+
+No v2.5 receipt, lifecycle, candidate output, production output, or observed
+v2.5 result may exist before the separately authorized v2.5 Git anchor.
