@@ -1,4 +1,4 @@
-"""Explicit v2.5 Phase B stage ordering.
+"""Explicit v2.6 Phase B stage ordering.
 
 The stage controller is intentionally result-agnostic.  It prevents candidate
 generation from being conflated with terminal lifecycle completion.

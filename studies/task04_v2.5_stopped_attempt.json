@@ -1,0 +1,30 @@
+{
+  "anchor_commit": "86f1f232f6e221c9ea64bbbb9c7ba1110062bb7f",
+  "anchor_tree": "2a80c5e3a555afdc084f17f45f903c532c2e14b6",
+  "candidate_digest": "fae2ce5df1e7b1c4dee0d5fc43bff787f24135cd99ec1294784d3e2b28d1a66e",
+  "candidate_inventory_count": 28,
+  "candidate_outputs_promoted": false,
+  "categorical_mismatch_count": 8261,
+  "classification": "ABANDONED_REGISTERED_ATTEMPT",
+  "failed_components": [
+    "daily_aggregation",
+    "volatility_regime_analysis",
+    "output_inventory"
+  ],
+  "failure_details": {
+    "daily_aggregation": "Default pandas CSV NA conversion changed the registered empty exclusion_reasons string to null.",
+    "output_inventory": "Independent inventory construction supplied eight figure basenames instead of their registered figures/ relative paths.",
+    "volatility_regime_analysis": "The wider independent working frame was compared directly with the registered 12-field volatility-lineage export instead of first projecting both sides to the registered schema."
+  },
+  "lifecycle_created": false,
+  "maximum_numerical_discrepancy": 4.547473508864641e-13,
+  "membership_mismatch_count": 4127,
+  "method_version": "range-weekday-registered-replication-v2.5",
+  "production_output_created": false,
+  "receipt_fingerprint": "63b7c9a0af077efeb9d49a907c6edffbdac2cac37f82048df4c03ffc7d5cf066",
+  "reconciliation_fingerprint": "1861d82d4d653a3539f961db391ed60ac5eca7e536fa10feff9fcfe620d96428",
+  "registration_version": "2.5",
+  "reason_for_abandonment": "v2.5 completed anchor, receipt, dependency validation, candidate generation, and most independent reconciliation components. Phase B stopped because three defects in anchored reconciliation code created false mismatches in empty-string handling, volatility-regime lineage schema alignment, and figure path normalization. No outputs were promoted and no lifecycle was completed.",
+  "schema_version": "task04-stopped-attempt-v1",
+  "study_id": "TASK-04"
+}

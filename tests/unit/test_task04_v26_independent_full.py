@@ -47,6 +47,7 @@ from eurusd_research.studies.independent_statistics import (
     omnibus_table,
     pairwise_table,
 )
+from eurusd_research.studies.reconciliation_schema import DAILY_PROFILE_OUTPUT_COLUMNS
 
 ROOT = find_repository_root()
 HISTORICAL = ROOT / "reports/research/task04_daily_range_weekday"
@@ -101,21 +102,59 @@ def test_full_reconciliation_orchestration_calculates_every_component(
         "SENSITIVITY_FULL",
         "SENSITIVITY_2023",
     )
+    daily_record = {
+        "utc_date": "2020-01-06",
+        "weekday_number": 0,
+        "weekday_name": "Monday",
+        "daily_open": 1.0,
+        "daily_high": 1.001,
+        "daily_low": 1.0,
+        "daily_close": 1.001,
+        "daily_range_price": 0.001,
+        "daily_range_pips": 10.0,
+        "first_timestamp_utc": "2020-01-06T00:00:00Z",
+        "last_timestamp_utc": "2020-01-06T00:15:00Z",
+        "observed_m15_rows": 2,
+        "expected_m15_rows": 2,
+        "observed_coverage_ratio": 1.0,
+        "first_expected_interval_present": True,
+        "last_expected_interval_present": True,
+        "continuous_expected_grid": True,
+        "is_weekday": True,
+        "is_weekend_date": False,
+        "is_boundary_date": False,
+        "is_partial_daily_observation": False,
+        "analysis_eligible": True,
+        "exclusion_reasons": "",
+        "first_raw_row_number": 1,
+        "last_raw_row_number": 2,
+        "contributing_raw_row_count": 2,
+        "contributing_rows_sha256": "a" * 64,
+        "expected_schedule_source": "fixture",
+        "zero_contribution": False,
+        "nonzero_partial": False,
+        "incomplete": False,
+        "complete": True,
+        "dataset_version": "fixture",
+        "raw_sha256": "b" * 64,
+        "audit_fingerprint": "c" * 64,
+        "coverage_fingerprint": "d" * 64,
+        "coverage_config_fingerprint": "e" * 64,
+        "task04_config_fingerprint": "f" * 64,
+        "preregistration_fingerprint": "1" * 64,
+        "method_id": "RANGE-WEEKDAY-001",
+        "method_version": "range-weekday-registered-replication-v2.6",
+        "repository_version": "fixture",
+    }
     frames = {
         profile: pd.DataFrame(
             [
                 {
+                    **daily_record,
                     "profile": profile,
-                    "utc_date": "2020-01-06",
-                    "weekday_name": "Monday",
-                    "analysis_eligible": True,
-                    "incomplete": False,
-                    "is_partial_daily_observation": False,
-                    "daily_range_pips": 10.0,
-                    "first_timestamp_utc": "2020-01-06T00:00:00Z",
-                    "last_timestamp_utc": "2020-01-06T00:15:00Z",
                 }
-            ]
+            ],
+            columns=DAILY_PROFILE_OUTPUT_COLUMNS,
         )
         for profile in profiles
     }
@@ -207,7 +246,34 @@ def test_full_reconciliation_orchestration_calculates_every_component(
             for regime in ("LOW", "MEDIUM", "HIGH")
         ]
     )
-    lineage = pd.DataFrame([{"utc_date": "2020-01-06", "history_count": 0}])
+    lineage = pd.DataFrame(
+        [
+            {
+                "utc_date": "2020-01-06",
+                "profile": "DEFAULT_RESEARCH",
+                "daily_range_pips": 10.0,
+                "lagged_trailing_median_range_pips": None,
+                "prior_regime_measure_count": 0,
+                "past_only_low_threshold": None,
+                "past_only_high_threshold": None,
+                "volatility_regime": "WARMUP",
+                "regime_warmup": True,
+                "regime_classification_reason": "insufficient_history",
+                "volatility_lookback": 180,
+                "volatility_minimum_history": 180,
+                "dataset_version": "fixture",
+                "raw_sha256": "b" * 64,
+                "audit_fingerprint": "c" * 64,
+                "coverage_fingerprint": "d" * 64,
+                "coverage_config_fingerprint": "e" * 64,
+                "task04_config_fingerprint": "f" * 64,
+                "preregistration_fingerprint": "1" * 64,
+                "method_id": "RANGE-WEEKDAY-001",
+                "method_version": "range-weekday-registered-replication-v2.6",
+                "repository_version": "fixture",
+            }
+        ]
+    )
     extreme = pd.DataFrame(
         [{"analysis_variant": "primary_raw_distribution", "sample_size": 1}]
     )
@@ -331,12 +397,12 @@ def test_full_reconciliation_orchestration_calculates_every_component(
     assert all(getattr(evidence, name).passed for name in evidence.checked_components)
 
 
-def test_v25_scientific_design_is_identical_to_v24() -> None:
-    v24 = yaml.safe_load(
-        (ROOT / "studies/task04_daily_range_weekday.v2.4.yaml").read_text()
-    )
+def test_v26_scientific_design_is_identical_to_v25() -> None:
     v25 = yaml.safe_load(
         (ROOT / "studies/task04_daily_range_weekday.v2.5.yaml").read_text()
+    )
+    v26 = yaml.safe_load(
+        (ROOT / "studies/task04_daily_range_weekday.v2.6.yaml").read_text()
     )
     scientific_fields = (
         "research_question",
@@ -371,8 +437,8 @@ def test_v25_scientific_design_is_identical_to_v24() -> None:
         "known_limitations",
         "prohibited_analyses",
     )
-    assert {field: v25[field] for field in scientific_fields} == {
-        field: v24[field] for field in scientific_fields
+    assert {field: v26[field] for field in scientific_fields} == {
+        field: v25[field] for field in scientific_fields
     }
 
 

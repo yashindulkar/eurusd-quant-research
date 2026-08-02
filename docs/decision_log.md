@@ -372,3 +372,25 @@ prevents lifecycle completion.
 **Rationale:** A second implementation is useful only when it can expose the
 same categories of defects that the production path could contain. Hard-coded
 zero discrepancies and asserted booleans are governance claims, not evidence.
+
+## 2026-08-02 — Stop v2.5 after three reconciliation execution defects
+
+**Decision:** Preserve the v2.5 anchor, validated receipt, candidate digest,
+and stopped reconciliation identity as an abandoned registered attempt. v2.5
+did not promote outputs or create a lifecycle. Its independent architecture
+calculated all twelve components, but default CSV NA conversion changed empty
+`exclusion_reasons` to null, the wider independent regime frame was compared
+without projection to the registered 12-field lineage, and figure basenames
+were compared with registered `figures/` paths. These caused false categorical,
+membership, and inventory mismatches. The compact identity is recorded in
+`studies/task04_v2.5_stopped_attempt.json`.
+
+Prepare v2.6 without changing any scientific definition or numerical
+tolerance. Register schema-driven empty-string handling only for
+`exclusion_reasons`, the exact regime-lineage field inventory, and canonical
+production-root-relative output paths with nested figure prefixes. Retain zero
+tolerance for categorical, membership, and inventory mismatches.
+
+**Rationale:** The fail-closed thresholds worked: false comparison mismatches
+prevented completion. Correcting the representation contracts is narrower and
+more defensible than weakening those thresholds or changing the study.

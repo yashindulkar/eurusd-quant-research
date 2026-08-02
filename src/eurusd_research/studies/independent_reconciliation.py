@@ -1,4 +1,4 @@
-"""Complete independent raw-to-evidence reconciliation for Task 04 v2.5.
+"""Complete independent raw-to-evidence reconciliation for Task 04 v2.6.
 
 This orchestration module imports no Task 04 production aggregation,
 statistics, robustness, rating, or inventory implementation.
@@ -34,6 +34,14 @@ from eurusd_research.studies.independent_robustness import (
 )
 from eurusd_research.studies.independent_statistics import weekday_order
 from eurusd_research.studies.integrity import canonical_digest
+from eurusd_research.studies.reconciliation_schema import (
+    DAILY_PROFILE_SCHEMA,
+    REGIME_LINEAGE_OUTPUT_SCHEMA,
+    canonical_registered_output_paths,
+    load_candidate_csv,
+    project_registered_regime_lineage,
+    schema_from_expected,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -291,8 +299,12 @@ def build_independent_reconciliation(
         root, config
     )
     population_expected = _population_table(frames, row_flags, masks, config)
-    population_actual = pd.read_csv(
-        output_directory / "population_reconciliation.csv", keep_default_na=False
+    population_actual = load_candidate_csv(
+        output_directory / "population_reconciliation.csv",
+        schema_from_expected(
+            population_expected,
+            empty_string_columns=("weekday",),
+        ),
     )
     source_comparison = compare_frames(
         population_expected,
@@ -307,7 +319,10 @@ def build_independent_reconciliation(
         independent_daily[column] = pd.to_datetime(
             independent_daily[column], utc=True
         ).dt.strftime("%Y-%m-%dT%H:%M:%SZ")
-    daily_actual = pd.read_csv(output_directory / "daily_profile_observations.csv")
+    daily_actual = load_candidate_csv(
+        output_directory / "daily_profile_observations.csv",
+        DAILY_PROFILE_SCHEMA,
+    )
     daily_comparison = compare_frames(
         independent_daily,
         daily_actual,
@@ -318,10 +333,22 @@ def build_independent_reconciliation(
     weekday_expected, omnibus_expected, pairwise_expected, effects_expected = (
         coverage_profile_tables(frames, config)
     )
-    weekday_actual = pd.read_csv(output_directory / "weekday_statistics.csv")
-    omnibus_actual = pd.read_csv(output_directory / "omnibus_tests.csv")
-    pairwise_actual = pd.read_csv(output_directory / "pairwise_tests.csv")
-    effects_actual = pd.read_csv(output_directory / "effect_sizes.csv")
+    weekday_actual = load_candidate_csv(
+        output_directory / "weekday_statistics.csv",
+        schema_from_expected(weekday_expected),
+    )
+    omnibus_actual = load_candidate_csv(
+        output_directory / "omnibus_tests.csv",
+        schema_from_expected(omnibus_expected),
+    )
+    pairwise_actual = load_candidate_csv(
+        output_directory / "pairwise_tests.csv",
+        schema_from_expected(pairwise_expected),
+    )
+    effects_actual = load_candidate_csv(
+        output_directory / "effect_sizes.csv",
+        schema_from_expected(effects_expected),
+    )
     descriptive_comparison = compare_frames(
         weekday_expected,
         weekday_actual,
@@ -356,8 +383,14 @@ def build_independent_reconciliation(
 
     primary = frames[config.primary_coverage_profile]
     periods_expected, split_expected = chronological_tables(primary, config)
-    periods_actual = pd.read_csv(output_directory / "period_robustness.csv")
-    split_actual = pd.read_csv(output_directory / "chronological_split_results.csv")
+    periods_actual = load_candidate_csv(
+        output_directory / "period_robustness.csv",
+        schema_from_expected(periods_expected),
+    )
+    split_actual = load_candidate_csv(
+        output_directory / "chronological_split_results.csv",
+        schema_from_expected(split_expected),
+    )
     chronological_comparison = compare_frames(
         split_expected, split_actual, keys=("analysis_period",), label="chronological"
     )
@@ -377,13 +410,19 @@ def build_independent_reconciliation(
     annual_comparison = _merge_comparisons(
         compare_frames(
             annual_statistics_expected,
-            pd.read_csv(output_directory / "yearly_statistics.csv"),
+            load_candidate_csv(
+                output_directory / "yearly_statistics.csv",
+                schema_from_expected(annual_statistics_expected),
+            ),
             keys=("year", "weekday_name"),
             label="annual_statistics",
         ),
         compare_frames(
             annual_tests_expected,
-            pd.read_csv(output_directory / "yearly_omnibus_tests.csv"),
+            load_candidate_csv(
+                output_directory / "yearly_omnibus_tests.csv",
+                schema_from_expected(annual_tests_expected),
+            ),
             keys=("year",),
             label="annual_tests",
         ),
@@ -392,30 +431,44 @@ def build_independent_reconciliation(
     regime_statistics_expected, regime_tests_expected, lineage_expected = regime_tables(
         primary, config
     )
-    lineage_actual = pd.read_csv(output_directory / "volatility_regime_lineage.csv")
+    lineage_actual = load_candidate_csv(
+        output_directory / "volatility_regime_lineage.csv",
+        REGIME_LINEAGE_OUTPUT_SCHEMA,
+    )
+    lineage_expected = project_registered_regime_lineage(lineage_expected)
+    lineage_actual = project_registered_regime_lineage(lineage_actual)
     regime_comparison = _merge_comparisons(
         compare_frames(
             regime_statistics_expected,
-            pd.read_csv(output_directory / "volatility_regime_statistics.csv"),
+            load_candidate_csv(
+                output_directory / "volatility_regime_statistics.csv",
+                schema_from_expected(regime_statistics_expected),
+            ),
             keys=("volatility_regime", "weekday_name"),
             label="regime_statistics",
         ),
         compare_frames(
             regime_tests_expected,
-            pd.read_csv(output_directory / "volatility_regime_tests.csv"),
+            load_candidate_csv(
+                output_directory / "volatility_regime_tests.csv",
+                schema_from_expected(regime_tests_expected),
+            ),
             keys=("volatility_regime", "test_name"),
             label="regime_tests",
         ),
         compare_frames(
             lineage_expected,
             lineage_actual,
-            keys=("utc_date",),
+            keys=("utc_date", "profile"),
             label="regime_lineage",
         ),
     )
 
     extreme_expected = extreme_table(primary, config)
-    extreme_actual = pd.read_csv(output_directory / "extreme_event_sensitivity.csv")
+    extreme_actual = load_candidate_csv(
+        output_directory / "extreme_event_sensitivity.csv",
+        schema_from_expected(extreme_expected),
+    )
     extreme_comparison = compare_frames(
         extreme_expected,
         extreme_actual,
@@ -486,7 +539,10 @@ def build_independent_reconciliation(
 
     inspection = inspect_output_inventory(
         output_directory,
-        tuple((*config.expected_output_files, *config.expected_figure_files)),
+        canonical_registered_output_paths(
+            config.expected_output_files,
+            config.expected_figure_files,
+        ),
     )
     inventory_mismatches = (
         len(inspection.missing_paths)
@@ -600,8 +656,8 @@ def build_independent_reconciliation(
         "schema_version": "task04-independent-reconciliation-v2",
         "implementation_id": INDEPENDENT_RECONCILIATION_IMPLEMENTATION,
         "study_id": "TASK-04",
-        "registration_version": "2.5",
-        "method_version": "range-weekday-registered-replication-v2.5",
+        "registration_version": config.registration_version,
+        "method_version": config.method_version,
         "anchor_commit": anchor_commit,
         "receipt_fingerprint": receipt_fingerprint,
         "raw_sha256": raw_sha,

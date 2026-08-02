@@ -1,4 +1,4 @@
-"""Fail-closed Task 04 v2.5 completion evidence and output controls.
+"""Fail-closed Task 04 v2.6 completion evidence and output controls.
 
 This module contains no weekday-result calculation.  It defines the evidence
 that Phase B must obtain before a candidate study may be promoted and marked
@@ -196,8 +196,8 @@ class IndependentReconciliationEvidence(FrozenEvidence):
     schema_version: Literal["task04-independent-reconciliation-v2"]
     implementation_id: Literal["task04-independent-full-reproduction-v2"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.5"]
-    method_version: Literal["range-weekday-registered-replication-v2.5"]
+    registration_version: Literal["2.6"]
+    method_version: Literal["range-weekday-registered-replication-v2.6"]
     anchor_commit: GitCommit
     receipt_fingerprint: Sha256
     raw_sha256: Sha256

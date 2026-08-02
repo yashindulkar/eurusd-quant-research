@@ -43,13 +43,13 @@ def main() -> int:
         expected_fingerprint=config.required_task03_row_membership_fingerprint,
     )
     if project_path(config.registration_receipt_path, root).exists():
-        raise ValueError("v2.5 receipt already exists; this is not pre-anchor state")
+        raise ValueError("v2.6 receipt already exists; this is not pre-anchor state")
     if project_path(config.registration_lifecycle_path, root).exists():
-        raise ValueError("v2.5 lifecycle already exists before anchoring")
+        raise ValueError("v2.6 lifecycle already exists before anchoring")
     if project_path(config.output_directory, root).exists():
-        raise ValueError("v2.5 production output directory exists before anchoring")
+        raise ValueError("v2.6 production output directory exists before anchoring")
     if project_path(config.candidate_output_directory, root).exists():
-        raise ValueError("v2.5 candidate output directory exists before anchoring")
+        raise ValueError("v2.6 candidate output directory exists before anchoring")
     print(
         f"Task 04 preregistration: PASS | status={registration.status} | "
         f"registration_version={registration.registration_version} | "

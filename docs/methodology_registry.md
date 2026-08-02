@@ -405,5 +405,16 @@ boundary classification, and subset/disjointness rule before reading an outcome
 into Task 04 aggregation. No Task 04 production aggregation, statistics,
 robustness, rating, or inventory function is a permitted dependency.
 
-No v2.5 receipt, lifecycle, candidate output, production output, or observed
-v2.5 result may exist before the separately authorized v2.5 Git anchor.
+For v2.6 reconciliation, candidate CSVs are loaded by explicit schema. The
+registered volatility-regime comparison is projected to exactly these fields,
+in order: `utc_date`, `profile`, `daily_range_pips`,
+`lagged_trailing_median_range_pips`, `prior_regime_measure_count`,
+`past_only_low_threshold`, `past_only_high_threshold`, `volatility_regime`,
+`regime_warmup`, `regime_classification_reason`, `volatility_lookback`, and
+`volatility_minimum_history`. Wider independent working fields are not output
+evidence. Output paths are production-root-relative forward-slash paths;
+figures must retain the `figures/` prefix. Categorical, membership, and
+inventory mismatches remain fail-closed at zero tolerance.
+
+No v2.6 receipt, lifecycle, candidate output, production output, or observed
+v2.6 result may exist before the separately authorized v2.6 Git anchor.

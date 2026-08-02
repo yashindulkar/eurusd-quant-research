@@ -64,7 +64,7 @@ class SourceDependencyEntry(StrictModel):
     model_config = ConfigDict(extra="forbid", frozen=True)
 
     path: str = Field(min_length=1)
-    file_type: Literal["python", "toml", "yaml", "json"]
+    file_type: Literal["python", "toml", "yaml", "json", "makefile"]
     executable: bool
     role: Literal[
         "package_source",
@@ -72,6 +72,7 @@ class SourceDependencyEntry(StrictModel):
         "package_contract",
         "runtime_configuration",
         "environment_lock",
+        "validation_test",
     ]
     sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
@@ -137,12 +138,15 @@ def _source_scope(root: Path) -> list[tuple[Path, bool, str]]:
         files.append((path, True, "package_source"))
     for path in sorted((root / "scripts").glob("*.py")):
         files.append((path, True, "task_script"))
+    for path in sorted((root / "tests").rglob("*.py")):
+        files.append((path, True, "validation_test"))
+    files.append((root / "Makefile", False, "package_contract"))
     files.append((root / "pyproject.toml", False, "package_contract"))
     for name in ("project.yaml", "data.yaml", "coverage.yaml", "sessions.yaml"):
         files.append((root / "configs" / name, False, "runtime_configuration"))
     files.append(
         (
-            root / "studies" / "task04_v2.5_environment_lock.json",
+            root / "studies" / "task04_v2.6_environment_lock.json",
             False,
             "environment_lock",
         )
@@ -150,7 +154,7 @@ def _source_scope(root: Path) -> list[tuple[Path, bool, str]]:
     return files
 
 
-def _file_type(path: Path) -> Literal["python", "toml", "yaml", "json"]:
+def _file_type(path: Path) -> Literal["python", "toml", "yaml", "json", "makefile"]:
     types = {
         ".py": "python",
         ".toml": "toml",
@@ -158,8 +162,11 @@ def _file_type(path: Path) -> Literal["python", "toml", "yaml", "json"]:
         ".json": "json",
     }
     try:
+        if path.name == "Makefile":
+            return "makefile"
         return cast(
-            Literal["python", "toml", "yaml", "json"], types[path.suffix.lower()]
+            Literal["python", "toml", "yaml", "json", "makefile"],
+            types[path.suffix.lower()],
         )
     except KeyError as error:
         raise ValueError(
@@ -187,8 +194,9 @@ def build_source_dependency_manifest(root: Path) -> SourceDependencyManifest:
     payload = {
         "schema_version": SOURCE_MANIFEST_SCHEMA_VERSION,
         "scope_policy": (
-            "All Python files under src/eurusd_research and scripts, pyproject.toml, "
-            "project/data/coverage/session runtime configuration, and the exact "
+            "All Python files under src/eurusd_research, scripts, and tests; the "
+            "Makefile; pyproject.toml; project/data/coverage/session runtime "
+            "configuration; and the exact "
             "Task 04 environment lock. Task 04 executable configuration and "
             "registration are bound separately by the receipt and Git anchor."
         ),
@@ -233,7 +241,7 @@ def validate_source_dependency_manifest(
     root: Path, expected_fingerprint: str
 ) -> SourceDependencyManifest:
     """Require the current complete source scope to match pinned evidence."""
-    path = root / "studies" / "task04_v2.5_source_manifest.json"
+    path = root / "studies" / "task04_v2.6_source_manifest.json"
     saved = read_source_dependency_manifest(path)
     if saved.dependency_manifest_fingerprint != expected_fingerprint:
         raise ValueError("Task 04 dependency manifest identity is not registered")
@@ -362,7 +370,7 @@ def validate_task03_row_membership(
     expected_fingerprint: str,
 ) -> Task03RowMembershipEvidence:
     """Fail before Task 04 calculation unless live masks match pinned evidence."""
-    path = root / "studies" / "task03_task04_v2.5_mask_evidence.json"
+    path = root / "studies" / "task03_task04_v2.6_mask_evidence.json"
     saved = read_task03_row_membership_evidence(path)
     if saved.evidence_fingerprint != expected_fingerprint:
         raise ValueError("Task 03 row-membership evidence identity is not registered")

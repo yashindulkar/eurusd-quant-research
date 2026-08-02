@@ -56,7 +56,7 @@ def _preregistered(
 def test_task04_config_and_registration_contract() -> None:
     root, config, registration = _contract()
     assert registration.status == "PREREGISTERED"
-    assert registration.registration_version == config.registration_version == "2.5"
+    assert registration.registration_version == config.registration_version == "2.6"
     assert_registration_matches_config(registration, config)
     assert len(locked_design_fingerprint(registration)) == 64
     assert len(executable_configuration_fingerprint(config)) == 64

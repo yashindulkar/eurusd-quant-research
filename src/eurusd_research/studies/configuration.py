@@ -127,9 +127,9 @@ class Task04Config(StrictModel):
     """Complete fail-closed configuration for the weekday-range study."""
 
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.5"]
+    registration_version: Literal["2.6"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.5"]
+    method_version: Literal["range-weekday-registered-replication-v2.6"]
     implementation_version: str = Field(min_length=1)
     receipt_schema_version: Literal["task04-registration-receipt-v4"]
     lifecycle_schema_version: Literal["task04-registration-lifecycle-v4"]
@@ -175,6 +175,17 @@ class Task04Config(StrictModel):
     independent_reconciliation_implementation: Literal[
         "task04-independent-full-reproduction-v2"
     ]
+    candidate_csv_loading_policy: Literal[
+        "SCHEMA_DRIVEN_PRESERVE_REGISTERED_EMPTY_STRINGS"
+    ]
+    exclusion_reasons_empty_value: Literal["EMPTY_STRING"]
+    exclusion_reasons_null_policy: Literal["NULL_INVALID"]
+    regime_lineage_comparison_fields: tuple[str, ...] = Field(
+        min_length=12, max_length=12
+    )
+    output_path_convention: Literal["PRODUCTION_ROOT_RELATIVE_FORWARD_SLASH"]
+    figure_path_prefix: Literal["figures/"]
+    mismatch_treatment: Literal["ZERO_CATEGORICAL_MEMBERSHIP_AND_INVENTORY_TOLERANCE"]
     independent_reconciliation_components: tuple[str, ...] = Field(
         min_length=12, max_length=12
     )
