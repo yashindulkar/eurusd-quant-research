@@ -97,13 +97,13 @@ def _receipt() -> Task04RegistrationReceipt:
     figures = tuple(sorted(f"figures/{x}" for x in config.expected_figure_files))
     payload = {
         "identity": {
-            "receipt_schema_version": "task04-registration-receipt-v4",
+            "receipt_schema_version": "task04-registration-receipt-v5",
             "study_id": "TASK-04",
-            "registration_version": "2.6",
+            "registration_version": "2.7",
             "method_id": "RANGE-WEEKDAY-001",
-            "method_version": "range-weekday-registered-replication-v2.6",
-            "registration_file_path": "studies/task04_daily_range_weekday.v2.6.yaml",
-            "receipt_file_path": "studies/task04_daily_range_weekday.v2.6.receipt.json",
+            "method_version": "range-weekday-registered-replication-v2.7",
+            "registration_file_path": "studies/task04_daily_range_weekday.v2.7.yaml",
+            "receipt_file_path": "studies/task04_daily_range_weekday.v2.7.receipt.json",
             "registration_classification": registration.registration_classification,
             "non_first_look_disclosure": registration.registration_disclosure,
             "registration_status_at_anchoring": "PREREGISTERED",
@@ -162,11 +162,20 @@ def _receipt() -> Task04RegistrationReceipt:
                 "readiness_status": "PASS, CONDITIONALLY_READY",
             },
             "task03": {
-                "schema_version": "task03-row-membership-evidence-v1",
+                "schema_version": "task03-layered-evidence-v1",
                 "method_version": "research-coverage-v1",
-                "coverage_fingerprint": config.required_coverage_summary_sha256,
-                "exact_evidence_fingerprint": (
-                    config.required_task03_row_membership_fingerprint
+                "coverage_stable_artifact_fingerprint": (
+                    config.required_coverage_summary_stable_sha256
+                ),
+                "scientific_membership_fingerprint": (
+                    config.required_task03_scientific_membership_fingerprint
+                ),
+                "stable_artifact_fingerprint": (
+                    config.required_task03_stable_artifact_fingerprint
+                ),
+                "execution_context_fingerprint_at_receipt": "6" * 64,
+                "execution_context_variance_policy": (
+                    "INFORMATIONAL_IF_SCIENTIFIC_AND_STABLE_ARTIFACT_IDENTITIES_MATCH"
                 ),
                 "exact_row_membership_fingerprint": "3" * 64,
                 "exact_date_membership_fingerprint": "4" * 64,
@@ -221,8 +230,8 @@ def _independent() -> IndependentReconciliationEvidence:
         "schema_version": "task04-independent-reconciliation-v2",
         "implementation_id": "task04-independent-full-reproduction-v2",
         "study_id": "TASK-04",
-        "registration_version": "2.6",
-        "method_version": "range-weekday-registered-replication-v2.6",
+        "registration_version": "2.7",
+        "method_version": "range-weekday-registered-replication-v2.7",
         "anchor_commit": "a" * 40,
         "receipt_fingerprint": "b" * 64,
         "raw_sha256": "a" * 64,
@@ -383,10 +392,10 @@ def test_receipt_builder_populates_every_v24_binding(
     root = find_repository_root()
     config, registration = _contract()
     source = read_source_dependency_manifest(
-        root / "studies/task04_v2.6_source_manifest.json"
+        root / "studies/task04_v2.7_source_manifest.json"
     )
     task03 = read_task03_row_membership_evidence(
-        root / "studies/task03_task04_v2.6_mask_evidence.json"
+        root / "studies/task03_task04_v2.7_evidence.json"
     )
     monkeypatch.setattr(
         registry_module, "validate_task04_dependencies", lambda *_: None
@@ -433,11 +442,11 @@ def test_receipt_builder_populates_every_v24_binding(
         root=root,
         anchor_commit="a" * 40,
     )
-    assert receipt.identity.registration_file_path.endswith("v2.6.yaml")
+    assert receipt.identity.registration_file_path.endswith("v2.7.yaml")
     assert receipt.git_anchor.anchor_parent_commit_id == "c" * 40
     assert receipt.git_anchor.registered_blob_identities
-    assert receipt.upstream_evidence.task03.exact_evidence_fingerprint == (
-        task03.evidence_fingerprint
+    assert receipt.upstream_evidence.task03.scientific_membership_fingerprint == (
+        task03.scientific_membership_fingerprint
     )
     assert receipt.scientific_and_executable_design.maximum_evidence_rating_cap == (
         "MODERATE"
@@ -487,6 +496,8 @@ def test_lifecycle_requires_complete_evidence_and_is_terminal(tmp_path: Path) ->
         primary_p_value=0.1,
         primary_effect_size=0.01,
         final_evidence_rating="MODERATE",
+        task03_execution_context_fingerprint="7" * 64,
+        task03_execution_context_variance_observed=False,
         limitations=registration.known_limitations,
     )
     original = lifecycle.model_dump(mode="python")
@@ -619,6 +630,8 @@ def test_lifecycle_rejects_each_failed_reconciliation_component(
             primary_p_value=0.5,
             primary_effect_size=0.01,
             final_evidence_rating="MODERATE",
+            task03_execution_context_fingerprint="7" * 64,
+            task03_execution_context_variance_observed=False,
             limitations=registration.known_limitations,
         )
 

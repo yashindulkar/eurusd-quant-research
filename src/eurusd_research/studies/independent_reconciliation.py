@@ -1,4 +1,4 @@
-"""Complete independent raw-to-evidence reconciliation for Task 04 v2.6.
+"""Complete independent raw-to-evidence reconciliation for Task 04 v2.7.
 
 This orchestration module imports no Task 04 production aggregation,
 statistics, robustness, rating, or inventory implementation.

@@ -143,7 +143,7 @@ def test_full_reconciliation_orchestration_calculates_every_component(
         "task04_config_fingerprint": "f" * 64,
         "preregistration_fingerprint": "1" * 64,
         "method_id": "RANGE-WEEKDAY-001",
-        "method_version": "range-weekday-registered-replication-v2.6",
+        "method_version": "range-weekday-registered-replication-v2.7",
         "repository_version": "fixture",
     }
     frames = {
@@ -269,7 +269,7 @@ def test_full_reconciliation_orchestration_calculates_every_component(
                 "task04_config_fingerprint": "f" * 64,
                 "preregistration_fingerprint": "1" * 64,
                 "method_id": "RANGE-WEEKDAY-001",
-                "method_version": "range-weekday-registered-replication-v2.6",
+                "method_version": "range-weekday-registered-replication-v2.7",
                 "repository_version": "fixture",
             }
         ]
@@ -397,12 +397,12 @@ def test_full_reconciliation_orchestration_calculates_every_component(
     assert all(getattr(evidence, name).passed for name in evidence.checked_components)
 
 
-def test_v26_scientific_design_is_identical_to_v25() -> None:
-    v25 = yaml.safe_load(
-        (ROOT / "studies/task04_daily_range_weekday.v2.5.yaml").read_text()
-    )
+def test_v27_scientific_design_is_identical_to_v26() -> None:
     v26 = yaml.safe_load(
         (ROOT / "studies/task04_daily_range_weekday.v2.6.yaml").read_text()
+    )
+    v27 = yaml.safe_load(
+        (ROOT / "studies/task04_daily_range_weekday.v2.7.yaml").read_text()
     )
     scientific_fields = (
         "research_question",
@@ -437,8 +437,8 @@ def test_v26_scientific_design_is_identical_to_v25() -> None:
         "known_limitations",
         "prohibited_analyses",
     )
-    assert {field: v26[field] for field in scientific_fields} == {
-        field: v25[field] for field in scientific_fields
+    assert {field: v27[field] for field in scientific_fields} == {
+        field: v26[field] for field in scientific_fields
     }
 
 
@@ -536,7 +536,7 @@ def test_independent_source_population_rebuilds_from_raw_and_exact_masks(
     evidence = SimpleNamespace(
         observed_row_count=2,
         observed_date_count=2,
-        evidence_fingerprint="b" * 64,
+        scientific_membership_fingerprint="b" * 64,
     )
     monkeypatch.setattr(module, "sha256_file", lambda _path: config.required_raw_sha256)
     monkeypatch.setattr(module, "load_config", lambda _root: object())

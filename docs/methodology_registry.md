@@ -208,7 +208,7 @@ commit.
 
 **Method ID:** RANGE-WEEKDAY-001
 
-**Status:** correctively registered replication, registration version 2.4
+**Status:** correctively registered replication, registration version 2.7
 prepared; preregistration anchor commit required
 
 **Created (UTC):** 2026-07-28
@@ -227,7 +227,7 @@ uses complete `DEFAULT_RESEARCH` dates. The registered dataset bounds are
 **Input dataset version(s):** `sha256:b2a41310927aa9a9`; full SHA-256
 `b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c`.
 The exact RAW-DQ-001 and COVERAGE-001 dependency fingerprints are locked in
-`studies/task04_daily_range_weekday.v2.4.yaml`. Historical v2.2 registration
+`studies/task04_daily_range_weekday.v2.7.yaml`. Historical v2.2 registration
 and control files remain alongside it without being rewritten.
 
 **Unit of observation:** One observed UTC calendar date within one coverage
@@ -283,7 +283,7 @@ winsorisation; and exclusion of the largest 1% of daily ranges.
 **Outputs:** After the separately authorized anchor commit, deterministic
 machine-readable study artifacts, date-level
 volatility-regime lineage, and eight static figures under
-`reports/research/task04_daily_range_weekday_v2.4/`, as enumerated in the
+`reports/research/task04_daily_range_weekday_v2.7/`, as enumerated in the
 machine-readable registration and immutable receipt.
 
 **Known limitations:** UTC dates are not local trading sessions; timestamp
@@ -292,14 +292,14 @@ clustering, unequal variance, changing regimes, and calendar imbalance can
 affect inference; sensitivity-only profiles are diagnostic populations; daily
 range does not establish direction, profitability, or a trading rule.
 
-**Supersedes / superseded by:** v2.4 supersedes the incomplete v2.3 production
-governance contract without changing the registered numerical methodology.
+**Supersedes / superseded by:** v2.7 supersedes the stopped v2.6 attempt without
+changing the registered numerical methodology.
 
 **Results access status at definition time:** The original Task 04 analysis had
 already been developed, generated, and independently reviewed before
-registration version 2.4 was prepared. The original mutable completion record
+registration version 2.7 was prepared. The original mutable completion record
 is preserved in `task04_development_baseline.json` but is not accepted as
-proven preregistration evidence. Version 2.4 is therefore a correctively
+proven preregistration evidence. Version 2.7 is therefore a correctively
 registered replication, not a pristine first-look preregistration.
 
 **Registration version 2.4 control:** The exact registered design, executable
@@ -416,5 +416,31 @@ evidence. Output paths are production-root-relative forward-slash paths;
 figures must retain the `figures/` prefix. Categorical, membership, and
 inventory mismatches remain fail-closed at zero tolerance.
 
-No v2.6 receipt, lifecycle, candidate output, production output, or observed
-v2.6 result may exist before the separately authorized v2.6 Git anchor.
+### Registration version 2.7 governance amendment
+
+The scientific definitions and all v2.6 reconciliation controls above remain
+unchanged. v2.6 completed its anchor, receipt, dependency gate, candidate
+generation, twelve-component reconciliation, deterministic regeneration, and
+figure validation. It stopped before promotion or lifecycle creation because
+an integration test incorrectly treated receipt absence as a global invariant
+after legitimate receipt creation.
+
+Version 2.7 registers five explicit filesystem lifecycle states:
+`PRE_RECEIPT`, `POST_RECEIPT_PRE_CANDIDATE`, `CANDIDATE`,
+`POST_PROMOTION_PRE_LIFECYCLE`, and `COMPLETED`. Tests use isolated paths and
+require receipt absence only in `PRE_RECEIPT`; later states require the receipt.
+
+Task 03 evidence is separated into scientific membership, stable artifact, and
+execution-context identities. Exact row/date memberships, counts, algebra,
+boundaries, schema, and raw identity comprise the scientific fingerprint.
+Canonical Task 03 output content after excluding only registered repository
+context comprises the stable-artifact fingerprint. Repository HEAD, dirty
+state, and raw artifact hashes remain in a separate execution-context
+fingerprint. Context variance is informational only when both scientific and
+stable identities match; either material identity mismatch fails before Task 04
+aggregation. The receipt binds scientific and stable identities plus the
+context observed at receipt creation; the lifecycle records the Phase B context
+and whether allowed variance occurred.
+
+No v2.7 receipt, lifecycle, candidate output, production output, or observed
+v2.7 result may exist before the separately authorized v2.7 Git anchor.

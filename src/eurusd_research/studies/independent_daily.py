@@ -201,13 +201,18 @@ def rebuild_daily_profiles(
         raise ValueError("Independent raw checksum does not match registration")
     research_config = load_config(root)
     coverage = build_coverage(
-        root=root, config=research_config, repository_version="independent-v2.6"
+        root=root, config=research_config, repository_version="independent-v2.7"
     )
     task03 = validate_task03_row_membership(
         root,
         coverage,
         research_config,
-        expected_fingerprint=config.required_task03_row_membership_fingerprint,
+        expected_scientific_fingerprint=(
+            config.required_task03_scientific_membership_fingerprint
+        ),
+        expected_stable_artifact_fingerprint=(
+            config.required_task03_stable_artifact_fingerprint
+        ),
     )
     raw = pd.read_csv(
         raw_path, usecols=["timestamp_utc", "open", "high", "low", "close"]
@@ -257,5 +262,5 @@ def rebuild_daily_profiles(
         coverage.flags_by_level["row"].copy(),
         coverage.profile_masks_by_level["row"].copy(),
         raw_sha,
-        task03.evidence_fingerprint,
+        task03.scientific_membership_fingerprint,
     )

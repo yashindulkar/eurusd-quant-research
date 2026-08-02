@@ -394,3 +394,25 @@ tolerance for categorical, membership, and inventory mismatches.
 **Rationale:** The fail-closed thresholds worked: false comparison mismatches
 prevented completion. Correcting the representation contracts is narrower and
 more defensible than weakening those thresholds or changing the study.
+
+## 2026-08-02 — Stop v2.6 on lifecycle-state test and layer Task 03 identity
+
+**Decision:** Preserve the v2.6 anchor, receipt, candidate digest, successful
+twelve-component reconciliation, deterministic regeneration, and figure
+validation as an abandoned registered attempt. No output was promoted and no
+lifecycle was created. The quality gate failed because an anchor-registered
+integration test required receipt absence even after the registered workflow
+had legitimately created the receipt. The production receipt workflow was not
+invalidated by that assertion.
+
+Prepare v2.7 with unchanged scientific definitions and unchanged reconciliation
+thresholds. Replace the global receipt-absence assumption with five explicit,
+isolated lifecycle-state tests. Separate Task 03 scientific membership identity
+and stable canonical artifact identity from repository/execution context.
+Scientific or stable-artifact differences remain fatal before aggregation;
+explicitly registered context-only variance remains auditable and informational.
+
+**Rationale:** Receipt existence is state-dependent, while row/date population
+identity is not equivalent to a regenerated artifact's repository-state
+metadata. Separating those contracts prevents false governance failures without
+relaxing exact membership validation.

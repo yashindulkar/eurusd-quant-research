@@ -11,14 +11,14 @@ from pathlib import Path
 from typing import Any, Literal, cast
 
 import pandas as pd
-from pydantic import ConfigDict, Field
+from pydantic import ConfigDict, Field, model_validator
 
 from eurusd_research.config import ResearchConfig, StrictModel
 from eurusd_research.data.registry import sha256_file
 from eurusd_research.research.models import CoverageResult
 
 SOURCE_MANIFEST_SCHEMA_VERSION = "task04-source-dependency-manifest-v1"
-TASK03_EVIDENCE_SCHEMA_VERSION = "task03-row-membership-evidence-v1"
+TASK03_EVIDENCE_SCHEMA_VERSION = "task03-layered-evidence-v1"
 ENVIRONMENT_LOCK_SCHEMA_VERSION = "task04-environment-lock-v1"
 
 PROFILE_NAMES = (
@@ -108,18 +108,18 @@ class Task03ProfileEvidence(StrictModel):
     date_membership_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
-class Task03RowMembershipEvidence(StrictModel):
-    """Authoritative Task 03 row-addressable evidence consumed by Task 04."""
+class Task03ScientificMembershipIdentity(StrictModel):
+    """Stable scientific population identity required before Task 04 calculation."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
-    schema_version: Literal["task03-row-membership-evidence-v1"]
-    architecture: Literal["DESIGN_B_REBUILD_AND_RECONCILE_EXACTLY"]
+    schema_version: Literal["task03-scientific-membership-v1"]
     raw_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     observed_row_count: int = Field(gt=0)
     observed_date_count: int = Field(gt=0)
     task03_method_id: str = Field(min_length=1)
     task03_method_version: str = Field(min_length=1)
+    coverage_schema_version: str = Field(min_length=1)
     stable_lineage_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     boundary_classification_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     profiles: tuple[Task03ProfileEvidence, ...] = Field(min_length=4, max_length=4)
@@ -127,9 +127,113 @@ class Task03RowMembershipEvidence(StrictModel):
     strict_disjoint_sensitivity_full: bool
     strict_union_sensitivity_full_equals_default: bool
     sensitivity_2023_subset_sensitivity_full: bool
-    coverage_output_sha256: Mapping[str, str]
-    coverage_output_inventory_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    scientific_membership_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def validate_fingerprint(self) -> Task03ScientificMembershipIdentity:
+        value = self.model_dump(mode="json")
+        fingerprint = cast(str, value.pop("scientific_membership_fingerprint"))
+        if canonical_digest(value) != fingerprint:
+            raise ValueError("Task 03 scientific-membership fingerprint is invalid")
+        return self
+
+
+class Task03StableArtifactIdentity(StrictModel):
+    """Canonical Task 03 artifacts after explicitly registered normalization."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: Literal["task03-stable-artifact-v1"]
+    normalization_policy: Literal[
+        "CANONICAL_CONTENT_EXCLUDING_REGISTERED_EXECUTION_CONTEXT"
+    ]
+    output_inventory: tuple[str, ...] = Field(min_length=1)
+    stable_output_sha256: Mapping[str, str]
+    stable_artifact_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def validate_fingerprint(self) -> Task03StableArtifactIdentity:
+        paths = tuple(self.stable_output_sha256)
+        if self.output_inventory != tuple(sorted(self.output_inventory)):
+            raise ValueError("Task 03 stable-artifact inventory must be sorted")
+        if paths != self.output_inventory:
+            raise ValueError("Task 03 stable-artifact hashes must match inventory")
+        value = self.model_dump(mode="json")
+        fingerprint = cast(str, value.pop("stable_artifact_fingerprint"))
+        if canonical_digest(value) != fingerprint:
+            raise ValueError("Task 03 stable-artifact fingerprint is invalid")
+        return self
+
+
+class Task03ExecutionContextIdentity(StrictModel):
+    """Auditable repository and raw artifact context, not population identity."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: Literal["task03-execution-context-v1"]
+    repository_version: str = Field(min_length=1)
+    context_variance_policy: Literal[
+        "INFORMATIONAL_IF_SCIENTIFIC_AND_STABLE_ARTIFACT_IDENTITIES_MATCH"
+    ]
+    raw_output_sha256: Mapping[str, str]
+    execution_context_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def validate_fingerprint(self) -> Task03ExecutionContextIdentity:
+        value = self.model_dump(mode="json")
+        fingerprint = cast(str, value.pop("execution_context_fingerprint"))
+        if canonical_digest(value) != fingerprint:
+            raise ValueError("Task 03 execution-context fingerprint is invalid")
+        return self
+
+
+class Task03RowMembershipEvidence(StrictModel):
+    """Layered Task 03 evidence consumed by Task 04 v2.7."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    schema_version: Literal["task03-layered-evidence-v1"]
+    architecture: Literal["DESIGN_B_REBUILD_AND_RECONCILE_EXACTLY"]
+    scientific_membership: Task03ScientificMembershipIdentity
+    stable_artifacts: Task03StableArtifactIdentity
+    execution_context: Task03ExecutionContextIdentity
     evidence_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def validate_fingerprint(self) -> Task03RowMembershipEvidence:
+        value = self.model_dump(mode="json")
+        fingerprint = cast(str, value.pop("evidence_fingerprint"))
+        if canonical_digest(value) != fingerprint:
+            raise ValueError("Task 03 layered-evidence fingerprint is invalid")
+        return self
+
+    @property
+    def profiles(self) -> tuple[Task03ProfileEvidence, ...]:
+        return self.scientific_membership.profiles
+
+    @property
+    def observed_row_count(self) -> int:
+        return self.scientific_membership.observed_row_count
+
+    @property
+    def observed_date_count(self) -> int:
+        return self.scientific_membership.observed_date_count
+
+    @property
+    def task03_method_version(self) -> str:
+        return self.scientific_membership.task03_method_version
+
+    @property
+    def scientific_membership_fingerprint(self) -> str:
+        return self.scientific_membership.scientific_membership_fingerprint
+
+    @property
+    def stable_artifact_fingerprint(self) -> str:
+        return self.stable_artifacts.stable_artifact_fingerprint
+
+    @property
+    def execution_context_fingerprint(self) -> str:
+        return self.execution_context.execution_context_fingerprint
 
 
 def _source_scope(root: Path) -> list[tuple[Path, bool, str]]:
@@ -146,7 +250,7 @@ def _source_scope(root: Path) -> list[tuple[Path, bool, str]]:
         files.append((root / "configs" / name, False, "runtime_configuration"))
     files.append(
         (
-            root / "studies" / "task04_v2.6_environment_lock.json",
+            root / "studies" / "task04_v2.7_environment_lock.json",
             False,
             "environment_lock",
         )
@@ -241,7 +345,7 @@ def validate_source_dependency_manifest(
     root: Path, expected_fingerprint: str
 ) -> SourceDependencyManifest:
     """Require the current complete source scope to match pinned evidence."""
-    path = root / "studies" / "task04_v2.6_source_manifest.json"
+    path = root / "studies" / "task04_v2.7_source_manifest.json"
     saved = read_source_dependency_manifest(path)
     if saved.dependency_manifest_fingerprint != expected_fingerprint:
         raise ValueError("Task 04 dependency manifest identity is not registered")
@@ -269,6 +373,29 @@ def _frame_digest(frame: pd.DataFrame, columns: tuple[str, ...]) -> str:
 def _stable_lineage(coverage: CoverageResult) -> dict[str, str]:
     value = coverage.lineage.to_dict()
     return {field: str(value[field]) for field in _STABLE_LINEAGE_FIELDS}
+
+
+def stable_coverage_artifact_sha256(path: Path) -> str:
+    """Hash scientific artifact content after narrowly registered normalization."""
+    if path.name == "coverage_summary.json":
+        value = json.loads(path.read_text(encoding="utf-8"))
+        lineage = value.get("lineage")
+        if not isinstance(lineage, dict) or "repository_version" not in lineage:
+            raise ValueError("Task 03 summary lacks registered repository context")
+        lineage = dict(lineage)
+        lineage.pop("repository_version")
+        value = {**value, "lineage": lineage}
+        return canonical_digest(value)
+    if path.name == "coverage_summary.md":
+        lines = path.read_text(encoding="utf-8").splitlines()
+        normalized = [
+            "- Repository version: `<EXECUTION_CONTEXT>`"
+            if line.startswith("- Repository version: ")
+            else line
+            for line in lines
+        ]
+        return hashlib.sha256(("\n".join(normalized) + "\n").encode()).hexdigest()
+    return sha256_file(path)
 
 
 def build_task03_row_membership_evidence(
@@ -322,14 +449,14 @@ def build_task03_row_membership_evidence(
         "partial_boundary_year",
         "partial_boundary_month",
     )
-    payload: dict[str, Any] = {
-        "schema_version": TASK03_EVIDENCE_SCHEMA_VERSION,
-        "architecture": "DESIGN_B_REBUILD_AND_RECONCILE_EXACTLY",
+    scientific_payload: dict[str, Any] = {
+        "schema_version": "task03-scientific-membership-v1",
         "raw_sha256": coverage.lineage.raw_sha256,
         "observed_row_count": len(row_flags),
         "observed_date_count": len(date_flags),
         "task03_method_id": coverage.lineage.coverage_method_id,
         "task03_method_version": coverage.lineage.coverage_method_version,
+        "coverage_schema_version": "research-coverage-artifacts-v1",
         "stable_lineage_sha256": canonical_digest(_stable_lineage(coverage)),
         "boundary_classification_sha256": _frame_digest(row_flags, boundary_columns),
         "profiles": profile_records,
@@ -341,8 +468,52 @@ def build_task03_row_membership_evidence(
         "sensitivity_2023_subset_sensitivity_full": bool(
             (sensitivity_2023 & ~sensitivity).sum() == 0
         ),
-        "coverage_output_sha256": output_fingerprints,
-        "coverage_output_inventory_sha256": canonical_digest(output_fingerprints),
+    }
+    scientific = Task03ScientificMembershipIdentity.model_validate(
+        {
+            **scientific_payload,
+            "scientific_membership_fingerprint": canonical_digest(scientific_payload),
+        }
+    )
+    output_inventory = tuple(output_fingerprints)
+    stable_output_sha256 = {
+        path.relative_to(root).as_posix(): stable_coverage_artifact_sha256(path)
+        for path in output_paths
+    }
+    stable_payload: dict[str, Any] = {
+        "schema_version": "task03-stable-artifact-v1",
+        "normalization_policy": (
+            "CANONICAL_CONTENT_EXCLUDING_REGISTERED_EXECUTION_CONTEXT"
+        ),
+        "output_inventory": output_inventory,
+        "stable_output_sha256": stable_output_sha256,
+    }
+    stable = Task03StableArtifactIdentity.model_validate(
+        {
+            **stable_payload,
+            "stable_artifact_fingerprint": canonical_digest(stable_payload),
+        }
+    )
+    context_payload: dict[str, Any] = {
+        "schema_version": "task03-execution-context-v1",
+        "repository_version": coverage.lineage.repository_version,
+        "context_variance_policy": (
+            "INFORMATIONAL_IF_SCIENTIFIC_AND_STABLE_ARTIFACT_IDENTITIES_MATCH"
+        ),
+        "raw_output_sha256": output_fingerprints,
+    }
+    context = Task03ExecutionContextIdentity.model_validate(
+        {
+            **context_payload,
+            "execution_context_fingerprint": canonical_digest(context_payload),
+        }
+    )
+    payload: dict[str, Any] = {
+        "schema_version": TASK03_EVIDENCE_SCHEMA_VERSION,
+        "architecture": "DESIGN_B_REBUILD_AND_RECONCILE_EXACTLY",
+        "scientific_membership": scientific.model_dump(mode="json"),
+        "stable_artifacts": stable.model_dump(mode="json"),
+        "execution_context": context.model_dump(mode="json"),
     }
     return Task03RowMembershipEvidence.model_validate(
         {**payload, "evidence_fingerprint": canonical_digest(payload)}
@@ -367,17 +538,22 @@ def validate_task03_row_membership(
     coverage: CoverageResult,
     config: ResearchConfig,
     *,
-    expected_fingerprint: str,
+    expected_scientific_fingerprint: str,
+    expected_stable_artifact_fingerprint: str,
 ) -> Task03RowMembershipEvidence:
-    """Fail before Task 04 calculation unless live masks match pinned evidence."""
-    path = root / "studies" / "task03_task04_v2.6_mask_evidence.json"
+    """Fail unless live scientific and stable artifact identities are pinned."""
+    path = root / "studies" / "task03_task04_v2.7_evidence.json"
     saved = read_task03_row_membership_evidence(path)
-    if saved.evidence_fingerprint != expected_fingerprint:
-        raise ValueError("Task 03 row-membership evidence identity is not registered")
+    if saved.scientific_membership_fingerprint != expected_scientific_fingerprint:
+        raise ValueError("Task 03 scientific-membership identity is not registered")
+    if saved.stable_artifact_fingerprint != expected_stable_artifact_fingerprint:
+        raise ValueError("Task 03 stable-artifact identity is not registered")
     current = build_task03_row_membership_evidence(root, coverage, config)
-    if current != saved:
-        raise ValueError("Live Task 03 row-level masks disagree with pinned evidence")
-    return saved
+    if current.scientific_membership != saved.scientific_membership:
+        raise ValueError("Live Task 03 scientific membership disagrees with evidence")
+    if current.stable_artifacts != saved.stable_artifacts:
+        raise ValueError("Live Task 03 stable artifacts disagree with evidence")
+    return current
 
 
 def assert_regular_contained_file(path: Path, root: Path) -> None:

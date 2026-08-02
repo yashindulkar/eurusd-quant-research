@@ -17,7 +17,7 @@ from eurusd_research.studies.task04 import generate_task04_study
 
 
 @pytest.mark.integration
-def test_task04_v24_stops_before_calculation_without_anchor_receipt(
+def test_task04_pre_receipt_state_stops_before_calculation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
@@ -35,6 +35,12 @@ def test_task04_v24_stops_before_calculation_without_anchor_receipt(
     monkeypatch.setattr(
         "eurusd_research.studies.task04.aggregate_daily_profiles",
         forbidden_calculation,
+    )
+    monkeypatch.setattr(
+        "eurusd_research.studies.registry.read_registration_receipt",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            FileNotFoundError("Task 04 receipt not found in isolated PRE_RECEIPT state")
+        ),
     )
     with pytest.raises(FileNotFoundError, match="receipt not found"):
         generate_task04_study(root, output)
@@ -136,14 +142,16 @@ def test_task04_dependency_validation_fails_closed() -> None:
     coverage_summary, raw_manifest = validate_task04_dependencies(root, config)
     assert coverage_summary["lineage"]["raw_sha256"] == config.required_raw_sha256
     assert raw_manifest["sha256"] == config.required_raw_sha256
-    stale = config.model_copy(update={"required_coverage_summary_sha256": "b" * 64})
-    with pytest.raises(ValueError, match="coverage summary fingerprint is stale"):
+    stale = config.model_copy(
+        update={"required_coverage_summary_stable_sha256": "b" * 64}
+    )
+    with pytest.raises(ValueError, match="stable coverage-summary fingerprint"):
         validate_task04_dependencies(root, stale)
 
     missing = config.model_copy(
         update={"coverage_summary_path": Path("reports/coverage/missing.json")}
     )
-    with pytest.raises(FileNotFoundError):
+    with pytest.raises(ValueError, match="dependency is unreadable"):
         validate_task04_dependencies(root, missing)
 
     mutations = (
@@ -169,8 +177,12 @@ def test_task04_dependency_validation_fails_closed() -> None:
             "environment lock",
         ),
         (
-            {"required_task03_row_membership_fingerprint": "b" * 64},
-            "row-membership evidence",
+            {"required_task03_scientific_membership_fingerprint": "b" * 64},
+            "scientific-membership evidence",
+        ),
+        (
+            {"required_task03_stable_artifact_fingerprint": "b" * 64},
+            "stable-artifact evidence",
         ),
     )
     for update, message in mutations:

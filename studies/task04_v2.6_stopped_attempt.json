@@ -1,0 +1,41 @@
+{
+  "anchor_commit": "26f52f51c8a8b9a20e6e18dbc28a7275c54936b6",
+  "anchor_tree": "b5a1f41441d58d1d55a9a08739aaaafb5f7e2dd3",
+  "candidate_digest": "b02946cd54631cf8535ac1f694287374602f0208a79f8560e075fe6216000fa4",
+  "candidate_inventory_count": 28,
+  "candidate_outputs_promoted": false,
+  "checked_field_count": 733255,
+  "checked_row_count": 25103,
+  "classification": "ABANDONED_REGISTERED_ATTEMPT",
+  "deterministic_regeneration_passed": true,
+  "failing_test": {
+    "path": "tests/integration/test_task04_study.py",
+    "reason": "The pre-receipt integration test depended on the real repository receipt being absent, so it failed during the legitimate post-receipt Phase B state and reached its deliberately forbidden aggregation function.",
+    "test": "test_task04_v24_stops_before_calculation_without_anchor_receipt"
+  },
+  "lifecycle_created": false,
+  "maximum_numerical_discrepancy": 4.547473508864641e-13,
+  "method_version": "range-weekday-registered-replication-v2.6",
+  "figure_validation_passed": true,
+  "production_output_created": false,
+  "quality_gate_failure": "INTEGRATION_TESTS_FAILED",
+  "reason_for_abandonment": "v2.6 completed anchor, receipt, dependency validation, candidate generation, all twelve independent reconciliation components, deterministic regeneration, and figure validation. Phase B stopped because an anchor-registered integration test incorrectly required the receipt to remain absent during the legitimate post-receipt Phase B state. No candidate was promoted and no lifecycle was completed.",
+  "receipt_fingerprint": "c495355d4ec06778117ca06766834d649f0fe3d896299280e0852e6e365060c3",
+  "reconciliation_artifact_fingerprint": "44c00da9ce8f76617a6fd21f8f4b692fee13091d7352c52dc068f6c5660b1fcb",
+  "registration_version": "2.6",
+  "schema_version": "task04-stopped-attempt-v1",
+  "study_id": "TASK-04",
+  "task03_evidence_observation": {
+    "boundary_classification_changed": false,
+    "date_membership_changed": false,
+    "profile_algebra_changed": false,
+    "profile_counts_changed": false,
+    "regenerated_combined_evidence_fingerprint": "db50ba37ba1876af40d29b0e8445d513d6400eff23c7b4dcde4dbc0f0876887f",
+    "regenerated_coverage_output_inventory_fingerprint": "319e76fe7e0f2e3d503e075a41d662db7e72e05e38a3b0aaf38c209449ede7a5",
+    "registered_combined_evidence_fingerprint": "323e74582c87a4f02f881e76c736587a0bd3260e5beb73bac702073d5b4c2320",
+    "registered_coverage_output_inventory_fingerprint": "7a64896c0ecdc6b212bcc8713b6454c153d3b0e6f86f6aab884b17070dc32a8f",
+    "row_membership_changed": false,
+    "stable_lineage_changed": false
+  },
+  "twelve_component_reconciliation_passed": true
+}

@@ -1,9 +1,9 @@
 study_id: TASK-04
-registration_version: '2.6'
+registration_version: '2.7'
 method_id: RANGE-WEEKDAY-001
-method_version: range-weekday-registered-replication-v2.6
-implementation_version: task04-daily-range-weekday-v2.6
-receipt_schema_version: task04-registration-receipt-v4
+method_version: range-weekday-registered-replication-v2.7
+implementation_version: task04-daily-range-weekday-v2.7
+receipt_schema_version: task04-registration-receipt-v5
 timezone: UTC
 pip_size: 0.0001
 weekday_inclusion:
@@ -57,15 +57,14 @@ variance_convention: sample_ddof_1
 mad_convention: unscaled_median_absolute_deviation
 timestamp_semantics_status: UNRESOLVED
 timestamp_operational_assumption: AS_SUPPLIED_TIMESTAMP_LABEL_DATE
-preregistration_path: studies/task04_daily_range_weekday.v2.6.yaml
-registration_receipt_path: studies/task04_daily_range_weekday.v2.6.receipt.json
-registration_lifecycle_path: studies/task04_daily_range_weekday.v2.6.lifecycle.json
+preregistration_path: studies/task04_daily_range_weekday.v2.7.yaml
+registration_receipt_path: studies/task04_daily_range_weekday.v2.7.receipt.json
+registration_lifecycle_path: studies/task04_daily_range_weekday.v2.7.lifecycle.json
 coverage_summary_path: reports/coverage/coverage_summary.json
-output_directory: reports/research/task04_daily_range_weekday_v2.6
+output_directory: reports/research/task04_daily_range_weekday_v2.7
 required_raw_sha256: b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c
 required_raw_manifest_sha256: dce975d2e769e6201e89010cc77be7011a3e18b5782f7ae4a8ece6abb803e2e1
 required_task02_audit_fingerprint: 670968cbfcf018abc59bbb64a4b2b3912bae9df44988542765748328caf9c61f
-required_coverage_summary_sha256: 3bc8a6d9c44e9801dfddb625bad92839d3a7d64b582642d413087bdb4866c096
 expected_output_files:
 - study_summary.json
 - study_summary.md
@@ -119,14 +118,12 @@ figure_settings:
   - '#6E7781'
   - '#8B5E83'
   violin_bandwidth_method: scott
-source_dependency_manifest_path: studies/task04_v2.6_source_manifest.json
-environment_lock_path: studies/task04_v2.6_environment_lock.json
-task03_row_membership_evidence_path: studies/task03_task04_v2.6_mask_evidence.json
-required_source_dependency_manifest_fingerprint: 1899ae5223bc64fa93e7ba8d470bfbb4c0ceaeed6da05be61080871a54418327
-required_environment_lock_fingerprint: d6d605fe0d6c0141dbc0ea496cb366ba28abf8edeabc6f02cf17e10b4317b5ca
-required_task03_row_membership_fingerprint: 323e74582c87a4f02f881e76c736587a0bd3260e5beb73bac702073d5b4c2320
-lifecycle_schema_version: task04-registration-lifecycle-v4
-candidate_output_directory: reports/research/.task04_v2.6_candidate
+source_dependency_manifest_path: studies/task04_v2.7_source_manifest.json
+environment_lock_path: studies/task04_v2.7_environment_lock.json
+required_source_dependency_manifest_fingerprint: 03eeb297cd5030d8ca1d29b850997efa94d831690f0fc6609a5c7f8f04b8198b
+required_environment_lock_fingerprint: b8e6e21c7f2b00739db45684f4117e8c6804ad6bc3f29a8274ed654a32152563
+lifecycle_schema_version: task04-registration-lifecycle-v5
+candidate_output_directory: reports/research/.task04_v2.7_candidate
 output_digest_algorithm: task04-path-length-bytes-sha256-v1
 independent_reconciliation_implementation: task04-independent-full-reproduction-v2
 independent_reconciliation_components:
@@ -215,3 +212,19 @@ regime_lineage_comparison_fields:
 output_path_convention: PRODUCTION_ROOT_RELATIVE_FORWARD_SLASH
 figure_path_prefix: figures/
 mismatch_treatment: ZERO_CATEGORICAL_MEMBERSHIP_AND_INVENTORY_TOLERANCE
+task03_evidence_path: studies/task03_task04_v2.7_evidence.json
+task03_evidence_layer_schema_version: task03-layered-evidence-v1
+task03_execution_context_variance_policy: INFORMATIONAL_IF_SCIENTIFIC_AND_STABLE_ARTIFACT_IDENTITIES_MATCH
+required_task03_scientific_membership_fingerprint: 3472712a1db02e6941d136f961acf6f4272f822c3ada1e9784b0bb8ad04251ce
+required_task03_stable_artifact_fingerprint: 958a1d7aa4d71901368cc3e59971ba736a5ed8187d0c0956e9498f0c46269418
+required_coverage_summary_stable_sha256: 464a9600384481798eef8c48600ff75cc1f04b6faa435c6f15abf595e04a3721
+lifecycle_state_integration_tests:
+- PRE_RECEIPT
+- POST_RECEIPT_PRE_CANDIDATE
+- CANDIDATE
+- POST_PROMOTION_PRE_LIFECYCLE
+- COMPLETED
+receipt_existence_policy: ABSENT_BEFORE_CREATION_REQUIRED_AFTER_CREATION
+task03_scientific_membership_policy: EXACT_ROW_DATE_ALGEBRA_BOUNDARY_AND_RAW_IDENTITY_REQUIRED
+task03_stable_artifact_policy: CANONICAL_CONTENT_EXCLUDING_REGISTERED_EXECUTION_CONTEXT_REQUIRED
+task03_material_mismatch_policy: SCIENTIFIC_OR_STABLE_ARTIFACT_MISMATCH_FAILS_BEFORE_AGGREGATION

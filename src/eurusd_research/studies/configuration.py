@@ -127,12 +127,12 @@ class Task04Config(StrictModel):
     """Complete fail-closed configuration for the weekday-range study."""
 
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.6"]
+    registration_version: Literal["2.7"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.6"]
+    method_version: Literal["range-weekday-registered-replication-v2.7"]
     implementation_version: str = Field(min_length=1)
-    receipt_schema_version: Literal["task04-registration-receipt-v4"]
-    lifecycle_schema_version: Literal["task04-registration-lifecycle-v4"]
+    receipt_schema_version: Literal["task04-registration-receipt-v5"]
+    lifecycle_schema_version: Literal["task04-registration-lifecycle-v5"]
     timezone: str
     pip_size: float = Field(gt=0.0, allow_inf_nan=False)
     weekday_inclusion: tuple[str, ...] = Field(min_length=5, max_length=5)
@@ -165,7 +165,28 @@ class Task04Config(StrictModel):
     registration_lifecycle_path: Path
     source_dependency_manifest_path: Path
     environment_lock_path: Path
-    task03_row_membership_evidence_path: Path
+    task03_evidence_path: Path
+    task03_evidence_layer_schema_version: Literal["task03-layered-evidence-v1"]
+    task03_execution_context_variance_policy: Literal[
+        "INFORMATIONAL_IF_SCIENTIFIC_AND_STABLE_ARTIFACT_IDENTITIES_MATCH"
+    ]
+    lifecycle_state_integration_tests: tuple[
+        Literal["PRE_RECEIPT"],
+        Literal["POST_RECEIPT_PRE_CANDIDATE"],
+        Literal["CANDIDATE"],
+        Literal["POST_PROMOTION_PRE_LIFECYCLE"],
+        Literal["COMPLETED"],
+    ]
+    receipt_existence_policy: Literal["ABSENT_BEFORE_CREATION_REQUIRED_AFTER_CREATION"]
+    task03_scientific_membership_policy: Literal[
+        "EXACT_ROW_DATE_ALGEBRA_BOUNDARY_AND_RAW_IDENTITY_REQUIRED"
+    ]
+    task03_stable_artifact_policy: Literal[
+        "CANONICAL_CONTENT_EXCLUDING_REGISTERED_EXECUTION_CONTEXT_REQUIRED"
+    ]
+    task03_material_mismatch_policy: Literal[
+        "SCIENTIFIC_OR_STABLE_ARTIFACT_MISMATCH_FAILS_BEFORE_AGGREGATION"
+    ]
     coverage_summary_path: Path
     output_directory: Path
     candidate_output_directory: Path
@@ -211,12 +232,15 @@ class Task04Config(StrictModel):
     required_raw_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     required_raw_manifest_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     required_task02_audit_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
-    required_coverage_summary_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    required_coverage_summary_stable_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     required_source_dependency_manifest_fingerprint: str = Field(
         pattern=r"^[0-9a-f]{64}$"
     )
     required_environment_lock_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
-    required_task03_row_membership_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    required_task03_scientific_membership_fingerprint: str = Field(
+        pattern=r"^[0-9a-f]{64}$"
+    )
+    required_task03_stable_artifact_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
     expected_output_files: tuple[str, ...] = Field(min_length=1)
     expected_figure_files: tuple[str, ...] = Field(min_length=1)
     evidence_rating: EvidenceRatingConfig
@@ -264,6 +288,15 @@ class Task04Config(StrictModel):
             raise ValueError(f"Unknown IANA timezone: {self.timezone}") from error
         if self.timezone != "UTC":
             raise ValueError("Task 04 timezone must be UTC")
+        expected_states = (
+            "PRE_RECEIPT",
+            "POST_RECEIPT_PRE_CANDIDATE",
+            "CANDIDATE",
+            "POST_PROMOTION_PRE_LIFECYCLE",
+            "COMPLETED",
+        )
+        if self.lifecycle_state_integration_tests != expected_states:
+            raise ValueError("Task 04 lifecycle-state inventory is not exact")
         expected_weekdays = ("Monday", "Tuesday", "Wednesday", "Thursday", "Friday")
         if self.weekday_inclusion != expected_weekdays:
             raise ValueError("Task 04 weekday order must be Monday through Friday")
@@ -286,7 +319,7 @@ class Task04Config(StrictModel):
             self.registration_lifecycle_path,
             self.source_dependency_manifest_path,
             self.environment_lock_path,
-            self.task03_row_membership_evidence_path,
+            self.task03_evidence_path,
             self.coverage_summary_path,
             self.output_directory,
             self.candidate_output_directory,

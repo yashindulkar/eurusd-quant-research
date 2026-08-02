@@ -1,17 +1,20 @@
-"""Promote validated v2.4 candidate outputs and create the terminal lifecycle."""
+"""Promote validated v2.7 candidate outputs and create the terminal lifecycle."""
 
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
 
+from eurusd_research.config import load_config
 from eurusd_research.paths import find_repository_root, project_path
+from eurusd_research.research.coverage import _repository_version, build_coverage
 from eurusd_research.studies.completion import (
     LifecycleCompletionRequest,
     build_output_digest,
     promote_candidate_outputs,
 )
 from eurusd_research.studies.configuration import load_task04_config
+from eurusd_research.studies.integrity import build_task03_row_membership_evidence
 from eurusd_research.studies.orchestration import PhaseBStage
 from eurusd_research.studies.registry import (
     LifecycleOutputEvidence,
@@ -41,6 +44,22 @@ def main(argv: list[str] | None = None) -> int:
         project_path(config.preregistration_path, root)
     )
     receipt = validate_registration_receipt(registration, config, root=root)
+    research_config = load_config(root)
+    task03 = build_task03_row_membership_evidence(
+        root,
+        build_coverage(
+            root=root,
+            config=research_config,
+            repository_version=_repository_version(
+                root,
+                ignored_generated_paths=(
+                    config.output_directory,
+                    config.candidate_output_directory,
+                ),
+            ),
+        ),
+        research_config,
+    )
     expected = tuple(
         sorted(
             (
@@ -87,10 +106,11 @@ def main(argv: list[str] | None = None) -> int:
         primary_p_value=request.primary_p_value,
         primary_effect_size=request.primary_effect_size,
         final_evidence_rating=request.final_evidence_rating,
-        task03_execution_context_fingerprint=(
-            receipt.upstream_evidence.task03.execution_context_fingerprint_at_receipt
+        task03_execution_context_fingerprint=(task03.execution_context_fingerprint),
+        task03_execution_context_variance_observed=(
+            task03.execution_context_fingerprint
+            != receipt.upstream_evidence.task03.execution_context_fingerprint_at_receipt
         ),
-        task03_execution_context_variance_observed=False,
         limitations=request.limitations,
     )
     progress = progress.advance(PhaseBStage.CREATE_COMPLETED_LIFECYCLE)
@@ -101,7 +121,7 @@ def main(argv: list[str] | None = None) -> int:
     if not progress.completed:
         raise AssertionError("Phase B completion sequence is incomplete")
     print(
-        "Task 04 v2.4 lifecycle: COMPLETED | "
+        "Task 04 v2.7 lifecycle: COMPLETED | "
         f"lifecycle_fingerprint={lifecycle.lifecycle_fingerprint}"
     )
     return 0

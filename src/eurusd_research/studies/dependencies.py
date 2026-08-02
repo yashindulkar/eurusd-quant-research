@@ -14,6 +14,7 @@ from eurusd_research.studies.configuration import Task04Config
 from eurusd_research.studies.integrity import (
     read_source_dependency_manifest,
     read_task03_row_membership_evidence,
+    stable_coverage_artifact_sha256,
 )
 
 
@@ -50,8 +51,6 @@ def validate_task04_dependencies(
     if manifest.sha256 != task_config.required_raw_sha256:
         raise ValueError("Task 04 raw manifest checksum is incompatible")
     coverage_path = project_path(task_config.coverage_summary_path, root)
-    if sha256_file(coverage_path) != task_config.required_coverage_summary_sha256:
-        raise ValueError("Task 03 coverage summary fingerprint is stale")
     coverage_summary = _read_json(coverage_path)
     lineage = coverage_summary.get("lineage", {})
     expected = {
@@ -104,17 +103,33 @@ def validate_task04_dependencies(
     ):
         raise ValueError("Task 04 environment lock is stale")
     mask_evidence = read_task03_row_membership_evidence(
-        project_path(task_config.task03_row_membership_evidence_path, root)
+        project_path(task_config.task03_evidence_path, root)
     )
-    if mask_evidence.evidence_fingerprint != (
-        task_config.required_task03_row_membership_fingerprint
-    ):
-        raise ValueError("Task 03 row-membership evidence is stale")
+    summary_relative = task_config.coverage_summary_path.as_posix()
+    registered_summary_sha = mask_evidence.stable_artifacts.stable_output_sha256.get(
+        summary_relative
+    )
     if (
-        mask_evidence.raw_sha256 != task_config.required_raw_sha256
-        or mask_evidence.task03_method_id != repository_config.coverage.method_id
+        registered_summary_sha is None
+        or registered_summary_sha != task_config.required_coverage_summary_stable_sha256
+        or stable_coverage_artifact_sha256(coverage_path) != registered_summary_sha
+    ):
+        raise ValueError("Task 03 stable coverage-summary fingerprint is stale")
+    if mask_evidence.scientific_membership_fingerprint != (
+        task_config.required_task03_scientific_membership_fingerprint
+    ):
+        raise ValueError("Task 03 scientific-membership evidence is stale")
+    if mask_evidence.stable_artifact_fingerprint != (
+        task_config.required_task03_stable_artifact_fingerprint
+    ):
+        raise ValueError("Task 03 stable-artifact evidence is stale")
+    if (
+        mask_evidence.scientific_membership.raw_sha256
+        != task_config.required_raw_sha256
+        or mask_evidence.scientific_membership.task03_method_id
+        != repository_config.coverage.method_id
         or mask_evidence.task03_method_version
         != repository_config.coverage.method_version
     ):
-        raise ValueError("Task 03 row-membership evidence lineage is incompatible")
+        raise ValueError("Task 03 scientific evidence lineage is incompatible")
     return coverage_summary, manifest.to_dict()

@@ -87,6 +87,10 @@ def main(argv: list[str] | None = None) -> int:
         primary_p_value=request.primary_p_value,
         primary_effect_size=request.primary_effect_size,
         final_evidence_rating=request.final_evidence_rating,
+        task03_execution_context_fingerprint=(
+            receipt.upstream_evidence.task03.execution_context_fingerprint_at_receipt
+        ),
+        task03_execution_context_variance_observed=False,
         limitations=request.limitations,
     )
     progress = progress.advance(PhaseBStage.CREATE_COMPLETED_LIFECYCLE)

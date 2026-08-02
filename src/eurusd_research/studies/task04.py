@@ -82,7 +82,7 @@ def _lineage(
         "dataset_version": str(coverage["dataset_version"]),
         "raw_sha256": str(coverage["raw_sha256"]),
         "audit_fingerprint": str(coverage["audit_result_content_sha256"]),
-        "coverage_fingerprint": config.required_coverage_summary_sha256,
+        "coverage_fingerprint": config.required_coverage_summary_stable_sha256,
         "coverage_config_fingerprint": str(coverage["coverage_config_sha256"]),
         "task04_config_fingerprint": _config_fingerprint(config),
         "preregistration_fingerprint": str(preregistration["locked_design_sha256"]),
@@ -961,7 +961,12 @@ def generate_task04_study(
         repository_root,
         coverage,
         repository_config,
-        expected_fingerprint=(task_config.required_task03_row_membership_fingerprint),
+        expected_scientific_fingerprint=(
+            task_config.required_task03_scientific_membership_fingerprint
+        ),
+        expected_stable_artifact_fingerprint=(
+            task_config.required_task03_stable_artifact_fingerprint
+        ),
     )
     saved_lineage = coverage_summary["lineage"]
     for field in (

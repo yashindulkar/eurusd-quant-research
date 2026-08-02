@@ -56,7 +56,7 @@ def _preregistered(
 def test_task04_config_and_registration_contract() -> None:
     root, config, registration = _contract()
     assert registration.status == "PREREGISTERED"
-    assert registration.registration_version == config.registration_version == "2.6"
+    assert registration.registration_version == config.registration_version == "2.7"
     assert_registration_matches_config(registration, config)
     assert len(locked_design_fingerprint(registration)) == 64
     assert len(executable_configuration_fingerprint(config)) == 64
@@ -144,7 +144,7 @@ def test_canonical_ordering_semantics_and_unknown_fields() -> None:
         ("required_raw_sha256", "b" * 64),
         ("required_raw_manifest_sha256", "b" * 64),
         ("required_task02_audit_fingerprint", "b" * 64),
-        ("required_coverage_summary_sha256", "b" * 64),
+        ("required_coverage_summary_stable_sha256", "b" * 64),
         ("timezone", "Europe/Berlin"),
         ("pip_size", 0.001),
         (
@@ -251,14 +251,14 @@ def test_receipt_creation_validates_live_dependencies(
     root, config, registration = _contract()
 
     def fail_dependency_validation(*_args: object, **_kwargs: object) -> None:
-        raise ValueError("Task 03 coverage summary fingerprint is stale")
+        raise ValueError("Task 03 stable coverage-summary fingerprint is stale")
 
     monkeypatch.setattr(
         registry_module,
         "validate_task04_dependencies",
         fail_dependency_validation,
     )
-    with pytest.raises(ValueError, match="coverage summary fingerprint is stale"):
+    with pytest.raises(ValueError, match="stable coverage-summary fingerprint"):
         build_registration_receipt(_preregistered(registration), config, root=root)
 
 

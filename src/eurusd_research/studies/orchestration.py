@@ -1,4 +1,4 @@
-"""Explicit v2.6 Phase B stage ordering.
+"""Explicit v2.7 Phase B stage ordering and filesystem lifecycle states.
 
 The stage controller is intentionally result-agnostic.  It prevents candidate
 generation from being conflated with terminal lifecycle completion.
@@ -7,6 +7,7 @@ generation from being conflated with terminal lifecycle completion.
 from __future__ import annotations
 
 from enum import StrEnum
+from pathlib import Path
 
 from pydantic import ConfigDict, Field
 
@@ -31,6 +32,49 @@ class PhaseBStage(StrEnum):
 
 
 PHASE_B_SEQUENCE = tuple(PhaseBStage)
+
+
+class PhaseBFilesystemState(StrEnum):
+    """Permitted externally observable Phase B evidence states."""
+
+    PRE_RECEIPT = "PRE_RECEIPT"
+    POST_RECEIPT_PRE_CANDIDATE = "POST_RECEIPT_PRE_CANDIDATE"
+    CANDIDATE = "CANDIDATE"
+    POST_PROMOTION_PRE_LIFECYCLE = "POST_PROMOTION_PRE_LIFECYCLE"
+    COMPLETED = "COMPLETED"
+
+
+def classify_phase_b_filesystem_state(
+    *,
+    receipt_path: Path,
+    lifecycle_path: Path,
+    candidate_directory: Path,
+    final_directory: Path,
+) -> PhaseBFilesystemState:
+    """Classify one valid lifecycle state without assuming receipt absence globally."""
+    present = (
+        receipt_path.exists(),
+        lifecycle_path.exists(),
+        candidate_directory.exists(),
+        final_directory.exists(),
+    )
+    states = {
+        (False, False, False, False): PhaseBFilesystemState.PRE_RECEIPT,
+        (True, False, False, False): (PhaseBFilesystemState.POST_RECEIPT_PRE_CANDIDATE),
+        (True, False, True, False): PhaseBFilesystemState.CANDIDATE,
+        (True, False, False, True): (
+            PhaseBFilesystemState.POST_PROMOTION_PRE_LIFECYCLE
+        ),
+        (True, True, False, True): PhaseBFilesystemState.COMPLETED,
+    }
+    try:
+        return states[present]
+    except KeyError as error:
+        raise ValueError(
+            "Invalid Task 04 lifecycle filesystem state: "
+            f"receipt={present[0]}, lifecycle={present[1]}, "
+            f"candidate={present[2]}, final={present[3]}"
+        ) from error
 
 
 class PhaseBProgress(StrictModel):

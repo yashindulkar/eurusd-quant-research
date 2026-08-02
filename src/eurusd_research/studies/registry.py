@@ -32,11 +32,11 @@ from eurusd_research.studies.integrity import (
     read_task03_row_membership_evidence,
     validate_source_dependency_manifest,
 )
-from eurusd_research.studies.registration_models import Task04PreregistrationV26
+from eurusd_research.studies.registration_models import Task04PreregistrationV27
 
 MUTABLE_REGISTRATION_FIELDS = ("status",)
-RECEIPT_SCHEMA_VERSION = "task04-registration-receipt-v4"
-LIFECYCLE_SCHEMA_VERSION = "task04-registration-lifecycle-v4"
+RECEIPT_SCHEMA_VERSION = "task04-registration-receipt-v5"
+LIFECYCLE_SCHEMA_VERSION = "task04-registration-lifecycle-v5"
 CANONICALIZATION_VERSION = "task04-canonical-json-v1"
 
 
@@ -77,7 +77,7 @@ class PreregistrationDeviation(StrictModel):
         return self
 
 
-Task04Preregistration = Task04PreregistrationV26
+Task04Preregistration = Task04PreregistrationV27
 
 
 LOCKED_FIELDS = tuple(
@@ -98,13 +98,13 @@ class RegisteredBlobIdentity(ReceiptSection):
 
 
 class ReceiptIdentity(ReceiptSection):
-    receipt_schema_version: Literal["task04-registration-receipt-v4"]
+    receipt_schema_version: Literal["task04-registration-receipt-v5"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.6"]
+    registration_version: Literal["2.7"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.6"]
-    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.6.yaml"]
-    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.6.receipt.json"]
+    method_version: Literal["range-weekday-registered-replication-v2.7"]
+    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.7.yaml"]
+    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.7.receipt.json"]
     registration_classification: Literal[
         "correctively registered replication of the developed Task 04 analysis"
     ]
@@ -178,10 +178,15 @@ class ReceiptTask03ProfileCounts(ReceiptSection):
 
 
 class ReceiptTask03Evidence(ReceiptSection):
-    schema_version: Literal["task03-row-membership-evidence-v1"]
+    schema_version: Literal["task03-layered-evidence-v1"]
     method_version: Literal["research-coverage-v1"]
-    coverage_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
-    exact_evidence_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    coverage_stable_artifact_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    scientific_membership_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    stable_artifact_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    execution_context_fingerprint_at_receipt: str = Field(pattern=r"^[0-9a-f]{64}$")
+    execution_context_variance_policy: Literal[
+        "INFORMATIONAL_IF_SCIENTIFIC_AND_STABLE_ARTIFACT_IDENTITIES_MATCH"
+    ]
     exact_row_membership_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
     exact_date_membership_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
     profile_counts: ReceiptTask03ProfileCounts
@@ -202,7 +207,7 @@ class ReceiptIntegrity(ReceiptSection):
 
 
 class Task04RegistrationReceipt(StrictModel):
-    """Immutable pre-result identity of the v2.6 registered replication."""
+    """Immutable pre-result identity of the v2.7 registered replication."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -215,13 +220,13 @@ class Task04RegistrationReceipt(StrictModel):
 
 
 class LifecycleIdentity(ReceiptSection):
-    lifecycle_schema_version: Literal["task04-registration-lifecycle-v4"]
+    lifecycle_schema_version: Literal["task04-registration-lifecycle-v5"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.6"]
+    registration_version: Literal["2.7"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.6"]
+    method_version: Literal["range-weekday-registered-replication-v2.7"]
     lifecycle_file_path: Literal[
-        "studies/task04_daily_range_weekday.v2.6.lifecycle.json"
+        "studies/task04_daily_range_weekday.v2.7.lifecycle.json"
     ]
     status: Literal["COMPLETED"]
     receipt_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -241,7 +246,13 @@ class LifecycleProductionState(ReceiptSection):
     registered_anchor_paths_unchanged: Literal[True]
     raw_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
     task02_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
-    task03_evidence_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    task03_scientific_membership_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    task03_stable_artifact_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    task03_execution_context_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    task03_execution_context_variance_observed: bool
+    task03_scientific_validation_passed: Literal[True]
+    task03_stable_artifact_validation_passed: Literal[True]
+    task03_execution_context_classified: Literal[True]
     executable_configuration_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
 
 
@@ -295,7 +306,7 @@ class LifecycleGovernance(ReceiptSection):
 
 
 class Task04RegistrationLifecycle(StrictModel):
-    """Terminal completion evidence bound to the original v2.6 receipt."""
+    """Terminal completion evidence bound to the original v2.7 receipt."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -379,9 +390,20 @@ def executable_configuration_contract(config: Task04Config) -> dict[str, Any]:
             "raw_checksum": config.required_raw_sha256,
             "raw_manifest_sha256": config.required_raw_manifest_sha256,
             "task02_audit_fingerprint": config.required_task02_audit_fingerprint,
-            "task03_coverage_fingerprint": config.required_coverage_summary_sha256,
-            "task03_row_membership_fingerprint": (
-                config.required_task03_row_membership_fingerprint
+            "task03_coverage_stable_fingerprint": (
+                config.required_coverage_summary_stable_sha256
+            ),
+            "task03_scientific_membership_fingerprint": (
+                config.required_task03_scientific_membership_fingerprint
+            ),
+            "task03_stable_artifact_fingerprint": (
+                config.required_task03_stable_artifact_fingerprint
+            ),
+            "task03_evidence_layer_schema_version": (
+                config.task03_evidence_layer_schema_version
+            ),
+            "task03_execution_context_variance_policy": (
+                config.task03_execution_context_variance_policy
             ),
             "source_dependency_manifest_fingerprint": (
                 config.required_source_dependency_manifest_fingerprint
@@ -443,6 +465,21 @@ def executable_configuration_contract(config: Task04Config) -> dict[str, Any]:
             "candidate_outputs_are_completed_evidence": (
                 config.candidate_outputs_are_completed_evidence
             ),
+            "lifecycle_state_integration_tests": list(
+                config.lifecycle_state_integration_tests
+            ),
+            "receipt_existence_policy": config.receipt_existence_policy,
+            "task03_evidence_layer_schema_version": (
+                config.task03_evidence_layer_schema_version
+            ),
+            "task03_scientific_membership_policy": (
+                config.task03_scientific_membership_policy
+            ),
+            "task03_stable_artifact_policy": config.task03_stable_artifact_policy,
+            "task03_execution_context_policy": (
+                config.task03_execution_context_variance_policy
+            ),
+            "task03_material_mismatch_policy": config.task03_material_mismatch_policy,
             "output_digest_algorithm": config.output_digest_algorithm,
             "independent_reconciliation_implementation": (
                 config.independent_reconciliation_implementation
@@ -528,11 +565,20 @@ def registration_execution_contract(
             "task02_audit_fingerprint": (
                 registration.task_02_dependency.normalized_result_fingerprint
             ),
-            "task03_coverage_fingerprint": (
-                registration.task_03_dependency.coverage_summary_file_fingerprint
+            "task03_coverage_stable_fingerprint": (
+                registration.task_03_dependency.coverage_summary_stable_fingerprint
             ),
-            "task03_row_membership_fingerprint": (
-                registration.task_03_dependency.row_membership_evidence_fingerprint
+            "task03_scientific_membership_fingerprint": (
+                registration.task_03_dependency.scientific_membership_fingerprint
+            ),
+            "task03_stable_artifact_fingerprint": (
+                registration.task_03_dependency.stable_artifact_fingerprint
+            ),
+            "task03_evidence_layer_schema_version": (
+                registration.task_03_dependency.evidence_layer_schema_version
+            ),
+            "task03_execution_context_variance_policy": (
+                registration.task_03_dependency.execution_context_variance_policy
             ),
             "source_dependency_manifest_fingerprint": (
                 registration.source_dependency_manifest_fingerprint
@@ -754,9 +800,7 @@ def build_registration_receipt(
     )
     anchor_parent = resolve_commit(root, f"{anchor}^")
     branch = branch_at_registration or _git(root, "branch", "--show-current")
-    task03 = read_task03_row_membership_evidence(
-        root / config.task03_row_membership_evidence_path
-    )
+    task03 = read_task03_row_membership_evidence(root / config.task03_evidence_path)
     row_membership = _canonical_digest(
         [
             {"profile": item.profile, "sha256": item.row_membership_sha256}
@@ -771,15 +815,17 @@ def build_registration_receipt(
     )
     algebra = _canonical_digest(
         {
-            "strict_subset_default": task03.strict_subset_default,
+            "strict_subset_default": (
+                task03.scientific_membership.strict_subset_default
+            ),
             "strict_disjoint_sensitivity_full": (
-                task03.strict_disjoint_sensitivity_full
+                task03.scientific_membership.strict_disjoint_sensitivity_full
             ),
             "strict_union_sensitivity_full_equals_default": (
-                task03.strict_union_sensitivity_full_equals_default
+                task03.scientific_membership.strict_union_sensitivity_full_equals_default
             ),
             "sensitivity_2023_subset_sensitivity_full": (
-                task03.sensitivity_2023_subset_sensitivity_full
+                task03.scientific_membership.sensitivity_2023_subset_sensitivity_full
             ),
         }
     )
@@ -859,8 +905,19 @@ def build_registration_receipt(
             "task03": {
                 "schema_version": task03.schema_version,
                 "method_version": task03.task03_method_version,
-                "coverage_fingerprint": config.required_coverage_summary_sha256,
-                "exact_evidence_fingerprint": task03.evidence_fingerprint,
+                "coverage_stable_artifact_fingerprint": (
+                    config.required_coverage_summary_stable_sha256
+                ),
+                "scientific_membership_fingerprint": (
+                    task03.scientific_membership_fingerprint
+                ),
+                "stable_artifact_fingerprint": task03.stable_artifact_fingerprint,
+                "execution_context_fingerprint_at_receipt": (
+                    task03.execution_context_fingerprint
+                ),
+                "execution_context_variance_policy": (
+                    task03.execution_context.context_variance_policy
+                ),
                 "exact_row_membership_fingerprint": row_membership,
                 "exact_date_membership_fingerprint": date_membership,
                 "profile_counts": {
@@ -1000,6 +1057,8 @@ def build_completed_lifecycle(
     primary_p_value: float,
     primary_effect_size: float,
     final_evidence_rating: Literal["INSUFFICIENT", "WEAK", "MODERATE", "STRONG"],
+    task03_execution_context_fingerprint: str,
+    task03_execution_context_variance_observed: bool,
     limitations: tuple[str, ...],
 ) -> Task04RegistrationLifecycle:
     """Construct terminal lifecycle evidence only after every gate has passed."""
@@ -1049,9 +1108,21 @@ def build_completed_lifecycle(
             "registered_anchor_paths_unchanged": True,
             "raw_sha256": receipt.upstream_evidence.raw_dataset.sha256,
             "task02_fingerprint": receipt.upstream_evidence.task02.audit_fingerprint,
-            "task03_evidence_fingerprint": (
-                receipt.upstream_evidence.task03.exact_evidence_fingerprint
+            "task03_scientific_membership_fingerprint": (
+                receipt.upstream_evidence.task03.scientific_membership_fingerprint
             ),
+            "task03_stable_artifact_fingerprint": (
+                receipt.upstream_evidence.task03.stable_artifact_fingerprint
+            ),
+            "task03_execution_context_fingerprint": (
+                task03_execution_context_fingerprint
+            ),
+            "task03_execution_context_variance_observed": (
+                task03_execution_context_variance_observed
+            ),
+            "task03_scientific_validation_passed": True,
+            "task03_stable_artifact_validation_passed": True,
+            "task03_execution_context_classified": True,
             "executable_configuration_fingerprint": (
                 receipt.scientific_and_executable_design.executable_configuration_fingerprint
             ),
@@ -1180,6 +1251,13 @@ def assert_completed_lifecycle_matches(
         == receipt.scientific_and_executable_design.source_tree_fingerprint,
         lifecycle.production_state.executable_configuration_fingerprint
         == executable_configuration_fingerprint(config),
+        lifecycle.production_state.task03_scientific_membership_fingerprint
+        == receipt.upstream_evidence.task03.scientific_membership_fingerprint,
+        lifecycle.production_state.task03_stable_artifact_fingerprint
+        == receipt.upstream_evidence.task03.stable_artifact_fingerprint,
+        lifecycle.production_state.task03_scientific_validation_passed,
+        lifecycle.production_state.task03_stable_artifact_validation_passed,
+        lifecycle.production_state.task03_execution_context_classified,
         lifecycle.production_state.registered_anchor_paths_unchanged,
         lifecycle.production_state.descends_from_anchor,
         lifecycle.governance.final_deviation_count == 0,
