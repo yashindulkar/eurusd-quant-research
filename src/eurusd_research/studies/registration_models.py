@@ -1,4 +1,4 @@
-"""Strict v2.7 semantic registration models for Task 04."""
+"""Strict v2.8 semantic registration models for Task 04."""
 
 from __future__ import annotations
 
@@ -244,7 +244,7 @@ class Task03Dependency(FrozenSection):
     method_version: Literal["research-coverage-v1"]
     coverage_config_fingerprint: Sha256
     coverage_summary_stable_fingerprint: Sha256
-    evidence_path: Literal["studies/task03_task04_v2.7_evidence.json"]
+    evidence_path: Literal["studies/task03_task04_v2.8_evidence.json"]
     evidence_layer_schema_version: Literal["task03-layered-evidence-v1"]
     scientific_membership_fingerprint: Sha256
     stable_artifact_fingerprint: Sha256
@@ -262,7 +262,7 @@ class FigureSettings(FrozenSection):
 
 
 class ExpectedOutputs(FrozenSection):
-    directory: Literal["reports/research/task04_daily_range_weekday_v2.7"]
+    directory: Literal["reports/research/task04_daily_range_weekday_v2.8"]
     files: tuple[str, ...] = Field(min_length=20, max_length=20)
     figures: tuple[str, ...] = Field(min_length=8, max_length=8)
     figure_settings: FigureSettings
@@ -322,13 +322,13 @@ class RepositoryLineage(FrozenSection):
     baseline_head: GitCommit
     development_baseline_path: Literal["studies/task04_development_baseline.json"]
     registration_receipt_path: Literal[
-        "studies/task04_daily_range_weekday.v2.7.receipt.json"
+        "studies/task04_daily_range_weekday.v2.8.receipt.json"
     ]
     registration_lifecycle_path: Literal[
-        "studies/task04_daily_range_weekday.v2.7.lifecycle.json"
+        "studies/task04_daily_range_weekday.v2.8.lifecycle.json"
     ]
-    source_manifest_path: Literal["studies/task04_v2.7_source_manifest.json"]
-    environment_lock_path: Literal["studies/task04_v2.7_environment_lock.json"]
+    source_manifest_path: Literal["studies/task04_v2.8_source_manifest.json"]
+    environment_lock_path: Literal["studies/task04_v2.8_environment_lock.json"]
     raw_path: Literal["data/raw/EURUSD_M15_UTC.csv"]
     manifest_path: Literal["reports/audits/raw_dataset_manifest.json"]
     task_02_result_path: Literal["reports/audits/raw_data_quality_audit.json"]
@@ -345,7 +345,7 @@ class DeviationPolicy(FrozenSection):
 
 
 class ProductionGovernance(FrozenSection):
-    """Pre-result v2.7 orchestration and completion contract."""
+    """Pre-result v2.8 orchestration and completion contract."""
 
     receipt_schema_version: Literal["task04-registration-receipt-v5"]
     lifecycle_schema_version: Literal["task04-registration-lifecycle-v5"]
@@ -365,8 +365,11 @@ class ProductionGovernance(FrozenSection):
         Literal["create_completed_lifecycle"],
         Literal["validate_completed_lifecycle"],
     ]
-    candidate_output_directory: Literal["reports/research/.task04_v2.7_candidate"]
-    final_output_directory: Literal["reports/research/task04_daily_range_weekday_v2.7"]
+    candidate_output_directory: Literal["reports/research/.task04_v2.8_candidate"]
+    final_output_directory: Literal["reports/research/task04_daily_range_weekday_v2.8"]
+    validated_candidate_identity_path: Literal[
+        "studies/task04_v2.8_validated_candidate_identity.json"
+    ]
     candidate_outputs_are_completed_evidence: Literal[False]
     lifecycle_state_integration_tests: tuple[
         Literal["PRE_RECEIPT"],
@@ -390,6 +393,19 @@ class ProductionGovernance(FrozenSection):
         "SCIENTIFIC_OR_STABLE_ARTIFACT_MISMATCH_FAILS_BEFORE_AGGREGATION"
     ]
     output_digest_algorithm: Literal["task04-path-length-bytes-sha256-v1"]
+    candidate_identity_schema_version: Literal["task04-validated-candidate-identity-v1"]
+    candidate_identity_establishment_stage: Literal[
+        "AFTER_TWELVE_COMPONENT_RECONCILIATION"
+    ]
+    candidate_identity_immutability_policy: Literal[
+        "WRITE_ONCE_NO_AUTOMATIC_REBASELINE"
+    ]
+    candidate_identity_comparison_policy: Literal[
+        "CURRENT_PATH_SIZE_SHA256_AND_DIGEST_MUST_EQUAL_VALIDATED_BASELINE"
+    ]
+    promotion_identity_policy: Literal[
+        "FINAL_BYTES_MUST_EQUAL_VALIDATED_CANDIDATE_BASELINE"
+    ]
     independent_reconciliation_implementation: Literal[
         "task04-independent-full-reproduction-v2"
     ]
@@ -455,13 +471,13 @@ class ProductionGovernance(FrozenSection):
         return self
 
 
-class Task04PreregistrationV27(FrozenSection):
-    """Complete v2.7 registration; lifecycle status remains external."""
+class Task04PreregistrationV28(FrozenSection):
+    """Complete v2.8 registration; lifecycle status remains external."""
 
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.7"]
+    registration_version: Literal["2.8"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.7"]
+    method_version: Literal["range-weekday-registered-replication-v2.8"]
     title: Literal["Daily Range Behaviour by Weekday"]
     status: Literal["PREREGISTERED"]
     registration_classification: Literal[
@@ -501,7 +517,7 @@ class Task04PreregistrationV27(FrozenSection):
     raw_manifest_sha256: Sha256
     task_02_dependency: Task02Dependency
     task_03_dependency: Task03Dependency
-    implementation_version: Literal["task04-daily-range-weekday-v2.7"]
+    implementation_version: Literal["task04-daily-range-weekday-v2.8"]
     source_dependency_manifest_fingerprint: Sha256
     environment_lock_fingerprint: Sha256
     expected_outputs: ExpectedOutputs
@@ -514,7 +530,7 @@ class Task04PreregistrationV27(FrozenSection):
     preregistration_deviations: tuple[Any, ...] = Field(max_length=0)
 
     @model_validator(mode="after")
-    def validate_design(self) -> Task04PreregistrationV27:
+    def validate_design(self) -> Task04PreregistrationV28:
         if len(set(self.descriptive_statistics)) != len(self.descriptive_statistics):
             raise ValueError("Descriptive method identifiers contain duplicates")
         if len(set(self.prohibited_analyses)) != len(self.prohibited_analyses):
@@ -528,9 +544,9 @@ class Task04PreregistrationV27(FrozenSection):
         ):
             raise ValueError("The corrective-registration disclosure is locked")
         if self.deviation_policy.post_anchor_scientific_changes_permitted:
-            raise ValueError("v2.7 post-anchor scientific changes are forbidden")
+            raise ValueError("v2.8 post-anchor scientific changes are forbidden")
         if self.deviation_policy.same_version_append_only_ledger_supported:
-            raise ValueError("v2.7 has no same-version append-only deviation ledger")
+            raise ValueError("v2.8 has no same-version append-only deviation ledger")
         try:
             json.dumps(
                 self.model_dump(mode="json"),

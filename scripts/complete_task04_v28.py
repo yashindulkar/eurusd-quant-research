@@ -1,17 +1,20 @@
-"""Promote validated v2.6 candidate outputs and create the terminal lifecycle."""
+"""Promote validated v2.8 candidate outputs and create the terminal lifecycle."""
 
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
 
+from eurusd_research.config import load_config
 from eurusd_research.paths import find_repository_root, project_path
+from eurusd_research.research.coverage import _repository_version, build_coverage
 from eurusd_research.studies.completion import (
     LifecycleCompletionRequest,
     build_output_digest,
     promote_candidate_outputs,
 )
 from eurusd_research.studies.configuration import load_task04_config
+from eurusd_research.studies.integrity import build_task03_row_membership_evidence
 from eurusd_research.studies.orchestration import PhaseBStage
 from eurusd_research.studies.registry import (
     LifecycleOutputEvidence,
@@ -41,6 +44,22 @@ def main(argv: list[str] | None = None) -> int:
         project_path(config.preregistration_path, root)
     )
     receipt = validate_registration_receipt(registration, config, root=root)
+    research_config = load_config(root)
+    task03 = build_task03_row_membership_evidence(
+        root,
+        build_coverage(
+            root=root,
+            config=research_config,
+            repository_version=_repository_version(
+                root,
+                ignored_generated_paths=(
+                    config.output_directory,
+                    config.candidate_output_directory,
+                ),
+            ),
+        ),
+        research_config,
+    )
     expected = tuple(
         sorted(
             (
@@ -64,11 +83,25 @@ def main(argv: list[str] | None = None) -> int:
         figure_inventory=figures,
         no_extra_output_validation_passed=True,
         output_containment_validation_passed=True,
-        validated_candidate_identity_fingerprint=request.validated_candidate_identity.identity_fingerprint,
-        baseline_candidate_digest=request.validated_candidate_identity.output_digest.path_plus_bytes_digest,
+        validated_candidate_identity_fingerprint=(
+            request.validated_candidate_identity.identity_fingerprint
+        ),
+        baseline_candidate_digest=(
+            request.validated_candidate_identity.output_digest.path_plus_bytes_digest
+        ),
         final_matches_validated_candidate_identity=True,
         byte_identity_mismatch_count=0,
     )
+    if candidate_digest != request.validated_candidate_identity.output_digest:
+        raise ValueError("Candidate differs from validated candidate identity")
+    byte_identity = request.independent_reconciliation.candidate_byte_identity
+    if byte_identity is None or not byte_identity.passed:
+        raise ValueError("Reconciliation is not bound to candidate baseline")
+    if (
+        byte_identity.validated_candidate_identity_fingerprint
+        != request.validated_candidate_identity.identity_fingerprint
+    ):
+        raise ValueError("Reconciliation used a different candidate baseline")
     promote_candidate_outputs(
         candidate,
         final,
@@ -96,10 +129,11 @@ def main(argv: list[str] | None = None) -> int:
         primary_p_value=request.primary_p_value,
         primary_effect_size=request.primary_effect_size,
         final_evidence_rating=request.final_evidence_rating,
-        task03_execution_context_fingerprint=(
-            receipt.upstream_evidence.task03.execution_context_fingerprint_at_receipt
+        task03_execution_context_fingerprint=(task03.execution_context_fingerprint),
+        task03_execution_context_variance_observed=(
+            task03.execution_context_fingerprint
+            != receipt.upstream_evidence.task03.execution_context_fingerprint_at_receipt
         ),
-        task03_execution_context_variance_observed=False,
         limitations=request.limitations,
     )
     progress = progress.advance(PhaseBStage.CREATE_COMPLETED_LIFECYCLE)
@@ -110,7 +144,7 @@ def main(argv: list[str] | None = None) -> int:
     if not progress.completed:
         raise AssertionError("Phase B completion sequence is incomplete")
     print(
-        "Task 04 v2.6 lifecycle: COMPLETED | "
+        "Task 04 v2.8 lifecycle: COMPLETED | "
         f"lifecycle_fingerprint={lifecycle.lifecycle_fingerprint}"
     )
     return 0

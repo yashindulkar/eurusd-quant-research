@@ -1,4 +1,4 @@
-"""Complete independent raw-to-evidence reconciliation for Task 04 v2.7.
+"""Complete independent raw-to-evidence reconciliation for Task 04 v2.8.
 
 This orchestration module imports no Task 04 production aggregation,
 statistics, robustness, rating, or inventory implementation.
@@ -17,13 +17,18 @@ import pandas as pd
 from eurusd_research.studies.completion import (
     INDEPENDENT_RECONCILIATION_IMPLEMENTATION,
     RECONCILIATION_COMPONENTS,
+    CandidateByteIdentityEvidence,
     ComponentDiscrepancy,
     ComponentName,
     IndependentReconciliationEvidence,
+    ValidatedCandidateIdentity,
 )
 from eurusd_research.studies.configuration import Task04Config
 from eurusd_research.studies.independent_daily import PROFILES, rebuild_daily_profiles
-from eurusd_research.studies.independent_inventory import inspect_output_inventory
+from eurusd_research.studies.independent_inventory import (
+    compare_output_to_validated_identity,
+    inspect_output_inventory,
+)
 from eurusd_research.studies.independent_rating import reconstruct_rating
 from eurusd_research.studies.independent_robustness import (
     annual_tables,
@@ -293,6 +298,7 @@ def build_independent_reconciliation(
     production_output_digest: str,
     absolute_tolerance: float,
     relative_tolerance: float,
+    validated_candidate_identity: ValidatedCandidateIdentity | None = None,
 ) -> IndependentReconciliationEvidence:
     """Reconstruct every registered evidence component and compare outputs."""
     frames, row_flags, masks, raw_sha, task03_fingerprint = rebuild_daily_profiles(
@@ -550,6 +556,38 @@ def build_independent_reconciliation(
         + len(inspection.duplicate_normalized_paths)
         + len(inspection.unsafe_paths)
     )
+    byte_identity: CandidateByteIdentityEvidence | None = None
+    if validated_candidate_identity is not None and inventory_mismatches == 0:
+        comparison = compare_output_to_validated_identity(
+            output_directory,
+            validated_candidate_identity,
+            registration_version=config.registration_version,
+            method_version=config.method_version,
+            anchor_commit=anchor_commit,
+            receipt_fingerprint=receipt_fingerprint,
+        )
+        inventory_mismatches += comparison.mismatch_count
+        byte_identity = CandidateByteIdentityEvidence(
+            validated_candidate_identity_fingerprint=(
+                validated_candidate_identity.identity_fingerprint
+            ),
+            baseline_candidate_digest=(
+                validated_candidate_identity.output_digest.path_plus_bytes_digest
+            ),
+            current_candidate_digest=(
+                comparison.current_output_digest.path_plus_bytes_digest
+            ),
+            baseline_files=validated_candidate_identity.output_digest.files,
+            current_files=comparison.current_output_digest.files,
+            missing_paths=comparison.missing_paths,
+            extra_paths=comparison.extra_paths,
+            size_mismatch_paths=comparison.size_mismatch_paths,
+            sha256_mismatch_paths=comparison.sha256_mismatch_paths,
+            byte_identity_mismatch_paths=comparison.byte_identity_mismatch_paths,
+            digest_mismatch=comparison.digest_mismatch,
+            baseline_identity_mismatch=comparison.baseline_identity_mismatch,
+            passed=comparison.reconciled,
+        )
     inventory_comparison = FrameComparison(
         len(inspection.records),
         max(1, len(inspection.records) * 7),
@@ -652,8 +690,12 @@ def build_independent_reconciliation(
         for component in components.values()
         for value in component.unsupported_claims
     )
+    baseline_eligible = all(item.passed for item in components.values())
+    baseline_missing = (
+        () if byte_identity is not None else ("validated_candidate_identity",)
+    )
     payload: dict[str, Any] = {
-        "schema_version": "task04-independent-reconciliation-v2",
+        "schema_version": "task04-independent-reconciliation-v3",
         "implementation_id": INDEPENDENT_RECONCILIATION_IMPLEMENTATION,
         "study_id": "TASK-04",
         "registration_version": config.registration_version,
@@ -663,6 +705,10 @@ def build_independent_reconciliation(
         "raw_sha256": raw_sha,
         "task03_evidence_fingerprint": task03_fingerprint,
         "production_output_digest": production_output_digest,
+        "baseline_establishment_eligible": baseline_eligible,
+        "candidate_byte_identity": (
+            None if byte_identity is None else byte_identity.model_dump(mode="json")
+        ),
         "tolerance_policy": "ABSOLUTE_AND_RELATIVE_WITH_ZERO_CATEGORICAL_TOLERANCE",
         "checked_components": list(RECONCILIATION_COMPONENTS),
         **{
@@ -696,7 +742,7 @@ def build_independent_reconciliation(
         "inventory_mismatch_count": sum(
             item.inventory_mismatch_count for item in components.values()
         ),
-        "missing_evidence": list(missing),
+        "missing_evidence": list((*missing, *baseline_missing)),
         "unsupported_claims": list(unsupported),
         "absolute_tolerance": absolute_tolerance,
         "relative_tolerance": relative_tolerance,
@@ -704,6 +750,8 @@ def build_independent_reconciliation(
             item.maximum_absolute_discrepancy for item in components.values()
         ),
         "passed": all(item.passed for item in components.values())
+        and byte_identity is not None
+        and byte_identity.passed
         and not missing
         and not unsupported,
     }

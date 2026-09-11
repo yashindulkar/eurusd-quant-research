@@ -208,7 +208,7 @@ commit.
 
 **Method ID:** RANGE-WEEKDAY-001
 
-**Status:** correctively registered replication, registration version 2.7
+**Status:** correctively registered replication, registration version 2.8
 prepared; preregistration anchor commit required
 
 **Created (UTC):** 2026-07-28
@@ -227,7 +227,7 @@ uses complete `DEFAULT_RESEARCH` dates. The registered dataset bounds are
 **Input dataset version(s):** `sha256:b2a41310927aa9a9`; full SHA-256
 `b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c`.
 The exact RAW-DQ-001 and COVERAGE-001 dependency fingerprints are locked in
-`studies/task04_daily_range_weekday.v2.7.yaml`. Historical v2.2 registration
+`studies/task04_daily_range_weekday.v2.8.yaml`. Historical v2.2 registration
 and control files remain alongside it without being rewritten.
 
 **Unit of observation:** One observed UTC calendar date within one coverage
@@ -283,7 +283,7 @@ winsorisation; and exclusion of the largest 1% of daily ranges.
 **Outputs:** After the separately authorized anchor commit, deterministic
 machine-readable study artifacts, date-level
 volatility-regime lineage, and eight static figures under
-`reports/research/task04_daily_range_weekday_v2.7/`, as enumerated in the
+`reports/research/task04_daily_range_weekday_v2.8/`, as enumerated in the
 machine-readable registration and immutable receipt.
 
 **Known limitations:** UTC dates are not local trading sessions; timestamp
@@ -292,14 +292,14 @@ clustering, unequal variance, changing regimes, and calendar imbalance can
 affect inference; sensitivity-only profiles are diagnostic populations; daily
 range does not establish direction, profitability, or a trading rule.
 
-**Supersedes / superseded by:** v2.7 supersedes the stopped v2.6 attempt without
+**Supersedes / superseded by:** v2.8 supersedes the stopped v2.7 attempt without
 changing the registered numerical methodology.
 
 **Results access status at definition time:** The original Task 04 analysis had
 already been developed, generated, and independently reviewed before
-registration version 2.7 was prepared. The original mutable completion record
+registration version 2.8 was prepared. The original mutable completion record
 is preserved in `task04_development_baseline.json` but is not accepted as
-proven preregistration evidence. Version 2.7 is therefore a correctively
+proven preregistration evidence. Version 2.8 is therefore a correctively
 registered replication, not a pristine first-look preregistration.
 
 **Registration version 2.4 control:** The exact registered design, executable
@@ -444,3 +444,25 @@ and whether allowed variance occurred.
 
 No v2.7 receipt, lifecycle, candidate output, production output, or observed
 v2.7 result may exist before the separately authorized v2.7 Git anchor.
+
+### Registration version 2.8 candidate byte-identity amendment
+
+The scientific design, Task 03 identity layers, output inventory, statistical
+methods, and tolerances remain unchanged from v2.7. The v2.7 attempt stopped
+before promotion and lifecycle creation after a one-byte mutation to
+`figures/01_weekday_boxplot.png` changed the file hash and canonical digest but
+was not compared with any prior trusted candidate identity.
+
+After schema, inventory, and all twelve reconciliation components succeed,
+v2.8 creates one immutable `task04-validated-candidate-identity-v1` record. It
+binds the anchor, receipt, method, exact path inventory, per-file sizes and
+SHA-256 hashes, and `task04-path-length-bytes-sha256-v1` digest. Subsequent
+reconciliation, pre-promotion validation, final-output validation, and lifecycle
+construction must compare their current bytes with that same baseline. Missing,
+replaced, cross-anchor, cross-receipt, cross-version, or automatically regenerated
+baseline identities fail closed. Deterministic regeneration remains a separate
+repeatability control.
+
+No v2.8 receipt, lifecycle, candidate output, production output, candidate
+identity, or observed v2.8 result may exist before the separately authorized
+v2.8 Git anchor.

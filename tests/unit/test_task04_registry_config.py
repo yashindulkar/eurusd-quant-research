@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any
 
 import pytest
+import yaml
 from pydantic import BaseModel, ValidationError
 
 from eurusd_research.paths import find_repository_root
@@ -56,7 +57,7 @@ def _preregistered(
 def test_task04_config_and_registration_contract() -> None:
     root, config, registration = _contract()
     assert registration.status == "PREREGISTERED"
-    assert registration.registration_version == config.registration_version == "2.7"
+    assert registration.registration_version == config.registration_version == "2.8"
     assert_registration_matches_config(registration, config)
     assert len(locked_design_fingerprint(registration)) == 64
     assert len(executable_configuration_fingerprint(config)) == 64
@@ -64,6 +65,60 @@ def test_task04_config_and_registration_contract() -> None:
         {"status"}
     )
     assert (root / "studies" / "task04_development_baseline.json").is_file()
+
+
+def test_v28_preserves_v27_scientific_design_exactly() -> None:
+    root = find_repository_root()
+    with (root / "studies/task04_daily_range_weekday.v2.7.yaml").open(
+        encoding="utf-8"
+    ) as handle:
+        v27 = yaml.safe_load(handle)
+    with (root / "studies/task04_daily_range_weekday.v2.8.yaml").open(
+        encoding="utf-8"
+    ) as handle:
+        v28 = yaml.safe_load(handle)
+    scientific_fields = (
+        "research_question",
+        "primary_null_hypothesis",
+        "primary_alternative_hypothesis",
+        "secondary_hypotheses",
+        "primary_outcome",
+        "unit_of_analysis",
+        "calendar_definition",
+        "weekday_definition",
+        "timestamp_semantics",
+        "primary_coverage_profile",
+        "sensitivity_profiles",
+        "daily_completeness_rule",
+        "boundary_period_policy",
+        "descriptive_statistics",
+        "statistical_conventions",
+        "primary_statistical_test",
+        "post_hoc_test",
+        "multiple_testing_correction",
+        "effect_size_measures",
+        "confidence_interval_method",
+        "normality_diagnostic",
+        "variance_diagnostic",
+        "robustness_analyses",
+        "volatility_regime_definition",
+        "chronological_stability_design",
+        "missing_data_policy",
+        "exclusion_policy",
+        "deterministic_seed_policy",
+        "evidence_rating",
+        "known_limitations",
+        "prohibited_analyses",
+    )
+    assert {field: v28[field] for field in scientific_fields} == {
+        field: v27[field] for field in scientific_fields
+    }
+    assert v28["expected_outputs"]["files"] == v27["expected_outputs"]["files"]
+    assert v28["expected_outputs"]["figures"] == v27["expected_outputs"]["figures"]
+    assert (
+        v28["expected_outputs"]["figure_settings"]
+        == (v27["expected_outputs"]["figure_settings"])
+    )
 
 
 @pytest.mark.parametrize(

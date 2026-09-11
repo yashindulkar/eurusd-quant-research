@@ -59,7 +59,7 @@ must remain byte-identical to their anchor blobs. Git does not make local files
 undeletable; a replacement scientific design creates a different auditable
 commit lineage.
 
-RANGE-WEEKDAY-001 v2.7 does not support same-version post-anchor deviations.
+RANGE-WEEKDAY-001 v2.8 does not support same-version post-anchor deviations.
 Any scientific, population, threshold, output-contract, or interpretive change
 requires a new registration version and new anchor. Its committed
 preregistration remains `PREREGISTERED`; completion is represented only by the
@@ -79,10 +79,10 @@ RANGE-WEEKDAY-001 uses Kruskal-Wallis as its primary test and reports all ten
 Dunn pairwise comparisons with Holm correction. Parametric tests are
 complementary, outliers remain in the primary analysis, and the evidence rating
 requires stability and effect magnitude rather than relying on a small p-value.
-Registration version 2.7 cannot exceed `MODERATE` while authoritative
+Registration version 2.8 cannot exceed `MODERATE` while authoritative
 candle-open-versus-candle-close timestamp semantics remain unresolved.
 
-Task 04 v2.7 distinguishes candidate evidence from completed evidence.
+Task 04 v2.8 distinguishes candidate evidence from completed evidence.
 Candidate generation cannot create a completed registry or lifecycle.
 Completion requires individually registered integrity, reconciliation,
 determinism, figure, test, typing, lint, coverage, path-safety, and raw-input
@@ -91,7 +91,7 @@ reconciliation is component-level: unchecked components, asserted zero
 discrepancies, unsupported claims, or uninspected inventories cannot satisfy a
 completion gate.
 
-Task 03 identity is layered for v2.7. Exact scientific row/date memberships,
+Task 03 identity remains layered for v2.8. Exact scientific row/date memberships,
 profile algebra, boundary classifications, raw identity, and stable canonical
 artifact content fail closed. Repository HEAD, dirty-state, and raw artifact
 hashes containing registered execution context remain separately traceable;
@@ -99,3 +99,10 @@ their variance is informational only when the scientific and stable-artifact
 identities both match. Integration tests likewise model PRE_RECEIPT,
 POST_RECEIPT_PRE_CANDIDATE, CANDIDATE, POST_PROMOTION_PRE_LIFECYCLE, and
 COMPLETED states instead of assuming receipt absence globally.
+
+After all twelve candidate reconciliation components succeed, v2.8 establishes
+a write-once validated candidate identity containing every registered path,
+size, SHA-256, and canonical path-length-bytes digest. Later reconciliation,
+promotion, and lifecycle completion compare current bytes with that prior
+identity. Deterministic regeneration tests repeatability; the candidate identity
+separately detects mutation of the already validated candidate.

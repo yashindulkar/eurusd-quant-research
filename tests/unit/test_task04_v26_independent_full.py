@@ -143,7 +143,7 @@ def test_full_reconciliation_orchestration_calculates_every_component(
         "task04_config_fingerprint": "f" * 64,
         "preregistration_fingerprint": "1" * 64,
         "method_id": "RANGE-WEEKDAY-001",
-        "method_version": "range-weekday-registered-replication-v2.7",
+        "method_version": "range-weekday-registered-replication-v2.8",
         "repository_version": "fixture",
     }
     frames = {
@@ -269,7 +269,7 @@ def test_full_reconciliation_orchestration_calculates_every_component(
                 "task04_config_fingerprint": "f" * 64,
                 "preregistration_fingerprint": "1" * 64,
                 "method_id": "RANGE-WEEKDAY-001",
-                "method_version": "range-weekday-registered-replication-v2.7",
+                "method_version": "range-weekday-registered-replication-v2.8",
                 "repository_version": "fixture",
             }
         ]
@@ -375,11 +375,13 @@ def test_full_reconciliation_orchestration_calculates_every_component(
         absolute_tolerance=1e-10,
         relative_tolerance=1e-10,
     )
-    assert evidence.passed, [
+    assert evidence.baseline_establishment_eligible, [
         (name, getattr(evidence, name).model_dump())
         for name in evidence.checked_components
         if not getattr(evidence, name).passed
     ]
+    assert not evidence.passed
+    assert evidence.missing_evidence == ("validated_candidate_identity",)
     assert evidence.checked_components == (
         "source_population",
         "daily_aggregation",
@@ -397,12 +399,12 @@ def test_full_reconciliation_orchestration_calculates_every_component(
     assert all(getattr(evidence, name).passed for name in evidence.checked_components)
 
 
-def test_v27_scientific_design_is_identical_to_v26() -> None:
-    v26 = yaml.safe_load(
-        (ROOT / "studies/task04_daily_range_weekday.v2.6.yaml").read_text()
-    )
+def test_v28_scientific_design_is_identical_to_v27() -> None:
     v27 = yaml.safe_load(
         (ROOT / "studies/task04_daily_range_weekday.v2.7.yaml").read_text()
+    )
+    v28 = yaml.safe_load(
+        (ROOT / "studies/task04_daily_range_weekday.v2.8.yaml").read_text()
     )
     scientific_fields = (
         "research_question",
@@ -437,8 +439,8 @@ def test_v27_scientific_design_is_identical_to_v26() -> None:
         "known_limitations",
         "prohibited_analyses",
     )
-    assert {field: v27[field] for field in scientific_fields} == {
-        field: v26[field] for field in scientific_fields
+    assert {field: v28[field] for field in scientific_fields} == {
+        field: v27[field] for field in scientific_fields
     }
 
 

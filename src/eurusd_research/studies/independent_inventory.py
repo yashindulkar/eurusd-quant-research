@@ -8,6 +8,12 @@ import stat
 from dataclasses import dataclass
 from pathlib import Path
 
+from eurusd_research.studies.completion import (
+    OutputDigestEvidence,
+    ValidatedCandidateIdentity,
+    build_output_digest,
+)
+
 
 @dataclass(frozen=True, slots=True)
 class InventoryRecord:
@@ -43,6 +49,38 @@ class InventoryInspection:
             or self.duplicate_normalized_paths
             or self.unsafe_paths
         )
+
+
+@dataclass(frozen=True, slots=True)
+class CandidateIdentityComparison:
+    """Current filesystem bytes compared with a prior immutable identity."""
+
+    current_output_digest: OutputDigestEvidence
+    missing_paths: tuple[str, ...]
+    extra_paths: tuple[str, ...]
+    size_mismatch_paths: tuple[str, ...]
+    sha256_mismatch_paths: tuple[str, ...]
+    byte_identity_mismatch_paths: tuple[str, ...]
+    digest_mismatch: bool
+    baseline_identity_mismatch: bool
+
+    @property
+    def mismatch_count(self) -> int:
+        return sum(
+            (
+                len(self.missing_paths),
+                len(self.extra_paths),
+                len(self.size_mismatch_paths),
+                len(self.sha256_mismatch_paths),
+                len(self.byte_identity_mismatch_paths),
+                int(self.digest_mismatch),
+                int(self.baseline_identity_mismatch),
+            )
+        )
+
+    @property
+    def reconciled(self) -> bool:
+        return self.mismatch_count == 0
 
 
 def _sha256(path: Path) -> str:
@@ -121,4 +159,62 @@ def inspect_output_inventory(
         unsafe_paths=tuple(sorted(unsafe)),
         records=tuple(records),
         path_plus_bytes_digest=aggregate.hexdigest(),
+    )
+
+
+def compare_output_to_validated_identity(
+    root: Path,
+    baseline: ValidatedCandidateIdentity,
+    *,
+    registration_version: str,
+    method_version: str,
+    anchor_commit: str,
+    receipt_fingerprint: str,
+) -> CandidateIdentityComparison:
+    """Compare current bytes to a previously established, context-bound baseline."""
+    identity_matches = (
+        baseline.registration_version == registration_version
+        and baseline.method_version == method_version
+        and baseline.anchor_commit == anchor_commit
+        and baseline.receipt_fingerprint == receipt_fingerprint
+    )
+    expected = tuple(item.relative_path for item in baseline.output_digest.files)
+    current = build_output_digest(
+        root,
+        expected,
+        figure_paths=(
+            item.relative_path
+            for item in baseline.output_digest.files
+            if item.category == "FIGURE"
+        ),
+    )
+    baseline_by_path = {
+        item.relative_path: item for item in baseline.output_digest.files
+    }
+    current_by_path = {item.relative_path: item for item in current.files}
+    missing = tuple(sorted(set(baseline_by_path) - set(current_by_path)))
+    extra = tuple(sorted(set(current_by_path) - set(baseline_by_path)))
+    common = tuple(sorted(set(baseline_by_path) & set(current_by_path)))
+    size = tuple(
+        path
+        for path in common
+        if baseline_by_path[path].size_bytes != current_by_path[path].size_bytes
+    )
+    hashes = tuple(
+        path
+        for path in common
+        if baseline_by_path[path].sha256 != current_by_path[path].sha256
+    )
+    return CandidateIdentityComparison(
+        current_output_digest=current,
+        missing_paths=missing,
+        extra_paths=extra,
+        size_mismatch_paths=size,
+        sha256_mismatch_paths=hashes,
+        byte_identity_mismatch_paths=hashes,
+        digest_mismatch=(
+            current.path_plus_bytes_digest
+            != baseline.output_digest.path_plus_bytes_digest
+        ),
+        baseline_identity_mismatch=not identity_matches,
     )

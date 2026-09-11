@@ -64,8 +64,17 @@ def main(argv: list[str] | None = None) -> int:
         figure_inventory=figures,
         no_extra_output_validation_passed=True,
         output_containment_validation_passed=True,
+        validated_candidate_identity_fingerprint=request.validated_candidate_identity.identity_fingerprint,
+        baseline_candidate_digest=request.validated_candidate_identity.output_digest.path_plus_bytes_digest,
+        final_matches_validated_candidate_identity=True,
+        byte_identity_mismatch_count=0,
     )
-    promote_candidate_outputs(candidate, final, expected)
+    promote_candidate_outputs(
+        candidate,
+        final,
+        expected,
+        validated_identity=request.validated_candidate_identity,
+    )
     progress = progress.advance(PhaseBStage.PROMOTE_FINAL_OUTPUTS)
     if not progress.lifecycle_may_be_created:
         raise AssertionError("Lifecycle creation stage is not yet permitted")

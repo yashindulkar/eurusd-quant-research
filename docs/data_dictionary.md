@@ -193,7 +193,7 @@ reasons in the internal long-form per-profile aggregation. The public wide
 daily CSV exports primary OHLC plus profile-prefixed contribution, range,
 eligibility, and digest fields; it does not export secondary-profile OHLC.
 
-The v2.7 population reconciliation reports `zero_contribution_dates`,
+The v2.8 population reconciliation reports `zero_contribution_dates`,
 `nonzero_partial_dates`, `complete_dates`, `incomplete_dates`, and
 `dates_included_in_analysis`. For every profile:
 
@@ -202,14 +202,14 @@ The v2.7 population reconciliation reports `zero_contribution_dates`,
 The historical v2.2 label `partial_daily_observations` meant total incomplete
 dates, including zero contribution; it remains historical output only.
 
-Version 2.7 additionally registers `daily_profile_observations.csv`. It is a
+Version 2.8 retains the registered `daily_profile_observations.csv`. It is a
 bounded long-form table with one row for every profile/date (4 × 5,146), not a
 copy of M15 prices. It exposes each profile's OHLC, range, first/last timestamp,
 expected/observed rows, completeness states, eligibility, exclusion reasons,
 and contributing-row digest. This closes the v2.4 limitation where
 secondary-profile OHLC existed only in memory.
 
-In the v2.7 long-form CSV, `exclusion_reasons` uses a schema-controlled
+In the v2.8 long-form CSV, `exclusion_reasons` uses a schema-controlled
 representation: no reason is the empty string; one or more reasons are joined
 with `|` in registered order; null, whitespace-only, unknown, duplicate, or
 reordered reason values are invalid. Other nullable columns retain null and are
@@ -223,3 +223,12 @@ measures, past-only 0.33/0.67 thresholds, regime label, warm-up flag/reason,
 lookback/minimum-history settings, and complete Task 04 lineage. Current-day
 range is shifted out before the trailing statistic, and thresholds use only
 earlier trailing measures.
+
+## Task 04 validated candidate identity
+
+The v2.8 Phase B baseline contains one sorted record per registered output:
+canonical production-root-relative path, byte length, SHA-256, and category.
+It also binds the aggregate path-length-bytes digest, anchor, receipt, method,
+registration version, establishment stage, and its own canonical fingerprint.
+It is created once only after candidate reconciliation and is not a scientific
+result. Current candidate and final-output bytes must match it exactly.

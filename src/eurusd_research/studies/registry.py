@@ -32,7 +32,7 @@ from eurusd_research.studies.integrity import (
     read_task03_row_membership_evidence,
     validate_source_dependency_manifest,
 )
-from eurusd_research.studies.registration_models import Task04PreregistrationV27
+from eurusd_research.studies.registration_models import Task04PreregistrationV28
 
 MUTABLE_REGISTRATION_FIELDS = ("status",)
 RECEIPT_SCHEMA_VERSION = "task04-registration-receipt-v5"
@@ -77,7 +77,7 @@ class PreregistrationDeviation(StrictModel):
         return self
 
 
-Task04Preregistration = Task04PreregistrationV27
+Task04Preregistration = Task04PreregistrationV28
 
 
 LOCKED_FIELDS = tuple(
@@ -100,11 +100,11 @@ class RegisteredBlobIdentity(ReceiptSection):
 class ReceiptIdentity(ReceiptSection):
     receipt_schema_version: Literal["task04-registration-receipt-v5"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.7"]
+    registration_version: Literal["2.8"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.7"]
-    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.7.yaml"]
-    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.7.receipt.json"]
+    method_version: Literal["range-weekday-registered-replication-v2.8"]
+    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.8.yaml"]
+    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.8.receipt.json"]
     registration_classification: Literal[
         "correctively registered replication of the developed Task 04 analysis"
     ]
@@ -150,6 +150,19 @@ class ReceiptScientificExecutableDesign(ReceiptSection):
     deviation_policy: Literal["NEW_REGISTRATION_VERSION_REQUIRED"]
     expected_production_output_inventory: tuple[str, ...] = Field(min_length=1)
     expected_figure_inventory: tuple[str, ...] = Field(min_length=8, max_length=8)
+    validated_candidate_identity_path: Literal[
+        "studies/task04_v2.8_validated_candidate_identity.json"
+    ]
+    candidate_identity_schema_version: Literal["task04-validated-candidate-identity-v1"]
+    candidate_identity_establishment_stage: Literal[
+        "AFTER_TWELVE_COMPONENT_RECONCILIATION"
+    ]
+    candidate_identity_immutability_policy: Literal[
+        "WRITE_ONCE_NO_AUTOMATIC_REBASELINE"
+    ]
+    candidate_identity_comparison_policy: Literal[
+        "CURRENT_PATH_SIZE_SHA256_AND_DIGEST_MUST_EQUAL_VALIDATED_BASELINE"
+    ]
 
 
 class ReceiptRawEvidence(ReceiptSection):
@@ -207,7 +220,7 @@ class ReceiptIntegrity(ReceiptSection):
 
 
 class Task04RegistrationReceipt(StrictModel):
-    """Immutable pre-result identity of the v2.7 registered replication."""
+    """Immutable pre-result identity of the v2.8 registered replication."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -222,11 +235,11 @@ class Task04RegistrationReceipt(StrictModel):
 class LifecycleIdentity(ReceiptSection):
     lifecycle_schema_version: Literal["task04-registration-lifecycle-v5"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.7"]
+    registration_version: Literal["2.8"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.7"]
+    method_version: Literal["range-weekday-registered-replication-v2.8"]
     lifecycle_file_path: Literal[
-        "studies/task04_daily_range_weekday.v2.7.lifecycle.json"
+        "studies/task04_daily_range_weekday.v2.8.lifecycle.json"
     ]
     status: Literal["COMPLETED"]
     receipt_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -263,6 +276,10 @@ class LifecycleOutputEvidence(ReceiptSection):
     figure_inventory: tuple[str, ...] = Field(min_length=8, max_length=8)
     no_extra_output_validation_passed: Literal[True]
     output_containment_validation_passed: Literal[True]
+    validated_candidate_identity_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+    baseline_candidate_digest: str = Field(pattern=r"^[0-9a-f]{64}$")
+    final_matches_validated_candidate_identity: Literal[True]
+    byte_identity_mismatch_count: Literal[0]
 
     @model_validator(mode="after")
     def validate_output_identity(self) -> LifecycleOutputEvidence:
@@ -273,6 +290,8 @@ class LifecycleOutputEvidence(ReceiptSection):
             raise ValueError("Lifecycle file hashes disagree with inventory")
         if not set(self.figure_inventory).issubset(set(expected)):
             raise ValueError("Lifecycle figure inventory is not an output subset")
+        if self.output_digest.path_plus_bytes_digest != self.baseline_candidate_digest:
+            raise ValueError("Lifecycle final digest differs from candidate baseline")
         return self
 
 
@@ -306,7 +325,7 @@ class LifecycleGovernance(ReceiptSection):
 
 
 class Task04RegistrationLifecycle(StrictModel):
-    """Terminal completion evidence bound to the original v2.7 receipt."""
+    """Terminal completion evidence bound to the original v2.8 receipt."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -316,6 +335,28 @@ class Task04RegistrationLifecycle(StrictModel):
     scientific_completion: LifecycleScientificCompletion
     governance: LifecycleGovernance
     lifecycle_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def validate_candidate_to_final_identity(self) -> Task04RegistrationLifecycle:
+        reconciliation = self.scientific_completion.independent_reconciliation
+        byte_identity = reconciliation.candidate_byte_identity
+        if byte_identity is None or not byte_identity.passed:
+            raise ValueError("Lifecycle lacks passing candidate byte identity")
+        output = self.output_evidence
+        if (
+            output.validated_candidate_identity_fingerprint
+            != byte_identity.validated_candidate_identity_fingerprint
+        ):
+            raise ValueError("Lifecycle candidate identity fingerprint differs")
+        if output.baseline_candidate_digest != byte_identity.baseline_candidate_digest:
+            raise ValueError("Lifecycle candidate baseline digest differs")
+        if output.output_digest.files != byte_identity.baseline_files:
+            raise ValueError("Final per-file hashes differ from candidate baseline")
+        if output.output_digest.path_plus_bytes_digest != (
+            byte_identity.baseline_candidate_digest
+        ):
+            raise ValueError("Final digest differs from candidate baseline")
+        return self
 
 
 def _canonical_json(value: object) -> bytes:
@@ -461,6 +502,9 @@ def executable_configuration_contract(config: Task04Config) -> dict[str, Any]:
             "lifecycle_schema_version": config.lifecycle_schema_version,
             "candidate_output_directory": config.candidate_output_directory.as_posix(),
             "final_output_directory": config.output_directory.as_posix(),
+            "validated_candidate_identity_path": (
+                config.validated_candidate_identity_path.as_posix()
+            ),
             "completion_sequence": list(config.completion_sequence),
             "candidate_outputs_are_completed_evidence": (
                 config.candidate_outputs_are_completed_evidence
@@ -481,6 +525,19 @@ def executable_configuration_contract(config: Task04Config) -> dict[str, Any]:
             ),
             "task03_material_mismatch_policy": config.task03_material_mismatch_policy,
             "output_digest_algorithm": config.output_digest_algorithm,
+            "candidate_identity_schema_version": (
+                config.candidate_identity_schema_version
+            ),
+            "candidate_identity_establishment_stage": (
+                config.candidate_identity_establishment_stage
+            ),
+            "candidate_identity_immutability_policy": (
+                config.candidate_identity_immutability_policy
+            ),
+            "candidate_identity_comparison_policy": (
+                config.candidate_identity_comparison_policy
+            ),
+            "promotion_identity_policy": config.promotion_identity_policy,
             "independent_reconciliation_implementation": (
                 config.independent_reconciliation_implementation
             ),
@@ -889,6 +946,21 @@ def build_registration_receipt(
             "deviation_policy": registration.deviation_policy.model,
             "expected_production_output_inventory": output_inventory,
             "expected_figure_inventory": figures,
+            "validated_candidate_identity_path": (
+                registration.production_governance.validated_candidate_identity_path
+            ),
+            "candidate_identity_schema_version": (
+                registration.production_governance.candidate_identity_schema_version
+            ),
+            "candidate_identity_establishment_stage": (
+                registration.production_governance.candidate_identity_establishment_stage
+            ),
+            "candidate_identity_immutability_policy": (
+                registration.production_governance.candidate_identity_immutability_policy
+            ),
+            "candidate_identity_comparison_policy": (
+                registration.production_governance.candidate_identity_comparison_policy
+            ),
         },
         "upstream_evidence": {
             "raw_dataset": {
@@ -1064,6 +1136,9 @@ def build_completed_lifecycle(
     """Construct terminal lifecycle evidence only after every gate has passed."""
     if not independent_reconciliation.passed:
         raise ValueError("Independent reconciliation did not pass")
+    byte_identity = independent_reconciliation.candidate_byte_identity
+    if byte_identity is None or not byte_identity.passed:
+        raise ValueError("Lifecycle requires candidate baseline byte reconciliation")
     if completion_gates.maximum_numerical_discrepancy != (
         independent_reconciliation.maximum_numerical_discrepancy
     ):
@@ -1082,6 +1157,13 @@ def build_completed_lifecycle(
         sorted(receipt.scientific_and_executable_design.expected_figure_inventory)
     ):
         raise ValueError("Completion figure evidence differs from receipt inventory")
+    if (
+        output_evidence.validated_candidate_identity_fingerprint
+        != byte_identity.validated_candidate_identity_fingerprint
+        or output_evidence.baseline_candidate_digest
+        != byte_identity.baseline_candidate_digest
+    ):
+        raise ValueError("Lifecycle and reconciliation use different baselines")
     output_digest = output_evidence.output_digest.path_plus_bytes_digest
     payload: dict[str, Any] = {
         "identity": {

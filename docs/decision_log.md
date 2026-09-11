@@ -2,6 +2,21 @@
 
 Material decisions are appended with an ISO date, rationale, and implications.
 
+## 2026-09-10 — Bind validated Task 04 candidate bytes before promotion
+
+**Decision:** Version 2.8 establishes a write-once candidate identity only after
+candidate schema, inventory, and all twelve independent reconciliation components
+are validated. It binds path, length, SHA-256, and canonical aggregate digest;
+every later reconciliation, promotion, and lifecycle check compares current bytes
+to that prior identity and never silently re-baselines.
+
+**Rationale:** The v2.7 inventory reconciler calculated current hashes but did
+not compare them with the already validated candidate. A one-byte figure mutation
+therefore produced a different digest while inventory and aggregate checks still
+passed. Deterministic regeneration and post-validation identity are distinct
+controls. v2.7 remains an abandoned registered attempt; no output was promoted
+and no lifecycle was created.
+
 ## 2026-07-27 — Use a `src`-layout Python package
 
 **Decision:** Package reusable code under `src/eurusd_research`.

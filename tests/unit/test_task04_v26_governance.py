@@ -15,12 +15,14 @@ from eurusd_research.studies import registry as registry_module
 from eurusd_research.studies.completion import (
     COMPLETION_BOOLEAN_FIELDS,
     RECONCILIATION_COMPONENTS,
+    CandidateByteIdentityEvidence,
     CompletionGateEvidence,
     ComponentDiscrepancy,
     IndependentReconciliationEvidence,
     LifecycleCompletionRequest,
     OutputDigestEvidence,
     OutputFileHash,
+    ValidatedCandidateIdentity,
     build_output_digest,
     promote_candidate_outputs,
 )
@@ -99,11 +101,11 @@ def _receipt() -> Task04RegistrationReceipt:
         "identity": {
             "receipt_schema_version": "task04-registration-receipt-v5",
             "study_id": "TASK-04",
-            "registration_version": "2.7",
+            "registration_version": "2.8",
             "method_id": "RANGE-WEEKDAY-001",
-            "method_version": "range-weekday-registered-replication-v2.7",
-            "registration_file_path": "studies/task04_daily_range_weekday.v2.7.yaml",
-            "receipt_file_path": "studies/task04_daily_range_weekday.v2.7.receipt.json",
+            "method_version": "range-weekday-registered-replication-v2.8",
+            "registration_file_path": "studies/task04_daily_range_weekday.v2.8.yaml",
+            "receipt_file_path": "studies/task04_daily_range_weekday.v2.8.receipt.json",
             "registration_classification": registration.registration_classification,
             "non_first_look_disclosure": registration.registration_disclosure,
             "registration_status_at_anchoring": "PREREGISTERED",
@@ -148,6 +150,21 @@ def _receipt() -> Task04RegistrationReceipt:
             "deviation_policy": "NEW_REGISTRATION_VERSION_REQUIRED",
             "expected_production_output_inventory": inventory,
             "expected_figure_inventory": figures,
+            "validated_candidate_identity_path": (
+                "studies/task04_v2.8_validated_candidate_identity.json"
+            ),
+            "candidate_identity_schema_version": (
+                "task04-validated-candidate-identity-v1"
+            ),
+            "candidate_identity_establishment_stage": (
+                "AFTER_TWELVE_COMPONENT_RECONCILIATION"
+            ),
+            "candidate_identity_immutability_policy": (
+                "WRITE_ONCE_NO_AUTOMATIC_REBASELINE"
+            ),
+            "candidate_identity_comparison_policy": (
+                "CURRENT_PATH_SIZE_SHA256_AND_DIGEST_MUST_EQUAL_VALIDATED_BASELINE"
+            ),
         },
         "upstream_evidence": {
             "raw_dataset": {
@@ -205,6 +222,48 @@ def _receipt() -> Task04RegistrationReceipt:
     )
 
 
+def _validated_identity(
+    digest: OutputDigestEvidence | None = None,
+) -> ValidatedCandidateIdentity:
+    if digest is None:
+        config, _ = _contract()
+        paths = tuple(
+            sorted(
+                (
+                    *config.expected_output_files,
+                    *(f"figures/{name}" for name in config.expected_figure_files),
+                )
+            )
+        )
+        files = tuple(
+            OutputFileHash(
+                relative_path=path,
+                size_bytes=1,
+                sha256="d" * 64,
+                category="FIGURE" if path.startswith("figures/") else "TABLE_OR_REPORT",
+            )
+            for path in paths
+        )
+        digest = OutputDigestEvidence(
+            digest_algorithm="task04-path-length-bytes-sha256-v1",
+            files=files,
+            inventory_fingerprint=canonical_digest(list(paths)),
+            path_plus_bytes_digest="b" * 64,
+        )
+    payload = {
+        "schema_version": "task04-validated-candidate-identity-v1",
+        "registration_version": "2.8",
+        "method_version": "range-weekday-registered-replication-v2.8",
+        "anchor_commit": "a" * 40,
+        "receipt_fingerprint": "b" * 64,
+        "establishment_stage": "AFTER_TWELVE_COMPONENT_RECONCILIATION",
+        "output_digest": digest.model_dump(mode="json"),
+    }
+    return ValidatedCandidateIdentity.model_validate(
+        {**payload, "identity_fingerprint": canonical_digest(payload)}
+    )
+
+
 def _independent() -> IndependentReconciliationEvidence:
     components = {
         name: ComponentDiscrepancy(
@@ -226,17 +285,35 @@ def _independent() -> IndependentReconciliationEvidence:
         )
         for name in RECONCILIATION_COMPONENTS
     }
+    identity = _validated_identity()
+    byte_identity = CandidateByteIdentityEvidence(
+        validated_candidate_identity_fingerprint=identity.identity_fingerprint,
+        baseline_candidate_digest="b" * 64,
+        current_candidate_digest="b" * 64,
+        baseline_files=identity.output_digest.files,
+        current_files=identity.output_digest.files,
+        missing_paths=(),
+        extra_paths=(),
+        size_mismatch_paths=(),
+        sha256_mismatch_paths=(),
+        byte_identity_mismatch_paths=(),
+        digest_mismatch=False,
+        baseline_identity_mismatch=False,
+        passed=True,
+    )
     payload = {
-        "schema_version": "task04-independent-reconciliation-v2",
+        "schema_version": "task04-independent-reconciliation-v3",
         "implementation_id": "task04-independent-full-reproduction-v2",
         "study_id": "TASK-04",
-        "registration_version": "2.7",
-        "method_version": "range-weekday-registered-replication-v2.7",
+        "registration_version": "2.8",
+        "method_version": "range-weekday-registered-replication-v2.8",
         "anchor_commit": "a" * 40,
         "receipt_fingerprint": "b" * 64,
         "raw_sha256": "a" * 64,
         "task03_evidence_fingerprint": "b" * 64,
-        "production_output_digest": "c" * 64,
+        "production_output_digest": "b" * 64,
+        "baseline_establishment_eligible": True,
+        "candidate_byte_identity": byte_identity.model_dump(mode="json"),
         "tolerance_policy": ("ABSOLUTE_AND_RELATIVE_WITH_ZERO_CATEGORICAL_TOLERANCE"),
         "checked_components": list(RECONCILIATION_COMPONENTS),
         **{name: value.model_dump(mode="json") for name, value in components.items()},
@@ -291,8 +368,8 @@ def _outputs(receipt: Task04RegistrationReceipt) -> LifecycleOutputEvidence:
         OutputFileHash(
             relative_path=path,
             size_bytes=1,
-            sha256="a" * 64,
-            category="FIGURE" if path in figures else "TABLE_OR_REPORT",
+            sha256="d" * 64,
+            category="FIGURE" if path.startswith("figures/") else "TABLE_OR_REPORT",
         )
         for path in paths
     )
@@ -309,6 +386,10 @@ def _outputs(receipt: Task04RegistrationReceipt) -> LifecycleOutputEvidence:
         figure_inventory=figures,
         no_extra_output_validation_passed=True,
         output_containment_validation_passed=True,
+        validated_candidate_identity_fingerprint=_validated_identity().identity_fingerprint,
+        baseline_candidate_digest="b" * 64,
+        final_matches_validated_candidate_identity=True,
+        byte_identity_mismatch_count=0,
     )
 
 
@@ -392,10 +473,10 @@ def test_receipt_builder_populates_every_v24_binding(
     root = find_repository_root()
     config, registration = _contract()
     source = read_source_dependency_manifest(
-        root / "studies/task04_v2.7_source_manifest.json"
+        root / "studies/task04_v2.8_source_manifest.json"
     )
     task03 = read_task03_row_membership_evidence(
-        root / "studies/task03_task04_v2.7_evidence.json"
+        root / "studies/task03_task04_v2.8_evidence.json"
     )
     monkeypatch.setattr(
         registry_module, "validate_task04_dependencies", lambda *_: None
@@ -442,7 +523,7 @@ def test_receipt_builder_populates_every_v24_binding(
         root=root,
         anchor_commit="a" * 40,
     )
-    assert receipt.identity.registration_file_path.endswith("v2.7.yaml")
+    assert receipt.identity.registration_file_path.endswith("v2.8.yaml")
     assert receipt.git_anchor.anchor_parent_commit_id == "c" * 40
     assert receipt.git_anchor.registered_blob_identities
     assert receipt.upstream_evidence.task03.scientific_membership_fingerprint == (
@@ -546,6 +627,25 @@ def test_lifecycle_requires_complete_evidence_and_is_terminal(tmp_path: Path) ->
                 config=config,
                 receipt=receipt,
             )
+    for mutation, message in (
+        ("identity_fingerprint", "identity fingerprint differs"),
+        ("baseline_digest", "baseline digest differs"),
+        ("final_file_hash", "per-file hashes differ"),
+    ):
+        values = lifecycle.model_dump(mode="python")
+        output = values["output_evidence"]
+        if mutation == "identity_fingerprint":
+            output["validated_candidate_identity_fingerprint"] = "c" * 64
+        elif mutation == "baseline_digest":
+            output["baseline_candidate_digest"] = "c" * 64
+            output["output_digest"]["path_plus_bytes_digest"] = "c" * 64
+        else:
+            output["output_digest"]["files"][0]["sha256"] = "e" * 64
+        values.pop("lifecycle_fingerprint")
+        with pytest.raises(ValidationError, match=message):
+            Task04RegistrationLifecycle.model_validate(
+                {**values, "lifecycle_fingerprint": canonical_digest(values)}
+            )
 
 
 def test_phase_b_sequence_cannot_skip_to_completion() -> None:
@@ -572,7 +672,8 @@ def test_completion_request_requires_exact_pre_promotion_sequence() -> None:
         "phase_b_progress": progress,
         "production_state_identifier": "candidate-state",
         "descendant_commit_or_working_state": "anchor-plus-results",
-        "deterministic_regeneration_digest": "a" * 64,
+        "deterministic_regeneration_digest": "b" * 64,
+        "validated_candidate_identity": _validated_identity(),
         "independent_reconciliation": _independent(),
         "completion_gates": _gates(),
         "primary_population": 50,
@@ -607,32 +708,12 @@ def test_lifecycle_rejects_each_failed_reconciliation_component(
     evidence_values[component]["passed"] = False
     evidence_values["passed"] = False
     evidence_values.pop("artifact_fingerprint")
-    evidence = IndependentReconciliationEvidence.model_validate(
-        {
-            **evidence_values,
-            "artifact_fingerprint": canonical_digest(evidence_values),
-        }
-    )
-    config, registration = _contract()
-    receipt = _receipt()
-    with pytest.raises(ValueError, match="reconciliation"):
-        build_completed_lifecycle(
-            registration,
-            config,
-            receipt,
-            production_state_identifier="candidate",
-            descendant_commit_or_working_state="descendant",
-            output_evidence=_outputs(receipt),
-            independent_reconciliation=evidence,
-            completion_gates=_gates(),
-            primary_population=50,
-            primary_statistic=1.0,
-            primary_p_value=0.5,
-            primary_effect_size=0.01,
-            final_evidence_rating="MODERATE",
-            task03_execution_context_fingerprint="7" * 64,
-            task03_execution_context_variance_observed=False,
-            limitations=registration.known_limitations,
+    with pytest.raises(ValidationError):
+        IndependentReconciliationEvidence.model_validate(
+            {
+                **evidence_values,
+                "artifact_fingerprint": canonical_digest(evidence_values),
+            }
         )
 
 
@@ -641,6 +722,33 @@ def test_candidate_generator_has_no_completion_transition() -> None:
     assert "transition_to_completed" not in source
     assert "write_completed_lifecycle" not in source
     assert '"status": "CANDIDATE"' in source
+
+
+def test_byte_identity_mismatch_fails_inventory_and_aggregate() -> None:
+    values = _independent().model_dump(mode="python")
+    byte_identity = values["candidate_byte_identity"]
+    changed_path = byte_identity["current_files"][0]["relative_path"]
+    byte_identity["current_files"][0]["sha256"] = "e" * 64
+    byte_identity["sha256_mismatch_paths"] = (changed_path,)
+    byte_identity["byte_identity_mismatch_paths"] = (changed_path,)
+    byte_identity["current_candidate_digest"] = "c" * 64
+    values["production_output_digest"] = "c" * 64
+    byte_identity["digest_mismatch"] = True
+    byte_identity["passed"] = False
+    inventory = values["output_inventory"]
+    inventory["status"] = "FAIL"
+    inventory["inventory_mismatch_count"] = 3
+    inventory["passed"] = False
+    values["baseline_establishment_eligible"] = False
+    values["inventory_mismatch_count"] = 3
+    values["passed"] = False
+    values.pop("artifact_fingerprint")
+    evidence = IndependentReconciliationEvidence.model_validate(
+        {**values, "artifact_fingerprint": canonical_digest(values)}
+    )
+    assert not evidence.output_inventory.passed
+    assert not evidence.passed
+    assert evidence.inventory_mismatch_count == 3
 
 
 def test_digest_algorithm_and_candidate_promotion_are_exact(tmp_path: Path) -> None:
@@ -652,10 +760,15 @@ def test_digest_algorithm_and_candidate_promotion_are_exact(tmp_path: Path) -> N
     second = build_output_digest(candidate, ("b.txt", "a.txt"))
     assert first == second
     final = tmp_path / "final"
-    promote_candidate_outputs(candidate, final, ("a.txt", "b.txt"))
+    identity = _validated_identity(first)
+    promote_candidate_outputs(
+        candidate, final, ("a.txt", "b.txt"), validated_identity=identity
+    )
     assert final.is_dir() and not candidate.exists()
     with pytest.raises(FileExistsError):
-        promote_candidate_outputs(final, final, ("a.txt", "b.txt"))
+        promote_candidate_outputs(
+            final, final, ("a.txt", "b.txt"), validated_identity=identity
+        )
     with pytest.raises(ValidationError):
         OutputFileHash(
             relative_path="figures\\figure.png",

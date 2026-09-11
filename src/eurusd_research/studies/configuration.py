@@ -127,9 +127,9 @@ class Task04Config(StrictModel):
     """Complete fail-closed configuration for the weekday-range study."""
 
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.7"]
+    registration_version: Literal["2.8"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.7"]
+    method_version: Literal["range-weekday-registered-replication-v2.8"]
     implementation_version: str = Field(min_length=1)
     receipt_schema_version: Literal["task04-registration-receipt-v5"]
     lifecycle_schema_version: Literal["task04-registration-lifecycle-v5"]
@@ -190,9 +190,23 @@ class Task04Config(StrictModel):
     coverage_summary_path: Path
     output_directory: Path
     candidate_output_directory: Path
+    validated_candidate_identity_path: Path
     completion_sequence: tuple[str, ...] = Field(min_length=14, max_length=14)
     candidate_outputs_are_completed_evidence: Literal[False]
     output_digest_algorithm: Literal["task04-path-length-bytes-sha256-v1"]
+    candidate_identity_schema_version: Literal["task04-validated-candidate-identity-v1"]
+    candidate_identity_establishment_stage: Literal[
+        "AFTER_TWELVE_COMPONENT_RECONCILIATION"
+    ]
+    candidate_identity_immutability_policy: Literal[
+        "WRITE_ONCE_NO_AUTOMATIC_REBASELINE"
+    ]
+    candidate_identity_comparison_policy: Literal[
+        "CURRENT_PATH_SIZE_SHA256_AND_DIGEST_MUST_EQUAL_VALIDATED_BASELINE"
+    ]
+    promotion_identity_policy: Literal[
+        "FINAL_BYTES_MUST_EQUAL_VALIDATED_CANDIDATE_BASELINE"
+    ]
     independent_reconciliation_implementation: Literal[
         "task04-independent-full-reproduction-v2"
     ]

@@ -1,0 +1,94 @@
+{
+  "architecture": "DESIGN_B_REBUILD_AND_RECONCILE_EXACTLY",
+  "evidence_fingerprint": "9350864bc9e50c3478cb25e9741f0b8a954d8605bcb01511776f38990804229d",
+  "execution_context": {
+    "context_variance_policy": "INFORMATIONAL_IF_SCIENTIFIC_AND_STABLE_ARTIFACT_IDENTITIES_MATCH",
+    "execution_context_fingerprint": "b25c2e5b5ad0b647ce2cb88ace78c2a3f63e3ba5142eabbbe5ca55945df1f05a",
+    "raw_output_sha256": {
+      "reports/coverage/coverage_profiles.csv": "51dd5865a4bebe866354fd31bbef9b3161cf200ff8a75f4904cec7f3eadb0403",
+      "reports/coverage/coverage_summary.json": "3bc8a6d9c44e9801dfddb625bad92839d3a7d64b582642d413087bdb4866c096",
+      "reports/coverage/coverage_summary.md": "a2a6cff62e5e0b7a112b607d120c341144ac5b138e52a0b1630baffe3140ae31",
+      "reports/coverage/date_flag_counts.csv": "8d7c55365db05edc7d1d354ca66cc72bfe52485e0adc2bf345d41112781724a7",
+      "reports/coverage/month_flag_counts.csv": "405e745e29b66e4acfaff4a1ea860d7e2b76a3e30c26d3c04dc21e9c09113444",
+      "reports/coverage/row_flag_counts.csv": "391f6fbd47cbda3b1d89790a34f5971c2c679bd41302d4d00b6ee99ce255731e"
+    },
+    "repository_version": "v2.8-anchor-pending",
+    "schema_version": "task03-execution-context-v1"
+  },
+  "schema_version": "task03-layered-evidence-v1",
+  "scientific_membership": {
+    "boundary_classification_sha256": "5c5b518a46880e2453354e924f5673ea74edde8e8f4e3fa751c55be0d718671d",
+    "coverage_schema_version": "research-coverage-artifacts-v1",
+    "observed_date_count": 5146,
+    "observed_row_count": 406945,
+    "profiles": [
+      {
+        "date_included": 5146,
+        "date_membership_sha256": "d557bbb9c4c461e9d025766657637b1180e125f10a7a78c088c92e7942366446",
+        "date_total": 5146,
+        "profile": "DEFAULT_RESEARCH",
+        "row_included": 406945,
+        "row_membership_sha256": "c06655ac1b6bfb0fde95a6e3441fa07367130ba96b29f3b001fe501a53819c5e",
+        "row_total": 406945
+      },
+      {
+        "date_included": 4465,
+        "date_membership_sha256": "5b2c3d8fb36e0fff5c561cebc8b117c6a30d4e22467c1f91d56c7c16c4f1d1b0",
+        "date_total": 5146,
+        "profile": "STRICT_CONTINUITY",
+        "row_included": 360477,
+        "row_membership_sha256": "ea44c20e2fba5ae52d0cc637e18513a054a63dba5ed33e2a5f1a92847816eb29",
+        "row_total": 406945
+      },
+      {
+        "date_included": 681,
+        "date_membership_sha256": "1a234329eb9a1cfb0c1629404e2decc81031c0eb211d3f3a82f1171687df05a2",
+        "date_total": 5146,
+        "profile": "SENSITIVITY_FULL",
+        "row_included": 46468,
+        "row_membership_sha256": "161b348a914aacefcbb7a2babf473091279b8386bb1254c8282b9d986e073e44",
+        "row_total": 406945
+      },
+      {
+        "date_included": 156,
+        "date_membership_sha256": "72cda6c8ae551f792df105ffca06de57cada5c6a96cbcee2dbd1a3eaf24f0177",
+        "date_total": 5146,
+        "profile": "SENSITIVITY_2023",
+        "row_included": 9258,
+        "row_membership_sha256": "815ba37fd0447df261101a9df8e46be6ad2865313ed37eef259095e8425fe452",
+        "row_total": 406945
+      }
+    ],
+    "raw_sha256": "b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c",
+    "schema_version": "task03-scientific-membership-v1",
+    "scientific_membership_fingerprint": "3472712a1db02e6941d136f961acf6f4272f822c3ada1e9784b0bb8ad04251ce",
+    "sensitivity_2023_subset_sensitivity_full": true,
+    "stable_lineage_sha256": "0da79ededd9ed14c8a44bd80432a6aaefc76a86971182e834edb97378b958ec9",
+    "strict_disjoint_sensitivity_full": true,
+    "strict_subset_default": true,
+    "strict_union_sensitivity_full_equals_default": true,
+    "task03_method_id": "COVERAGE-001",
+    "task03_method_version": "research-coverage-v1"
+  },
+  "stable_artifacts": {
+    "normalization_policy": "CANONICAL_CONTENT_EXCLUDING_REGISTERED_EXECUTION_CONTEXT",
+    "output_inventory": [
+      "reports/coverage/coverage_profiles.csv",
+      "reports/coverage/coverage_summary.json",
+      "reports/coverage/coverage_summary.md",
+      "reports/coverage/date_flag_counts.csv",
+      "reports/coverage/month_flag_counts.csv",
+      "reports/coverage/row_flag_counts.csv"
+    ],
+    "schema_version": "task03-stable-artifact-v1",
+    "stable_artifact_fingerprint": "958a1d7aa4d71901368cc3e59971ba736a5ed8187d0c0956e9498f0c46269418",
+    "stable_output_sha256": {
+      "reports/coverage/coverage_profiles.csv": "51dd5865a4bebe866354fd31bbef9b3161cf200ff8a75f4904cec7f3eadb0403",
+      "reports/coverage/coverage_summary.json": "464a9600384481798eef8c48600ff75cc1f04b6faa435c6f15abf595e04a3721",
+      "reports/coverage/coverage_summary.md": "44abb387190f0248429200d299ee0ea8451884d54bd899fe9b388293b55f59ac",
+      "reports/coverage/date_flag_counts.csv": "8d7c55365db05edc7d1d354ca66cc72bfe52485e0adc2bf345d41112781724a7",
+      "reports/coverage/month_flag_counts.csv": "405e745e29b66e4acfaff4a1ea860d7e2b76a3e30c26d3c04dc21e9c09113444",
+      "reports/coverage/row_flag_counts.csv": "391f6fbd47cbda3b1d89790a34f5971c2c679bd41302d4d00b6ee99ce255731e"
+    }
+  }
+}
