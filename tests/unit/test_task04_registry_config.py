@@ -57,7 +57,7 @@ def _preregistered(
 def test_task04_config_and_registration_contract() -> None:
     root, config, registration = _contract()
     assert registration.status == "PREREGISTERED"
-    assert registration.registration_version == config.registration_version == "2.9"
+    assert registration.registration_version == config.registration_version == "2.10"
     assert_registration_matches_config(registration, config)
     assert len(locked_design_fingerprint(registration)) == 64
     assert len(executable_configuration_fingerprint(config)) == 64
@@ -67,16 +67,16 @@ def test_task04_config_and_registration_contract() -> None:
     assert (root / "studies" / "task04_development_baseline.json").is_file()
 
 
-def test_v29_preserves_v28_scientific_design_exactly() -> None:
+def test_v210_preserves_v29_scientific_design_exactly() -> None:
     root = find_repository_root()
-    with (root / "studies/task04_daily_range_weekday.v2.8.yaml").open(
-        encoding="utf-8"
-    ) as handle:
-        v28 = yaml.safe_load(handle)
     with (root / "studies/task04_daily_range_weekday.v2.9.yaml").open(
         encoding="utf-8"
     ) as handle:
         v29 = yaml.safe_load(handle)
+    with (root / "studies/task04_daily_range_weekday.v2.10.yaml").open(
+        encoding="utf-8"
+    ) as handle:
+        v210 = yaml.safe_load(handle)
     scientific_fields = (
         "research_question",
         "primary_null_hypothesis",
@@ -110,15 +110,24 @@ def test_v29_preserves_v28_scientific_design_exactly() -> None:
         "known_limitations",
         "prohibited_analyses",
     )
-    assert {field: v29[field] for field in scientific_fields} == {
-        field: v28[field] for field in scientific_fields
+    assert {field: v210[field] for field in scientific_fields} == {
+        field: v29[field] for field in scientific_fields
     }
-    assert v29["expected_outputs"]["files"] == v28["expected_outputs"]["files"]
-    assert v29["expected_outputs"]["figures"] == v28["expected_outputs"]["figures"]
+    assert v210["expected_outputs"]["files"] == v29["expected_outputs"]["files"]
+    assert v210["expected_outputs"]["figures"] == v29["expected_outputs"]["figures"]
     assert (
-        v29["expected_outputs"]["figure_settings"]
-        == (v28["expected_outputs"]["figure_settings"])
+        v210["expected_outputs"]["figure_settings"]
+        == (v29["expected_outputs"]["figure_settings"])
     )
+    assert v210["raw_checksum"] == v29["raw_checksum"]
+    assert v210["raw_manifest_sha256"] == v29["raw_manifest_sha256"]
+    for identity in (
+        "scientific_membership_fingerprint",
+        "stable_artifact_fingerprint",
+    ):
+        assert (
+            v210["task_03_dependency"][identity] == v29["task_03_dependency"][identity]
+        )
 
 
 @pytest.mark.parametrize(

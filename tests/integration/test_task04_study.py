@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+import yaml
 from scipy import stats
 
 from eurusd_research.data.registry import sha256_file
@@ -17,6 +18,53 @@ from eurusd_research.studies.dependencies import (
 from eurusd_research.studies.task04 import generate_task04_study
 
 
+def _copy_registered_pre_receipt_repository(source_root: Path, root: Path) -> None:
+    """Copy only immutable registered inputs plus raw data into an isolated state."""
+    config = load_task04_config(source_root)
+    registration = yaml.safe_load(
+        (source_root / config.preregistration_path).read_text(encoding="utf-8")
+    )
+    root.mkdir(parents=True)
+    registered = registration["repository_lineage"]["registered_path_inventory"]
+    for relative in registered:
+        source = source_root / relative
+        if not source.is_file():
+            raise FileNotFoundError(f"registered fixture input is missing: {relative}")
+        target = root / relative
+        target.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, target)
+    raw_relative = Path("data/raw/EURUSD_M15_UTC.csv")
+    raw_target = root / raw_relative
+    raw_target.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(source_root / raw_relative, raw_target)
+
+
+def _assert_pre_receipt_runtime_absent(root: Path) -> None:
+    config = load_task04_config(root)
+    forbidden = (
+        config.registration_receipt_path,
+        config.registration_lifecycle_path,
+        config.validated_candidate_identity_path,
+        config.independent_reconciliation_path,
+        config.candidate_output_directory,
+        config.output_directory,
+    )
+    assert all(not (root / path).exists() for path in forbidden)
+    for pattern in (
+        "studies/task04_daily_range_weekday.v*.receipt.json",
+        "studies/task04_daily_range_weekday.v*.lifecycle.json",
+        "studies/task04_v*_validated_candidate_identity.json",
+        "studies/task04_v*_independent_reconciliation.json",
+        "reports/research/.task04_v*_candidate",
+        "reports/research/task04_daily_range_weekday_v*",
+        "**/.task04_*_mutation*",
+        "**/.task04_*_regeneration*",
+    ):
+        assert not tuple(root.glob(pattern))
+    assert not tuple(root.glob("**/.coverage*"))
+    assert not tuple(root.glob("**/.pytest_cache"))
+
+
 @pytest.mark.integration
 def test_task04_pre_receipt_state_stops_before_calculation(
     tmp_path: Path,
@@ -24,18 +72,8 @@ def test_task04_pre_receipt_state_stops_before_calculation(
 ) -> None:
     source_root = find_repository_root()
     root = tmp_path / "isolated-pre-receipt-repository"
-    shutil.copytree(
-        source_root,
-        root,
-        ignore=shutil.ignore_patterns(
-            ".git",
-            ".venv",
-            "__pycache__",
-            ".pytest_cache",
-            ".coverage*",
-            ".task04_*_candidate",
-        ),
-    )
+    _copy_registered_pre_receipt_repository(source_root, root)
+    _assert_pre_receipt_runtime_absent(root)
     raw = root / "data/raw/EURUSD_M15_UTC.csv"
     before = (sha256_file(raw), raw.stat().st_mtime_ns)
     output = tmp_path / "task04"
@@ -61,6 +99,88 @@ def test_task04_pre_receipt_state_stops_before_calculation(
     assert not called
     assert not output.exists()
     assert before == (sha256_file(raw), raw.stat().st_mtime_ns)
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    "ambient_state",
+    ("anchor", "receipt", "candidate", "promoted", "completed", "historical"),
+)
+def test_pre_receipt_fixture_ignores_ambient_runtime_state(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    ambient_state: str,
+) -> None:
+    source_root = find_repository_root()
+    ambient = tmp_path / f"ambient-{ambient_state}"
+    _copy_registered_pre_receipt_repository(source_root, ambient)
+    config = load_task04_config(ambient)
+    if ambient_state in {"receipt", "candidate", "promoted", "completed"}:
+        path = ambient / config.registration_receipt_path
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("{}\n", encoding="utf-8")
+    if ambient_state == "candidate":
+        (ambient / config.candidate_output_directory).mkdir(parents=True)
+    if ambient_state in {"promoted", "completed"}:
+        (ambient / config.output_directory).mkdir(parents=True)
+    if ambient_state == "completed":
+        for relative in (
+            config.validated_candidate_identity_path,
+            config.independent_reconciliation_path,
+            config.registration_lifecycle_path,
+        ):
+            path = ambient / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("{}\n", encoding="utf-8")
+    if ambient_state == "historical":
+        for version in ("2.4", "2.5", "2.6", "2.7", "2.8", "2.9"):
+            path = (
+                ambient / f"studies/task04_daily_range_weekday.v{version}.receipt.json"
+            )
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("{}\n", encoding="utf-8")
+            (ambient / f"reports/research/.task04_v{version}_candidate").mkdir(
+                parents=True
+            )
+            (ambient / f"reports/research/task04_daily_range_weekday_v{version}").mkdir(
+                parents=True
+            )
+            for name in (
+                f"task04_v{version}_validated_candidate_identity.json",
+                f"task04_v{version}_independent_reconciliation.json",
+                f"task04_daily_range_weekday.v{version}.lifecycle.json",
+            ):
+                (ambient / "studies" / name).write_text("{}\n", encoding="utf-8")
+        (ambient / ".coverage").write_text("ambient\n", encoding="utf-8")
+        (ambient / ".pytest_cache").mkdir()
+        (ambient / ".task04_v2.9_mutation_attack").mkdir()
+        (ambient / ".task04_v2.9_regeneration_1").mkdir()
+
+    isolated = tmp_path / f"isolated-{ambient_state}"
+    _copy_registered_pre_receipt_repository(ambient, isolated)
+    _assert_pre_receipt_runtime_absent(isolated)
+    output = tmp_path / f"output-{ambient_state}"
+    called = False
+
+    def forbidden_calculation(*_args: object, **_kwargs: object) -> None:
+        nonlocal called
+        called = True
+        raise AssertionError("calculation crossed the missing-receipt boundary")
+
+    monkeypatch.setattr(
+        "eurusd_research.studies.task04.aggregate_daily_profiles",
+        forbidden_calculation,
+    )
+    monkeypatch.setattr(
+        "eurusd_research.studies.registry.read_registration_receipt",
+        lambda *_args, **_kwargs: (_ for _ in ()).throw(
+            FileNotFoundError("Task 04 receipt not found in isolated PRE_RECEIPT state")
+        ),
+    )
+    with pytest.raises(FileNotFoundError, match="receipt not found"):
+        generate_task04_study(isolated, output)
+    assert not called
+    assert not output.exists()
 
 
 @pytest.mark.integration

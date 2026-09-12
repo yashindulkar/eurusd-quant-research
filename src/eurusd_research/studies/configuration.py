@@ -127,9 +127,9 @@ class Task04Config(StrictModel):
     """Complete fail-closed configuration for the weekday-range study."""
 
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.9"]
+    registration_version: Literal["2.10"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.9"]
+    method_version: Literal["range-weekday-registered-replication-v2.10"]
     implementation_version: str = Field(min_length=1)
     receipt_schema_version: Literal["task04-registration-receipt-v6"]
     lifecycle_schema_version: Literal["task04-registration-lifecycle-v6"]
@@ -178,6 +178,9 @@ class Task04Config(StrictModel):
         Literal["COMPLETED"],
     ]
     receipt_existence_policy: Literal["ABSENT_BEFORE_CREATION_REQUIRED_AFTER_CREATION"]
+    pre_receipt_fixture_isolation_policy: Literal[
+        "REGISTERED_ANCHOR_PATHS_PLUS_RAW_ONLY_NO_AMBIENT_RUNTIME"
+    ]
     task03_scientific_membership_policy: Literal[
         "EXACT_ROW_DATE_ALGEBRA_BOUNDARY_AND_RAW_IDENTITY_REQUIRED"
     ]

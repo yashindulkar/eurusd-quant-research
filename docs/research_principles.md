@@ -113,3 +113,8 @@ requires their canonical identities, context, and output hashes to equal the
 lifecycle and final output. A self-consistent embedded copy cannot conceal a
 missing or substituted standalone file. This is governance hardening only; all
 scientific rules and the unresolved-timestamp `MODERATE` cap remain unchanged.
+
+Task 04 v2.10 also treats lifecycle-state test fixtures as explicit registered
+states. PRE_RECEIPT copies only the registered anchor dependency inventory and
+raw CSV; it cannot inherit ambient runtime evidence, caches, coverage output, or
+temporary attack artifacts from a completed developer repository.

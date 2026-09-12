@@ -201,7 +201,7 @@ def rebuild_daily_profiles(
         raise ValueError("Independent raw checksum does not match registration")
     research_config = load_config(root)
     coverage = build_coverage(
-        root=root, config=research_config, repository_version="independent-v2.9"
+        root=root, config=research_config, repository_version="independent-v2.10"
     )
     task03 = validate_task03_row_membership(
         root,

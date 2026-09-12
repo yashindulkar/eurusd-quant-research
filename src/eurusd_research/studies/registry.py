@@ -34,7 +34,7 @@ from eurusd_research.studies.integrity import (
     read_task03_row_membership_evidence,
     validate_source_dependency_manifest,
 )
-from eurusd_research.studies.registration_models import Task04PreregistrationV29
+from eurusd_research.studies.registration_models import Task04PreregistrationV210
 
 MUTABLE_REGISTRATION_FIELDS = ("status",)
 RECEIPT_SCHEMA_VERSION = "task04-registration-receipt-v6"
@@ -79,7 +79,7 @@ class PreregistrationDeviation(StrictModel):
         return self
 
 
-Task04Preregistration = Task04PreregistrationV29
+Task04Preregistration = Task04PreregistrationV210
 
 
 LOCKED_FIELDS = tuple(
@@ -102,11 +102,11 @@ class RegisteredBlobIdentity(ReceiptSection):
 class ReceiptIdentity(ReceiptSection):
     receipt_schema_version: Literal["task04-registration-receipt-v6"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.9"]
+    registration_version: Literal["2.10"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.9"]
-    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.9.yaml"]
-    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.9.receipt.json"]
+    method_version: Literal["range-weekday-registered-replication-v2.10"]
+    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.10.yaml"]
+    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.10.receipt.json"]
     registration_classification: Literal[
         "correctively registered replication of the developed Task 04 analysis"
     ]
@@ -153,10 +153,10 @@ class ReceiptScientificExecutableDesign(ReceiptSection):
     expected_production_output_inventory: tuple[str, ...] = Field(min_length=1)
     expected_figure_inventory: tuple[str, ...] = Field(min_length=8, max_length=8)
     validated_candidate_identity_path: Literal[
-        "studies/task04_v2.9_validated_candidate_identity.json"
+        "studies/task04_v2.10_validated_candidate_identity.json"
     ]
     independent_reconciliation_path: Literal[
-        "studies/task04_v2.9_independent_reconciliation.json"
+        "studies/task04_v2.10_independent_reconciliation.json"
     ]
     standalone_completion_evidence_policy: Literal[
         "REOPEN_STRICTLY_VALIDATE_AND_MATCH_LIFECYCLE_CONTEXT_AND_FINAL_BYTES"
@@ -231,7 +231,7 @@ class ReceiptIntegrity(ReceiptSection):
 
 
 class Task04RegistrationReceipt(StrictModel):
-    """Immutable pre-result identity of the v2.9 registered replication."""
+    """Immutable pre-result identity of the v2.10 registered replication."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -246,11 +246,11 @@ class Task04RegistrationReceipt(StrictModel):
 class LifecycleIdentity(ReceiptSection):
     lifecycle_schema_version: Literal["task04-registration-lifecycle-v6"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.9"]
+    registration_version: Literal["2.10"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.9"]
+    method_version: Literal["range-weekday-registered-replication-v2.10"]
     lifecycle_file_path: Literal[
-        "studies/task04_daily_range_weekday.v2.9.lifecycle.json"
+        "studies/task04_daily_range_weekday.v2.10.lifecycle.json"
     ]
     status: Literal["COMPLETED"]
     receipt_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -336,7 +336,7 @@ class LifecycleGovernance(ReceiptSection):
 
 
 class Task04RegistrationLifecycle(StrictModel):
-    """Terminal completion evidence bound to the original v2.9 receipt."""
+    """Terminal completion evidence bound to the original v2.10 receipt."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -533,6 +533,9 @@ def executable_configuration_contract(config: Task04Config) -> dict[str, Any]:
                 config.lifecycle_state_integration_tests
             ),
             "receipt_existence_policy": config.receipt_existence_policy,
+            "pre_receipt_fixture_isolation_policy": (
+                config.pre_receipt_fixture_isolation_policy
+            ),
             "task03_evidence_layer_schema_version": (
                 config.task03_evidence_layer_schema_version
             ),

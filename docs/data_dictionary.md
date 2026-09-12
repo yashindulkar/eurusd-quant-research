@@ -238,3 +238,8 @@ JSON are mandatory lifecycle dependencies. Completed-state validation reopens
 both files, validates their strict schemas and canonical fingerprints, and
 requires their anchor, receipt, version, method, digest, and per-file evidence
 to match the lifecycle and final output exactly.
+
+Version 2.10 does not change either standalone evidence schema. Its governance
+amendment isolates lifecycle-state test repositories from ambient untracked
+runtime artifacts; those artifacts are neither registered inputs nor scientific
+evidence for v2.10.

@@ -79,13 +79,13 @@ make test                 # all tests with coverage thresholds
 make check                # lint, typecheck, tests, and environment validation
 make audit-raw-data       # read-only registered raw-data quality audit
 make generate-coverage    # Task 02-backed research eligibility metadata
-make prepare-task04-v28-integrity
-make prepare-task04-v28-registration
-make validate-task04-preregistration  # Phase A; no v2.8 results
+make prepare-task04-v210-integrity
+make prepare-task04-v210-registration
+make validate-task04-preregistration  # Phase A; no v2.10 results
 make create-task04-registration-receipt  # Phase B, after anchor commit
 make validate-task04-registration-receipt
 make generate-task04-candidate  # Phase B candidate generation; never completion
-make reconcile-task04-v28       # establish and verify candidate byte identity
+make reconcile-task04-v210      # establish and verify candidate byte identity
 ```
 
 `make audit-raw-data` verifies the registered identity, loads the CSV once for
@@ -147,8 +147,8 @@ deleted and no row-level copy of the raw dataset is written.
 
 Task 04 remains a correctively registered replication of the reviewed
 development analysis. Version 2.2 is retained as historical control evidence;
-the current pre-anchor design is version 2.9 at
-`studies/task04_daily_range_weekday.v2.9.yaml`, method
+the current pre-anchor design is version 2.10 at
+`studies/task04_daily_range_weekday.v2.10.yaml`, method
 `RANGE-WEEKDAY-001`. It asks whether the distribution of unrounded EUR/USD
 daily high-low range in pips differs across Monday-Friday UTC calendar dates.
 
@@ -164,7 +164,7 @@ correction; one-way and Welch ANOVA are complementary. The outputs include
 effect sizes, deterministic bootstrap intervals, chronological and yearly
 stability, past-only volatility regimes, coverage-profile comparisons, and
 reversible extreme-event sensitivities under
-`reports/research/task04_daily_range_weekday_v2.9/` only after the separately
+`reports/research/task04_daily_range_weekday_v2.10/` only after the separately
 authorized anchor commit. The existing unversioned directory remains
 historical v2.2 output.
 
@@ -182,8 +182,12 @@ mismatches involving empty strings, regime-lineage projection, and nested
 figure paths. v2.8 completed Phase B but failed final red-team review because
 completed-lifecycle validation trusted embedded copies without reopening both
 standalone evidence artifacts. v2.9 requires strict standalone parsing,
-fingerprint/context equality, and final-byte equality. Historical estimates
-remain regression controls, not v2.9 evidence.
+fingerprint/context equality, and final-byte equality. v2.9 then completed the
+scientific workflow but stopped before production authorization because its
+PRE_RECEIPT test copied ambient completed runtime evidence. Version 2.10 copies
+only registered anchor inputs plus raw data into that fixture and builds every
+lifecycle state explicitly. Historical estimates remain regression controls,
+not v2.10 evidence.
 
 ## Research workflow
 

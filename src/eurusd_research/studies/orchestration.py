@@ -1,4 +1,4 @@
-"""Explicit v2.9 Phase B stage ordering and filesystem lifecycle states.
+"""Explicit v2.10 Phase B stage ordering and filesystem lifecycle states.
 
 The stage controller is intentionally result-agnostic.  It prevents candidate
 generation from being conflated with terminal lifecycle completion.

@@ -2,6 +2,21 @@
 
 Material decisions are appended with an ISO date, rationale, and implications.
 
+## 2026-09-12 — Isolate lifecycle-state integration fixtures from ambient evidence
+
+**Decision:** Version 2.10 constructs PRE_RECEIPT fixtures from the immutable
+registered path inventory plus the registered raw CSV. Receipt, candidate,
+identity, reconciliation, final-output, lifecycle, historical runtime, cache,
+coverage, and temporary artifacts are never copied from the developer checkout.
+Each lifecycle-state test creates its intended state explicitly.
+
+**Rationale:** v2.9 completed scientific reconciliation, standalone-evidence
+attacks, promotion, and lifecycle creation, but its mandatory completed-state
+integration run exposed that a wholesale repository copy imported the live
+untracked lifecycle. Candidate generation therefore stopped at the completed
+lifecycle guard instead of the intended missing-receipt boundary. This is a
+fixture-isolation correction only; v2.9 remains immutable stopped evidence.
+
 ## 2026-09-11 — Reopen standalone completion evidence during lifecycle validation
 
 **Decision:** Version 2.9 requires completed-lifecycle validation to reopen the

@@ -1,4 +1,4 @@
-"""Create the Task 04 v2.9 receipt for the committed preregistration anchor."""
+"""Create the Task 04 v2.10 receipt for the committed preregistration anchor."""
 
 from __future__ import annotations
 

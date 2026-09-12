@@ -481,3 +481,13 @@ The independent evidence-rating path also reconstructs and compares every
 nested rating-summary dimension field by field; the registered thresholds and
 rating algorithm are unchanged. PRE_RECEIPT integration tests use temporary
 repository state and never infer lifecycle state from a developer checkout.
+
+### Registration version 2.10 lifecycle-fixture isolation amendment
+
+Version 2.10 preserves the complete v2.9 scientific design, standalone-evidence
+binding, Task 03 identities, and 28-file output inventory. Its PRE_RECEIPT
+fixture is constructed only from registered anchor paths and the registered raw
+CSV. It explicitly excludes all ambient receipt, candidate, validated identity,
+reconciliation, final-output, lifecycle, historical runtime, cache, coverage,
+and temporary mutation state. Every other lifecycle-state test likewise builds
+its own state rather than inheriting the live repository state.
