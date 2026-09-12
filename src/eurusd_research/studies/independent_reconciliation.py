@@ -1,4 +1,4 @@
-"""Complete independent raw-to-evidence reconciliation for Task 04 v2.8.
+"""Complete independent raw-to-evidence reconciliation for Task 04 v2.9.
 
 This orchestration module imports no Task 04 production aggregation,
 statistics, robustness, rating, or inventory implementation.
@@ -158,6 +158,75 @@ def _merge_comparisons(*values: FrameComparison) -> FrameComparison:
         sum(item.membership_mismatches for item in values),
         tuple(example for item in values for example in item.examples)[:20],
         tuple(missing for item in values for missing in item.missing),
+    )
+
+
+def _flatten_rating(value: object, prefix: str = "") -> dict[str, object]:
+    """Flatten every rating-summary leaf for field-by-field reconciliation."""
+    if isinstance(value, dict):
+        return {
+            key: leaf
+            for name in sorted(value)
+            for key, leaf in _flatten_rating(
+                value[name], f"{prefix}.{name}" if prefix else str(name)
+            ).items()
+        }
+    if isinstance(value, list):
+        return {
+            key: leaf
+            for index, item in enumerate(value)
+            for key, leaf in _flatten_rating(item, f"{prefix}[{index}]").items()
+        }
+    return {prefix: value}
+
+
+def _compare_rating_summary(
+    expected: dict[str, object], actual: object
+) -> FrameComparison:
+    """Compare every independently reconstructed production rating field."""
+    if not isinstance(actual, dict):
+        return FrameComparison(0, 0, {}, {}, 1, 0, (), ("evidence_rating",))
+    left = _flatten_rating(expected)
+    right = _flatten_rating(actual)
+    missing = tuple(sorted(set(left) - set(right)))
+    extra = tuple(sorted(set(right) - set(left)))
+    examples: list[str] = []
+    absolute: dict[str, float] = {}
+    relative: dict[str, float] = {}
+    categorical = 0
+    for field in sorted(set(left) & set(right)):
+        left_value = left[field]
+        right_value = right[field]
+        if (
+            isinstance(left_value, (int, float))
+            and not isinstance(left_value, bool)
+            and isinstance(right_value, (int, float))
+            and not isinstance(right_value, bool)
+        ):
+            difference = abs(float(left_value) - float(right_value))
+            absolute[f"evidence_rating.{field}"] = difference
+            relative[f"evidence_rating.{field}"] = difference / max(
+                abs(float(left_value)), np.finfo(float).eps
+            )
+        elif type(left_value) is not type(right_value) or left_value != right_value:
+            categorical += 1
+            if len(examples) < 20:
+                examples.append(
+                    f"evidence_rating:{field}:{left_value!r}!={right_value!r}"
+                )
+    if missing:
+        examples.append(f"evidence_rating:missing={list(missing)}")
+    if extra:
+        examples.append(f"evidence_rating:extra={list(extra)}")
+    return FrameComparison(
+        1,
+        len(left),
+        absolute,
+        relative,
+        categorical,
+        len(missing) + len(extra),
+        tuple(examples[:20]),
+        missing,
     )
 
 
@@ -523,13 +592,8 @@ def build_independent_reconciliation(
         config=config,
     )
     summary = json.loads((output_directory / "study_summary.json").read_text())
-    published_rating = str(summary["evidence_rating"]["rating"])
-    rating_frame = pd.DataFrame([{"dimension": "final_rating", "value": rating.rating}])
-    rating_actual = pd.DataFrame(
-        [{"dimension": "final_rating", "value": published_rating}]
-    )
-    rating_comparison = compare_frames(
-        rating_frame, rating_actual, keys=("dimension",), label="evidence_rating"
+    rating_comparison = _compare_rating_summary(
+        rating.production_summary, summary.get("evidence_rating")
     )
     if rating.missing_evidence:
         rating_comparison = FrameComparison(

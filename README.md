@@ -147,8 +147,8 @@ deleted and no row-level copy of the raw dataset is written.
 
 Task 04 remains a correctively registered replication of the reviewed
 development analysis. Version 2.2 is retained as historical control evidence;
-the corrected pre-anchor design is version 2.8 at
-`studies/task04_daily_range_weekday.v2.8.yaml`, method
+the current pre-anchor design is version 2.9 at
+`studies/task04_daily_range_weekday.v2.9.yaml`, method
 `RANGE-WEEKDAY-001`. It asks whether the distribution of unrounded EUR/USD
 daily high-low range in pips differs across Monday-Friday UTC calendar dates.
 
@@ -164,7 +164,7 @@ correction; one-way and Welch ANOVA are complementary. The outputs include
 effect sizes, deterministic bootstrap intervals, chronological and yearly
 stability, past-only volatility regimes, coverage-profile comparisons, and
 reversible extreme-event sensitivities under
-`reports/research/task04_daily_range_weekday_v2.8/` only after the separately
+`reports/research/task04_daily_range_weekday_v2.9/` only after the separately
 authorized anchor commit. The existing unversioned directory remains
 historical v2.2 output.
 
@@ -179,7 +179,11 @@ not compared with a prior trusted candidate identity. Version 2.8 binds a
 write-once validated candidate identity to reconciliation, promotion, and
 lifecycle completion. The earlier v2.5 attempt had stopped on three false comparison
 mismatches involving empty strings, regime-lineage projection, and nested
-figure paths. Historical estimates remain regression controls, not v2.8 evidence.
+figure paths. v2.8 completed Phase B but failed final red-team review because
+completed-lifecycle validation trusted embedded copies without reopening both
+standalone evidence artifacts. v2.9 requires strict standalone parsing,
+fingerprint/context equality, and final-byte equality. Historical estimates
+remain regression controls, not v2.9 evidence.
 
 ## Research workflow
 

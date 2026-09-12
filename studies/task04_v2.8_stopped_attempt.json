@@ -1,0 +1,32 @@
+{
+  "anchor_commit": "9b49258f2568076241ab7fa42c83e7a1a68ded45",
+  "anchor_parent": "58cbd5fc1ca9278d13e5a8cd1db846bb8cfd1bb9",
+  "anchor_tree": "7a004586fdfbd444138f221108da4e34492da8f3",
+  "candidate_digest": "b111ca3ff73ce4cc2dcff02bdac24505053902778142215c4cc6d343293940db",
+  "candidate_inventory_count": 28,
+  "candidate_scientific_estimates_accepted_as_completed_evidence": false,
+  "checked_field_count": 733255,
+  "checked_row_count": 25103,
+  "classification": "ABANDONED_REGISTERED_ATTEMPT",
+  "deterministic_regeneration_passed": true,
+  "figure_validation_passed": true,
+  "independent_reconciliation_fingerprint": "b2692e6c462983ed9f815ae864ff7e33dfa1eb835172d35179666d18fce6f3b4",
+  "lifecycle_fingerprint": "254161372c1593cd40bf6a67b269d60e7e6e6737e2764928a17111c93a24705e",
+  "maximum_numerical_discrepancy": 4.547473508864641e-13,
+  "method_version": "range-weekday-registered-replication-v2.8",
+  "phase_b_completed": true,
+  "production_commit_created": false,
+  "receipt_fingerprint": "34eab2fe874771ef3c35b587c61e255352bbed69861bcb38a27e3b4b6a726182",
+  "reason_for_abandonment": "v2.8 completed Phase B and internally reconciled its scientific outputs, but final red-team review proved that completed-lifecycle validation did not reopen and bind the standalone validated-candidate identity and independent-reconciliation artifacts. The PRE_RECEIPT integration test also depended on the live repository state and failed in the legitimate completed state. Production authorization stopped before any production commit.",
+  "red_team_findings": [
+    "A missing standalone independent-reconciliation artifact was accepted when embedded lifecycle evidence remained internally consistent.",
+    "An internally valid substituted standalone validated-candidate identity was accepted when embedded lifecycle evidence remained internally consistent.",
+    "The PRE_RECEIPT integration test resolved the live completed repository and failed before reaching its isolated missing-receipt assertion."
+  ],
+  "registration_version": "2.8",
+  "schema_version": "task04-stopped-attempt-v1",
+  "scientific_reconciliation_status": "PASS_BUT_GOVERNANCE_INCOMPLETE",
+  "status": "STOPPED_AFTER_FINAL_RED_TEAM_FAILURE",
+  "study_id": "TASK-04",
+  "validated_candidate_identity_fingerprint": "cadd76a222435b03af02268ce3a0407a973db28242394081c91e5518467598c5"
+}

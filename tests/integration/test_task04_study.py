@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import shutil
 from pathlib import Path
 
 import pandas as pd
@@ -21,7 +22,20 @@ def test_task04_pre_receipt_state_stops_before_calculation(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    root = find_repository_root()
+    source_root = find_repository_root()
+    root = tmp_path / "isolated-pre-receipt-repository"
+    shutil.copytree(
+        source_root,
+        root,
+        ignore=shutil.ignore_patterns(
+            ".git",
+            ".venv",
+            "__pycache__",
+            ".pytest_cache",
+            ".coverage*",
+            ".task04_*_candidate",
+        ),
+    )
     raw = root / "data/raw/EURUSD_M15_UTC.csv"
     before = (sha256_file(raw), raw.stat().st_mtime_ns)
     output = tmp_path / "task04"

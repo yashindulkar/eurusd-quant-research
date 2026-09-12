@@ -19,6 +19,8 @@ from eurusd_research.studies.completion import (
     IndependentReconciliationEvidence,
     OutputDigestEvidence,
     build_output_digest,
+    read_independent_reconciliation,
+    read_validated_candidate_identity,
 )
 from eurusd_research.studies.configuration import Task04Config
 from eurusd_research.studies.dependencies import validate_task04_dependencies
@@ -32,11 +34,11 @@ from eurusd_research.studies.integrity import (
     read_task03_row_membership_evidence,
     validate_source_dependency_manifest,
 )
-from eurusd_research.studies.registration_models import Task04PreregistrationV28
+from eurusd_research.studies.registration_models import Task04PreregistrationV29
 
 MUTABLE_REGISTRATION_FIELDS = ("status",)
-RECEIPT_SCHEMA_VERSION = "task04-registration-receipt-v5"
-LIFECYCLE_SCHEMA_VERSION = "task04-registration-lifecycle-v5"
+RECEIPT_SCHEMA_VERSION = "task04-registration-receipt-v6"
+LIFECYCLE_SCHEMA_VERSION = "task04-registration-lifecycle-v6"
 CANONICALIZATION_VERSION = "task04-canonical-json-v1"
 
 
@@ -77,7 +79,7 @@ class PreregistrationDeviation(StrictModel):
         return self
 
 
-Task04Preregistration = Task04PreregistrationV28
+Task04Preregistration = Task04PreregistrationV29
 
 
 LOCKED_FIELDS = tuple(
@@ -98,13 +100,13 @@ class RegisteredBlobIdentity(ReceiptSection):
 
 
 class ReceiptIdentity(ReceiptSection):
-    receipt_schema_version: Literal["task04-registration-receipt-v5"]
+    receipt_schema_version: Literal["task04-registration-receipt-v6"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.8"]
+    registration_version: Literal["2.9"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.8"]
-    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.8.yaml"]
-    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.8.receipt.json"]
+    method_version: Literal["range-weekday-registered-replication-v2.9"]
+    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.9.yaml"]
+    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.9.receipt.json"]
     registration_classification: Literal[
         "correctively registered replication of the developed Task 04 analysis"
     ]
@@ -151,7 +153,16 @@ class ReceiptScientificExecutableDesign(ReceiptSection):
     expected_production_output_inventory: tuple[str, ...] = Field(min_length=1)
     expected_figure_inventory: tuple[str, ...] = Field(min_length=8, max_length=8)
     validated_candidate_identity_path: Literal[
-        "studies/task04_v2.8_validated_candidate_identity.json"
+        "studies/task04_v2.9_validated_candidate_identity.json"
+    ]
+    independent_reconciliation_path: Literal[
+        "studies/task04_v2.9_independent_reconciliation.json"
+    ]
+    standalone_completion_evidence_policy: Literal[
+        "REOPEN_STRICTLY_VALIDATE_AND_MATCH_LIFECYCLE_CONTEXT_AND_FINAL_BYTES"
+    ]
+    independent_rating_reconciliation_policy: Literal[
+        "COMPARE_EVERY_REGISTERED_PRODUCTION_RATING_SUMMARY_FIELD"
     ]
     candidate_identity_schema_version: Literal["task04-validated-candidate-identity-v1"]
     candidate_identity_establishment_stage: Literal[
@@ -220,7 +231,7 @@ class ReceiptIntegrity(ReceiptSection):
 
 
 class Task04RegistrationReceipt(StrictModel):
-    """Immutable pre-result identity of the v2.8 registered replication."""
+    """Immutable pre-result identity of the v2.9 registered replication."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -233,13 +244,13 @@ class Task04RegistrationReceipt(StrictModel):
 
 
 class LifecycleIdentity(ReceiptSection):
-    lifecycle_schema_version: Literal["task04-registration-lifecycle-v5"]
+    lifecycle_schema_version: Literal["task04-registration-lifecycle-v6"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.8"]
+    registration_version: Literal["2.9"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.8"]
+    method_version: Literal["range-weekday-registered-replication-v2.9"]
     lifecycle_file_path: Literal[
-        "studies/task04_daily_range_weekday.v2.8.lifecycle.json"
+        "studies/task04_daily_range_weekday.v2.9.lifecycle.json"
     ]
     status: Literal["COMPLETED"]
     receipt_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -325,7 +336,7 @@ class LifecycleGovernance(ReceiptSection):
 
 
 class Task04RegistrationLifecycle(StrictModel):
-    """Terminal completion evidence bound to the original v2.8 receipt."""
+    """Terminal completion evidence bound to the original v2.9 receipt."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -504,6 +515,15 @@ def executable_configuration_contract(config: Task04Config) -> dict[str, Any]:
             "final_output_directory": config.output_directory.as_posix(),
             "validated_candidate_identity_path": (
                 config.validated_candidate_identity_path.as_posix()
+            ),
+            "independent_reconciliation_path": (
+                config.independent_reconciliation_path.as_posix()
+            ),
+            "standalone_completion_evidence_policy": (
+                config.standalone_completion_evidence_policy
+            ),
+            "independent_rating_reconciliation_policy": (
+                config.independent_rating_reconciliation_policy
             ),
             "completion_sequence": list(config.completion_sequence),
             "candidate_outputs_are_completed_evidence": (
@@ -949,6 +969,15 @@ def build_registration_receipt(
             "validated_candidate_identity_path": (
                 registration.production_governance.validated_candidate_identity_path
             ),
+            "independent_reconciliation_path": (
+                registration.production_governance.independent_reconciliation_path
+            ),
+            "standalone_completion_evidence_policy": (
+                registration.production_governance.standalone_completion_evidence_policy
+            ),
+            "independent_rating_reconciliation_policy": (
+                registration.production_governance.independent_rating_reconciliation_policy
+            ),
             "candidate_identity_schema_version": (
                 registration.production_governance.candidate_identity_schema_version
             ),
@@ -1297,19 +1326,91 @@ def validate_registration_lifecycle(
         expected_paths,
         figure_paths=(f"figures/{name}" for name in config.expected_figure_files),
     )
+    validate_standalone_completion_evidence(
+        lifecycle,
+        registration=registration,
+        receipt=receipt,
+        actual_output=actual_output,
+        identity_path=root / config.validated_candidate_identity_path,
+        reconciliation_path=root / config.independent_reconciliation_path,
+    )
     assert_completed_lifecycle_matches(
         lifecycle,
         registration=registration,
         config=config,
         receipt=receipt,
     )
-    checks = (
-        lifecycle.output_evidence.output_digest == actual_output,
-        lifecycle.output_evidence.exact_output_paths == expected_paths,
-    )
-    if not all(checks):
+    if (
+        lifecycle.output_evidence.output_digest != actual_output
+        or lifecycle.output_evidence.exact_output_paths != expected_paths
+    ):
         raise ValueError("Task 04 completed lifecycle output evidence changed")
     return lifecycle
+
+
+def validate_standalone_completion_evidence(
+    lifecycle: Task04RegistrationLifecycle,
+    *,
+    registration: Task04Preregistration,
+    receipt: Task04RegistrationReceipt,
+    actual_output: OutputDigestEvidence,
+    identity_path: Path,
+    reconciliation_path: Path,
+) -> None:
+    """Reopen both standalone artifacts and bind them to lifecycle and outputs."""
+    if not identity_path.is_file():
+        raise FileNotFoundError("Standalone validated candidate identity is missing")
+    if not reconciliation_path.is_file():
+        raise FileNotFoundError(
+            "Standalone independent reconciliation artifact is missing"
+        )
+    try:
+        standalone_identity = read_validated_candidate_identity(identity_path)
+    except (OSError, ValueError) as error:
+        raise ValueError(
+            "Standalone validated candidate identity is malformed or invalid"
+        ) from error
+    try:
+        standalone_reconciliation = read_independent_reconciliation(reconciliation_path)
+    except (OSError, ValueError) as error:
+        raise ValueError(
+            "Standalone independent reconciliation is malformed or invalid"
+        ) from error
+    checks = (
+        standalone_identity.registration_version == registration.registration_version,
+        standalone_identity.method_version == registration.method_version,
+        standalone_identity.anchor_commit == receipt.git_anchor.anchor_commit_id,
+        standalone_identity.receipt_fingerprint == receipt.receipt_fingerprint,
+        standalone_identity.identity_fingerprint
+        == lifecycle.output_evidence.validated_candidate_identity_fingerprint,
+        standalone_identity.output_digest == actual_output,
+        standalone_reconciliation
+        == lifecycle.scientific_completion.independent_reconciliation,
+        standalone_reconciliation.anchor_commit == receipt.git_anchor.anchor_commit_id,
+        standalone_reconciliation.receipt_fingerprint == receipt.receipt_fingerprint,
+        standalone_reconciliation.registration_version
+        == registration.registration_version,
+        standalone_reconciliation.method_version == registration.method_version,
+        standalone_reconciliation.production_output_digest
+        == actual_output.path_plus_bytes_digest,
+        standalone_reconciliation.candidate_byte_identity is not None,
+    )
+    if not all(checks):
+        raise ValueError(
+            "Task 04 standalone completion evidence or final output changed"
+        )
+    byte_identity = standalone_reconciliation.candidate_byte_identity
+    if byte_identity is None or (
+        byte_identity.validated_candidate_identity_fingerprint
+        != standalone_identity.identity_fingerprint
+        or byte_identity.baseline_candidate_digest
+        != standalone_identity.output_digest.path_plus_bytes_digest
+        or byte_identity.current_candidate_digest
+        != actual_output.path_plus_bytes_digest
+    ):
+        raise ValueError(
+            "Standalone reconciliation does not bind the validated identity"
+        )
 
 
 def assert_completed_lifecycle_matches(

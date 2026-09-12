@@ -466,3 +466,18 @@ repeatability control.
 No v2.8 receipt, lifecycle, candidate output, production output, candidate
 identity, or observed v2.8 result may exist before the separately authorized
 v2.8 Git anchor.
+
+### Registration version 2.9 standalone completion-evidence amendment
+
+Version 2.9 preserves every v2.8 scientific definition and the exact 28-file
+scientific output inventory. It changes governance only. A completed lifecycle
+is valid only when validation reopens both standalone evidence files, validates
+their strict schemas and canonical fingerprints, matches anchor, receipt,
+registration and method context, and proves the standalone candidate inventory
+equals final production bytes. Embedded lifecycle copies cannot substitute for
+missing, truncated, or different standalone evidence.
+
+The independent evidence-rating path also reconstructs and compares every
+nested rating-summary dimension field by field; the registered thresholds and
+rating algorithm are unchanged. PRE_RECEIPT integration tests use temporary
+repository state and never infer lifecycle state from a developer checkout.

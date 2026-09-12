@@ -51,6 +51,7 @@ from eurusd_research.studies.registry import (
     locked_design_fingerprint,
     read_preregistration,
     read_registration_receipt,
+    validate_standalone_completion_evidence,
     write_completed_lifecycle,
     write_registration_receipt,
 )
@@ -99,13 +100,13 @@ def _receipt() -> Task04RegistrationReceipt:
     figures = tuple(sorted(f"figures/{x}" for x in config.expected_figure_files))
     payload = {
         "identity": {
-            "receipt_schema_version": "task04-registration-receipt-v5",
+            "receipt_schema_version": "task04-registration-receipt-v6",
             "study_id": "TASK-04",
-            "registration_version": "2.8",
+            "registration_version": "2.9",
             "method_id": "RANGE-WEEKDAY-001",
-            "method_version": "range-weekday-registered-replication-v2.8",
-            "registration_file_path": "studies/task04_daily_range_weekday.v2.8.yaml",
-            "receipt_file_path": "studies/task04_daily_range_weekday.v2.8.receipt.json",
+            "method_version": "range-weekday-registered-replication-v2.9",
+            "registration_file_path": "studies/task04_daily_range_weekday.v2.9.yaml",
+            "receipt_file_path": "studies/task04_daily_range_weekday.v2.9.receipt.json",
             "registration_classification": registration.registration_classification,
             "non_first_look_disclosure": registration.registration_disclosure,
             "registration_status_at_anchoring": "PREREGISTERED",
@@ -151,7 +152,7 @@ def _receipt() -> Task04RegistrationReceipt:
             "expected_production_output_inventory": inventory,
             "expected_figure_inventory": figures,
             "validated_candidate_identity_path": (
-                "studies/task04_v2.8_validated_candidate_identity.json"
+                "studies/task04_v2.9_validated_candidate_identity.json"
             ),
             "candidate_identity_schema_version": (
                 "task04-validated-candidate-identity-v1"
@@ -164,6 +165,15 @@ def _receipt() -> Task04RegistrationReceipt:
             ),
             "candidate_identity_comparison_policy": (
                 "CURRENT_PATH_SIZE_SHA256_AND_DIGEST_MUST_EQUAL_VALIDATED_BASELINE"
+            ),
+            "independent_reconciliation_path": (
+                "studies/task04_v2.9_independent_reconciliation.json"
+            ),
+            "standalone_completion_evidence_policy": (
+                "REOPEN_STRICTLY_VALIDATE_AND_MATCH_LIFECYCLE_CONTEXT_AND_FINAL_BYTES"
+            ),
+            "independent_rating_reconciliation_policy": (
+                "COMPARE_EVERY_REGISTERED_PRODUCTION_RATING_SUMMARY_FIELD"
             ),
         },
         "upstream_evidence": {
@@ -224,6 +234,8 @@ def _receipt() -> Task04RegistrationReceipt:
 
 def _validated_identity(
     digest: OutputDigestEvidence | None = None,
+    *,
+    receipt_fingerprint: str = "b" * 64,
 ) -> ValidatedCandidateIdentity:
     if digest is None:
         config, _ = _contract()
@@ -252,10 +264,10 @@ def _validated_identity(
         )
     payload = {
         "schema_version": "task04-validated-candidate-identity-v1",
-        "registration_version": "2.8",
-        "method_version": "range-weekday-registered-replication-v2.8",
+        "registration_version": "2.9",
+        "method_version": "range-weekday-registered-replication-v2.9",
         "anchor_commit": "a" * 40,
-        "receipt_fingerprint": "b" * 64,
+        "receipt_fingerprint": receipt_fingerprint,
         "establishment_stage": "AFTER_TWELVE_COMPONENT_RECONCILIATION",
         "output_digest": digest.model_dump(mode="json"),
     }
@@ -264,7 +276,9 @@ def _validated_identity(
     )
 
 
-def _independent() -> IndependentReconciliationEvidence:
+def _independent(
+    *, receipt_fingerprint: str = "b" * 64
+) -> IndependentReconciliationEvidence:
     components = {
         name: ComponentDiscrepancy(
             component=name,
@@ -285,7 +299,7 @@ def _independent() -> IndependentReconciliationEvidence:
         )
         for name in RECONCILIATION_COMPONENTS
     }
-    identity = _validated_identity()
+    identity = _validated_identity(receipt_fingerprint=receipt_fingerprint)
     byte_identity = CandidateByteIdentityEvidence(
         validated_candidate_identity_fingerprint=identity.identity_fingerprint,
         baseline_candidate_digest="b" * 64,
@@ -305,10 +319,10 @@ def _independent() -> IndependentReconciliationEvidence:
         "schema_version": "task04-independent-reconciliation-v3",
         "implementation_id": "task04-independent-full-reproduction-v2",
         "study_id": "TASK-04",
-        "registration_version": "2.8",
-        "method_version": "range-weekday-registered-replication-v2.8",
+        "registration_version": "2.9",
+        "method_version": "range-weekday-registered-replication-v2.9",
         "anchor_commit": "a" * 40,
-        "receipt_fingerprint": "b" * 64,
+        "receipt_fingerprint": receipt_fingerprint,
         "raw_sha256": "a" * 64,
         "task03_evidence_fingerprint": "b" * 64,
         "production_output_digest": "b" * 64,
@@ -386,7 +400,9 @@ def _outputs(receipt: Task04RegistrationReceipt) -> LifecycleOutputEvidence:
         figure_inventory=figures,
         no_extra_output_validation_passed=True,
         output_containment_validation_passed=True,
-        validated_candidate_identity_fingerprint=_validated_identity().identity_fingerprint,
+        validated_candidate_identity_fingerprint=_validated_identity(
+            receipt_fingerprint=receipt.receipt_fingerprint
+        ).identity_fingerprint,
         baseline_candidate_digest="b" * 64,
         final_matches_validated_candidate_identity=True,
         byte_identity_mismatch_count=0,
@@ -473,10 +489,10 @@ def test_receipt_builder_populates_every_v24_binding(
     root = find_repository_root()
     config, registration = _contract()
     source = read_source_dependency_manifest(
-        root / "studies/task04_v2.8_source_manifest.json"
+        root / "studies/task04_v2.9_source_manifest.json"
     )
     task03 = read_task03_row_membership_evidence(
-        root / "studies/task03_task04_v2.8_evidence.json"
+        root / "studies/task03_task04_v2.9_evidence.json"
     )
     monkeypatch.setattr(
         registry_module, "validate_task04_dependencies", lambda *_: None
@@ -523,7 +539,7 @@ def test_receipt_builder_populates_every_v24_binding(
         root=root,
         anchor_commit="a" * 40,
     )
-    assert receipt.identity.registration_file_path.endswith("v2.8.yaml")
+    assert receipt.identity.registration_file_path.endswith("v2.9.yaml")
     assert receipt.git_anchor.anchor_parent_commit_id == "c" * 40
     assert receipt.git_anchor.registered_blob_identities
     assert receipt.upstream_evidence.task03.scientific_membership_fingerprint == (
@@ -570,7 +586,9 @@ def test_lifecycle_requires_complete_evidence_and_is_terminal(tmp_path: Path) ->
         production_state_identifier="working-tree:descendant",
         descendant_commit_or_working_state="working-tree:descendant",
         output_evidence=_outputs(receipt),
-        independent_reconciliation=_independent(),
+        independent_reconciliation=_independent(
+            receipt_fingerprint=receipt.receipt_fingerprint
+        ),
         completion_gates=_gates(),
         primary_population=50,
         primary_statistic=5.0,
@@ -646,6 +664,238 @@ def test_lifecycle_requires_complete_evidence_and_is_terminal(tmp_path: Path) ->
             Task04RegistrationLifecycle.model_validate(
                 {**values, "lifecycle_fingerprint": canonical_digest(values)}
             )
+
+
+def _completed_lifecycle_fixture() -> tuple[
+    Any,
+    Any,
+    Task04RegistrationReceipt,
+    Task04RegistrationLifecycle,
+]:
+    config, registration = _contract()
+    receipt = _receipt()
+    lifecycle = build_completed_lifecycle(
+        registration,
+        config,
+        receipt,
+        production_state_identifier="working-tree:descendant",
+        descendant_commit_or_working_state="working-tree:descendant",
+        output_evidence=_outputs(receipt),
+        independent_reconciliation=_independent(
+            receipt_fingerprint=receipt.receipt_fingerprint
+        ),
+        completion_gates=_gates(),
+        primary_population=50,
+        primary_statistic=5.0,
+        primary_p_value=0.1,
+        primary_effect_size=0.01,
+        final_evidence_rating="MODERATE",
+        task03_execution_context_fingerprint="7" * 64,
+        task03_execution_context_variance_observed=False,
+        limitations=registration.known_limitations,
+    )
+    return config, registration, receipt, lifecycle
+
+
+def _write_json(path: Path, value: object) -> None:
+    path.write_text(json.dumps(value, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def test_completed_lifecycle_reopens_and_binds_standalone_evidence(
+    tmp_path: Path,
+) -> None:
+    _config, registration, receipt, lifecycle = _completed_lifecycle_fixture()
+    identity = _validated_identity(receipt_fingerprint=receipt.receipt_fingerprint)
+    reconciliation = _independent(receipt_fingerprint=receipt.receipt_fingerprint)
+    identity_path = tmp_path / "identity.json"
+    reconciliation_path = tmp_path / "reconciliation.json"
+    _write_json(identity_path, identity.model_dump(mode="json"))
+    _write_json(reconciliation_path, reconciliation.model_dump(mode="json"))
+    validate_standalone_completion_evidence(
+        lifecycle,
+        registration=registration,
+        receipt=receipt,
+        actual_output=identity.output_digest,
+        identity_path=identity_path,
+        reconciliation_path=reconciliation_path,
+    )
+
+    identity_path.unlink()
+    with pytest.raises(FileNotFoundError, match="identity is missing"):
+        validate_standalone_completion_evidence(
+            lifecycle,
+            registration=registration,
+            receipt=receipt,
+            actual_output=identity.output_digest,
+            identity_path=identity_path,
+            reconciliation_path=reconciliation_path,
+        )
+    _write_json(identity_path, identity.model_dump(mode="json"))
+    reconciliation_path.unlink()
+    with pytest.raises(FileNotFoundError, match="reconciliation artifact is missing"):
+        validate_standalone_completion_evidence(
+            lifecycle,
+            registration=registration,
+            receipt=receipt,
+            actual_output=identity.output_digest,
+            identity_path=identity_path,
+            reconciliation_path=reconciliation_path,
+        )
+
+
+def test_completed_lifecycle_rejects_valid_standalone_substitutions(
+    tmp_path: Path,
+) -> None:
+    _config, registration, receipt, lifecycle = _completed_lifecycle_fixture()
+    identity = _validated_identity(receipt_fingerprint=receipt.receipt_fingerprint)
+    reconciliation = _independent(receipt_fingerprint=receipt.receipt_fingerprint)
+    identity_path = tmp_path / "identity.json"
+    reconciliation_path = tmp_path / "reconciliation.json"
+    _write_json(reconciliation_path, reconciliation.model_dump(mode="json"))
+
+    identity_values = identity.model_dump(mode="json")
+    identity_values["anchor_commit"] = "c" * 40
+    identity_values.pop("identity_fingerprint")
+    substituted_identity = {
+        **identity_values,
+        "identity_fingerprint": canonical_digest(identity_values),
+    }
+    _write_json(identity_path, substituted_identity)
+    with pytest.raises(ValueError, match="standalone completion evidence"):
+        validate_standalone_completion_evidence(
+            lifecycle,
+            registration=registration,
+            receipt=receipt,
+            actual_output=identity.output_digest,
+            identity_path=identity_path,
+            reconciliation_path=reconciliation_path,
+        )
+
+    _write_json(identity_path, identity.model_dump(mode="json"))
+    reconciliation_values = reconciliation.model_dump(mode="json")
+    reconciliation_values["receipt_fingerprint"] = "c" * 64
+    reconciliation_values.pop("artifact_fingerprint")
+    substituted_reconciliation = {
+        **reconciliation_values,
+        "artifact_fingerprint": canonical_digest(reconciliation_values),
+    }
+    _write_json(reconciliation_path, substituted_reconciliation)
+    with pytest.raises(ValueError, match="standalone completion evidence"):
+        validate_standalone_completion_evidence(
+            lifecycle,
+            registration=registration,
+            receipt=receipt,
+            actual_output=identity.output_digest,
+            identity_path=identity_path,
+            reconciliation_path=reconciliation_path,
+        )
+
+
+@pytest.mark.parametrize("artifact", ["identity", "reconciliation"])
+def test_completed_lifecycle_rejects_same_size_standalone_byte_mutation(
+    tmp_path: Path, artifact: str
+) -> None:
+    _config, registration, receipt, lifecycle = _completed_lifecycle_fixture()
+    identity = _validated_identity(receipt_fingerprint=receipt.receipt_fingerprint)
+    identity_path = tmp_path / "identity.json"
+    reconciliation_path = tmp_path / "reconciliation.json"
+    _write_json(identity_path, identity.model_dump(mode="json"))
+    _write_json(
+        reconciliation_path,
+        _independent(receipt_fingerprint=receipt.receipt_fingerprint).model_dump(
+            mode="json"
+        ),
+    )
+    path = identity_path if artifact == "identity" else reconciliation_path
+    original_mtime = path.stat().st_mtime_ns
+    content = path.read_bytes()
+    offset = content.index(b"a")
+    path.write_bytes(content[:offset] + b"c" + content[offset + 1 :])
+    os.utime(path, ns=(original_mtime, original_mtime))
+    with pytest.raises(ValueError, match="malformed or invalid"):
+        validate_standalone_completion_evidence(
+            lifecycle,
+            registration=registration,
+            receipt=receipt,
+            actual_output=identity.output_digest,
+            identity_path=identity_path,
+            reconciliation_path=reconciliation_path,
+        )
+
+
+@pytest.mark.parametrize(
+    ("artifact", "field", "value"),
+    [
+        ("identity", "anchor_commit", "c" * 40),
+        ("identity", "receipt_fingerprint", "c" * 64),
+        ("identity", "registration_version", "2.8"),
+        ("identity", "method_version", "range-weekday-registered-replication-v2.8"),
+        ("reconciliation", "anchor_commit", "c" * 40),
+        ("reconciliation", "receipt_fingerprint", "c" * 64),
+        ("reconciliation", "registration_version", "2.8"),
+        (
+            "reconciliation",
+            "method_version",
+            "range-weekday-registered-replication-v2.8",
+        ),
+        ("reconciliation", "production_output_digest", "c" * 64),
+    ],
+)
+def test_completed_lifecycle_rejects_each_standalone_context_substitution(
+    tmp_path: Path, artifact: str, field: str, value: str
+) -> None:
+    _config, registration, receipt, lifecycle = _completed_lifecycle_fixture()
+    identity = _validated_identity(receipt_fingerprint=receipt.receipt_fingerprint)
+    reconciliation = _independent(receipt_fingerprint=receipt.receipt_fingerprint)
+    identity_path = tmp_path / "identity.json"
+    reconciliation_path = tmp_path / "reconciliation.json"
+    identity_values = identity.model_dump(mode="json")
+    reconciliation_values = reconciliation.model_dump(mode="json")
+    target = identity_values if artifact == "identity" else reconciliation_values
+    fingerprint = (
+        "identity_fingerprint" if artifact == "identity" else "artifact_fingerprint"
+    )
+    target[field] = value
+    target.pop(fingerprint)
+    target[fingerprint] = canonical_digest(target)
+    _write_json(identity_path, identity_values)
+    _write_json(reconciliation_path, reconciliation_values)
+    with pytest.raises(ValueError):
+        validate_standalone_completion_evidence(
+            lifecycle,
+            registration=registration,
+            receipt=receipt,
+            actual_output=identity.output_digest,
+            identity_path=identity_path,
+            reconciliation_path=reconciliation_path,
+        )
+
+
+def test_completed_lifecycle_rejects_reconciliation_bound_to_other_identity(
+    tmp_path: Path,
+) -> None:
+    _config, registration, receipt, lifecycle = _completed_lifecycle_fixture()
+    identity = _validated_identity(receipt_fingerprint=receipt.receipt_fingerprint)
+    reconciliation = _independent(receipt_fingerprint=receipt.receipt_fingerprint)
+    identity_path = tmp_path / "identity.json"
+    reconciliation_path = tmp_path / "reconciliation.json"
+    _write_json(identity_path, identity.model_dump(mode="json"))
+    values = reconciliation.model_dump(mode="json")
+    values["candidate_byte_identity"]["validated_candidate_identity_fingerprint"] = (
+        "c" * 64
+    )
+    values.pop("artifact_fingerprint")
+    values["artifact_fingerprint"] = canonical_digest(values)
+    _write_json(reconciliation_path, values)
+    with pytest.raises(ValueError, match="standalone completion evidence"):
+        validate_standalone_completion_evidence(
+            lifecycle,
+            registration=registration,
+            receipt=receipt,
+            actual_output=identity.output_digest,
+            identity_path=identity_path,
+            reconciliation_path=reconciliation_path,
+        )
 
 
 def test_phase_b_sequence_cannot_skip_to_completion() -> None:

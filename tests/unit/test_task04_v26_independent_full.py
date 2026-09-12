@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import json
 import os
 from pathlib import Path
 from types import SimpleNamespace
@@ -30,6 +31,7 @@ from eurusd_research.studies.independent_rating import (
     reconstruct_rating,
 )
 from eurusd_research.studies.independent_reconciliation import (
+    _compare_rating_summary,
     _population_table,
     build_independent_reconciliation,
     compare_frames,
@@ -143,7 +145,7 @@ def test_full_reconciliation_orchestration_calculates_every_component(
         "task04_config_fingerprint": "f" * 64,
         "preregistration_fingerprint": "1" * 64,
         "method_id": "RANGE-WEEKDAY-001",
-        "method_version": "range-weekday-registered-replication-v2.8",
+        "method_version": "range-weekday-registered-replication-v2.9",
         "repository_version": "fixture",
     }
     frames = {
@@ -269,7 +271,7 @@ def test_full_reconciliation_orchestration_calculates_every_component(
                 "task04_config_fingerprint": "f" * 64,
                 "preregistration_fingerprint": "1" * 64,
                 "method_id": "RANGE-WEEKDAY-001",
-                "method_version": "range-weekday-registered-replication-v2.8",
+                "method_version": "range-weekday-registered-replication-v2.9",
                 "repository_version": "fixture",
             }
         ]
@@ -325,6 +327,7 @@ def test_full_reconciliation_orchestration_calculates_every_component(
                 ),
             ),
             (),
+            {"rating": "MODERATE"},
         ),
     )
     record = InventoryRecord("artifact.csv", 1, "c" * 64, True, False, 1, True)
@@ -399,12 +402,12 @@ def test_full_reconciliation_orchestration_calculates_every_component(
     assert all(getattr(evidence, name).passed for name in evidence.checked_components)
 
 
-def test_v28_scientific_design_is_identical_to_v27() -> None:
-    v27 = yaml.safe_load(
-        (ROOT / "studies/task04_daily_range_weekday.v2.7.yaml").read_text()
-    )
+def test_v29_scientific_design_is_identical_to_v28() -> None:
     v28 = yaml.safe_load(
         (ROOT / "studies/task04_daily_range_weekday.v2.8.yaml").read_text()
+    )
+    v29 = yaml.safe_load(
+        (ROOT / "studies/task04_daily_range_weekday.v2.9.yaml").read_text()
     )
     scientific_fields = (
         "research_question",
@@ -439,8 +442,8 @@ def test_v28_scientific_design_is_identical_to_v27() -> None:
         "known_limitations",
         "prohibited_analyses",
     )
-    assert {field: v28[field] for field in scientific_fields} == {
-        field: v27[field] for field in scientific_fields
+    assert {field: v29[field] for field in scientific_fields} == {
+        field: v28[field] for field in scientific_fields
     }
 
 
@@ -924,6 +927,19 @@ def test_independent_rating_reproduces_and_missing_is_insufficient(config) -> No
     result = reconstruct_rating(config=config, **tables)
     assert result.rating == "MODERATE"
     assert result.decisions
+    published = json.loads(
+        (HISTORICAL / "study_summary.json").read_text(encoding="utf-8")
+    )["evidence_rating"]
+    full_surface = _compare_rating_summary(result.production_summary, published)
+    assert full_surface.checked_fields >= 30
+    assert full_surface.categorical_mismatches == 0
+    assert full_surface.missing == (
+        "high_regime_kruskal_p_value",
+        "high_regime_significance_role",
+        "thresholds.high_regime_significance_role",
+        "thresholds.minimum_regime_sample",
+    )
+    assert max(full_surface.absolute.values(), default=0.0) < 1e-12
     tables["extreme"] = pd.DataFrame()
     assert reconstruct_rating(config=config, **tables).rating == "INSUFFICIENT"
 
@@ -1025,3 +1041,25 @@ def test_unchecked_component_cannot_default_to_pass() -> None:
             unsupported_claims=(),
             passed=True,
         )
+
+
+def test_rating_reconciliation_checks_every_nested_summary_dimension() -> None:
+    expected = {
+        "rating": "MODERATE",
+        "moderate_checks": {"primary_significant": True},
+        "strong_checks": {"timestamp_semantics_resolved": False},
+        "fixed_period_rank_correlations": [1.0, 0.7, 0.9],
+        "thresholds": {"minimum_rank_correlation": 0.6},
+    }
+    matched = _compare_rating_summary(expected, expected)
+    assert matched.checked_fields == 7
+    assert not matched.categorical_mismatches
+    assert not matched.membership_mismatches
+    altered = json.loads(json.dumps(expected))
+    altered["moderate_checks"]["primary_significant"] = False
+    mismatch = _compare_rating_summary(expected, altered)
+    assert mismatch.categorical_mismatches == 1
+    missing = json.loads(json.dumps(expected))
+    del missing["strong_checks"]["timestamp_semantics_resolved"]
+    missing_comparison = _compare_rating_summary(expected, missing)
+    assert missing_comparison.membership_mismatches == 1

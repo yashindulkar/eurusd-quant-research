@@ -106,3 +106,10 @@ size, SHA-256, and canonical path-length-bytes digest. Later reconciliation,
 promotion, and lifecycle completion compare current bytes with that prior
 identity. Deterministic regeneration tests repeatability; the candidate identity
 separately detects mutation of the already validated candidate.
+
+Task 04 v2.9 additionally treats standalone completion artifacts as required
+evidence, not optional mirrors. Lifecycle validation reopens both artifacts and
+requires their canonical identities, context, and output hashes to equal the
+lifecycle and final output. A self-consistent embedded copy cannot conceal a
+missing or substituted standalone file. This is governance hardening only; all
+scientific rules and the unresolved-timestamp `MODERATE` cap remain unchanged.

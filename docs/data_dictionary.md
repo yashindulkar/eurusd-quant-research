@@ -232,3 +232,9 @@ It also binds the aggregate path-length-bytes digest, anchor, receipt, method,
 registration version, establishment stage, and its own canonical fingerprint.
 It is created once only after candidate reconciliation and is not a scientific
 result. Current candidate and final-output bytes must match it exactly.
+
+For v2.9, this standalone identity and the standalone independent-reconciliation
+JSON are mandatory lifecycle dependencies. Completed-state validation reopens
+both files, validates their strict schemas and canonical fingerprints, and
+requires their anchor, receipt, version, method, digest, and per-file evidence
+to match the lifecycle and final output exactly.

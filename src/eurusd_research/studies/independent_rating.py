@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -32,6 +33,7 @@ class IndependentRating:
     cap: str
     decisions: tuple[RatingDecision, ...]
     missing_evidence: tuple[str, ...]
+    production_summary: dict[str, Any]
 
 
 def reconstruct_rating(
@@ -58,7 +60,7 @@ def reconstruct_rating(
     missing = tuple(sorted(name for name, table in required.items() if table.empty))
     if missing:
         return IndependentRating(
-            "INSUFFICIENT", "INSUFFICIENT", "MODERATE", (), missing
+            "INSUFFICIENT", "INSUFFICIENT", "MODERATE", (), missing, {}
         )
     primary = coverage.loc[coverage["profile"].eq(config.primary_coverage_profile)]
     primary_stats = weekday.loc[weekday["profile"].eq(config.primary_coverage_profile)]
@@ -122,7 +124,9 @@ def reconstruct_rating(
         if sufficient_years.empty:
             errors_set.add("sufficient years")
         errors = tuple(sorted(errors_set))
-        return IndependentRating("INSUFFICIENT", "INSUFFICIENT", "MODERATE", (), errors)
+        return IndependentRating(
+            "INSUFFICIENT", "INSUFFICIENT", "MODERATE", (), errors, {}
+        )
     if (
         primary_regime["sample_size"] < config.evidence_rating.minimum_regime_sample
     ).any():
@@ -132,6 +136,7 @@ def reconstruct_rating(
             "MODERATE",
             (),
             ("insufficient regime population",),
+            {},
         )
     primary_row = primary.iloc[0]
     period_index = periods.set_index("analysis_period")
@@ -318,4 +323,75 @@ def reconstruct_rating(
             "caps maximum rating",
         )
     )
-    return IndependentRating(rating, uncapped, cap, tuple(decisions), ())
+    moderate_checks = {
+        "primary_significant": moderate_values[0][3],
+        "epsilon_squared_meets_moderate_threshold": moderate_values[1][3],
+        "median_ci_precision_meets_moderate_threshold": moderate_values[2][3],
+        "primary_group_sample_sufficient": moderate_values[3][3],
+        "development_validation_rank_correlation_sufficient": moderate_values[4][3],
+        "strict_continuity_direction_concordant": moderate_values[5][3],
+        "extreme_sensitivity_does_not_reverse_order": moderate_values[6][3],
+    }
+    development_significant = bool(
+        period_index.loc["development_70", "kruskal_p_value"] < config.alpha
+    )
+    validation_significant = bool(
+        period_index.loc["validation_30", "kruskal_p_value"] < config.alpha
+    )
+    required_profile_concordance = bool(
+        strict_agreement >= thresholds.minimum_rank_correlation
+    )
+    diagnostic_profile_concordance = bool(
+        (diagnostic >= thresholds.minimum_rank_correlation).all()
+    )
+    fixed_correlations = [
+        float(period_index.loc[name, "rank_correlation_with_full"])
+        for name in ("pre_2020", "covid_era", "post_2021")
+    ]
+    regime_correlations = [
+        rank_correlation(full_order, order) for order in regime_orders
+    ]
+    strong_checks = {
+        "epsilon_squared_meets_strong_threshold": strong_values[0][3],
+        "development_significant": development_significant,
+        "validation_significant": validation_significant,
+        "median_ci_precision_meets_strong_threshold": strong_values[1][3],
+        "sufficient_year_stability_meets_threshold": strong_values[2][3],
+        "all_fixed_periods_directionally_stable": strong_values[3][3],
+        "all_regimes_directionally_stable": strong_values[4][3],
+        "required_coverage_profiles_directionally_concordant": (
+            required_profile_concordance
+        ),
+        "timestamp_semantics_resolved": config.timestamp_semantics_status
+        != "UNRESOLVED",
+    }
+    if thresholds.diagnostic_profile_disagreement_blocks_strong:
+        strong_checks["diagnostic_coverage_profiles_directionally_concordant"] = (
+            diagnostic_profile_concordance
+        )
+    summary: dict[str, Any] = {
+        "rating": rating,
+        "moderate_checks": moderate_checks,
+        "strong_checks": strong_checks,
+        "development_validation_rank_correlation": validation_agreement,
+        "sufficient_year_stable_fraction": stable_year_fraction,
+        "fixed_period_rank_correlations": fixed_correlations,
+        "regime_rank_correlations": regime_correlations,
+        "extreme_event_minimum_rank_correlation": extreme_agreement,
+        "maximum_primary_median_ci_relative_width": maximum_width,
+        "minimum_primary_weekday_sample": minimum_n,
+        "required_profile_concordance": required_profile_concordance,
+        "diagnostic_profile_concordance": diagnostic_profile_concordance,
+        "diagnostic_profile_disagreement_blocks_strong": (
+            thresholds.diagnostic_profile_disagreement_blocks_strong
+        ),
+        "high_regime_significance_role": thresholds.high_regime_significance_role,
+        "high_regime_kruskal_p_value": float(
+            primary_regime.set_index("volatility_regime").loc["HIGH", "p_value"]
+        ),
+        "timestamp_semantics_status": config.timestamp_semantics_status,
+        "timestamp_semantics_rating_cap": cap,
+        "thresholds": thresholds.model_dump(mode="json"),
+        "logic_source": "studies/task04_daily_range_weekday.yaml",
+    }
+    return IndependentRating(rating, uncapped, cap, tuple(decisions), (), summary)

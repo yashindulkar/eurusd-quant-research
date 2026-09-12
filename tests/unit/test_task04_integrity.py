@@ -61,7 +61,7 @@ def test_live_task03_row_membership_matches_pinned_evidence() -> None:
 def test_dependency_manifest_covers_representative_execution_closure() -> None:
     root = find_repository_root()
     manifest = read_source_dependency_manifest(
-        root / "studies" / "task04_v2.8_source_manifest.json"
+        root / "studies" / "task04_v2.9_source_manifest.json"
     )
     paths = {entry.path for entry in manifest.entries}
     assert {
@@ -78,7 +78,7 @@ def test_dependency_manifest_covers_representative_execution_closure() -> None:
         "tests/unit/test_task04_v26_governance.py",
         "Makefile",
         "pyproject.toml",
-        "studies/task04_v2.8_environment_lock.json",
+        "studies/task04_v2.9_environment_lock.json",
     }.issubset(paths)
 
 
@@ -87,7 +87,7 @@ def test_pinned_task03_evidence_tamper_fails_self_validation(
 ) -> None:
     root = find_repository_root()
     value = json.loads(
-        (root / "studies" / "task03_task04_v2.8_evidence.json").read_text(
+        (root / "studies" / "task03_task04_v2.9_evidence.json").read_text(
             encoding="utf-8"
         )
     )
@@ -246,7 +246,7 @@ def _minimal_source_scope(root: Path) -> None:
     (root / "Makefile").write_text("check:\n\t@true\n", encoding="utf-8")
     for name in ("project.yaml", "data.yaml", "coverage.yaml", "sessions.yaml"):
         (root / "configs" / name).write_text("{}\n", encoding="utf-8")
-    (root / "studies" / "task04_v2.8_environment_lock.json").write_text(
+    (root / "studies" / "task04_v2.9_environment_lock.json").write_text(
         json.dumps({"schema_version": "fixture"}) + "\n",
         encoding="utf-8",
     )

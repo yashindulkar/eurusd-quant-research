@@ -2,6 +2,21 @@
 
 Material decisions are appended with an ISO date, rationale, and implications.
 
+## 2026-09-11 — Reopen standalone completion evidence during lifecycle validation
+
+**Decision:** Version 2.9 requires completed-lifecycle validation to reopen the
+standalone validated-candidate identity and independent-reconciliation JSON,
+strictly validate both canonical fingerprints, and match their complete context
+and byte identities to the lifecycle and final output. PRE_RECEIPT integration
+testing now runs in an isolated temporary repository. Independent rating
+reconciliation compares every nested production rating-summary field.
+
+**Rationale:** Final red-team review proved v2.8 could accept a missing standalone
+reconciliation file or a substituted but internally valid standalone identity
+because only embedded copies were checked. v2.8 remains a valid anchor and a
+scientifically reconciled but governance-incomplete stopped attempt; it was not
+production-committed.
+
 ## 2026-09-10 — Bind validated Task 04 candidate bytes before promotion
 
 **Decision:** Version 2.8 establishes a write-once candidate identity only after

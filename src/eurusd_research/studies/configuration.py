@@ -127,12 +127,12 @@ class Task04Config(StrictModel):
     """Complete fail-closed configuration for the weekday-range study."""
 
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.8"]
+    registration_version: Literal["2.9"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.8"]
+    method_version: Literal["range-weekday-registered-replication-v2.9"]
     implementation_version: str = Field(min_length=1)
-    receipt_schema_version: Literal["task04-registration-receipt-v5"]
-    lifecycle_schema_version: Literal["task04-registration-lifecycle-v5"]
+    receipt_schema_version: Literal["task04-registration-receipt-v6"]
+    lifecycle_schema_version: Literal["task04-registration-lifecycle-v6"]
     timezone: str
     pip_size: float = Field(gt=0.0, allow_inf_nan=False)
     weekday_inclusion: tuple[str, ...] = Field(min_length=5, max_length=5)
@@ -191,6 +191,13 @@ class Task04Config(StrictModel):
     output_directory: Path
     candidate_output_directory: Path
     validated_candidate_identity_path: Path
+    independent_reconciliation_path: Path
+    standalone_completion_evidence_policy: Literal[
+        "REOPEN_STRICTLY_VALIDATE_AND_MATCH_LIFECYCLE_CONTEXT_AND_FINAL_BYTES"
+    ]
+    independent_rating_reconciliation_policy: Literal[
+        "COMPARE_EVERY_REGISTERED_PRODUCTION_RATING_SUMMARY_FIELD"
+    ]
     completion_sequence: tuple[str, ...] = Field(min_length=14, max_length=14)
     candidate_outputs_are_completed_evidence: Literal[False]
     output_digest_algorithm: Literal["task04-path-length-bytes-sha256-v1"]
