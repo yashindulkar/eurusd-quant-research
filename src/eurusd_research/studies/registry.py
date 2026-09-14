@@ -34,7 +34,7 @@ from eurusd_research.studies.integrity import (
     read_task03_row_membership_evidence,
     validate_source_dependency_manifest,
 )
-from eurusd_research.studies.registration_models import Task04PreregistrationV210
+from eurusd_research.studies.registration_models import Task04PreregistrationV211
 
 MUTABLE_REGISTRATION_FIELDS = ("status",)
 RECEIPT_SCHEMA_VERSION = "task04-registration-receipt-v6"
@@ -79,7 +79,7 @@ class PreregistrationDeviation(StrictModel):
         return self
 
 
-Task04Preregistration = Task04PreregistrationV210
+Task04Preregistration = Task04PreregistrationV211
 
 
 LOCKED_FIELDS = tuple(
@@ -102,11 +102,11 @@ class RegisteredBlobIdentity(ReceiptSection):
 class ReceiptIdentity(ReceiptSection):
     receipt_schema_version: Literal["task04-registration-receipt-v6"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.10"]
+    registration_version: Literal["2.11"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.10"]
-    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.10.yaml"]
-    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.10.receipt.json"]
+    method_version: Literal["range-weekday-registered-replication-v2.11"]
+    registration_file_path: Literal["studies/task04_daily_range_weekday.v2.11.yaml"]
+    receipt_file_path: Literal["studies/task04_daily_range_weekday.v2.11.receipt.json"]
     registration_classification: Literal[
         "correctively registered replication of the developed Task 04 analysis"
     ]
@@ -153,16 +153,25 @@ class ReceiptScientificExecutableDesign(ReceiptSection):
     expected_production_output_inventory: tuple[str, ...] = Field(min_length=1)
     expected_figure_inventory: tuple[str, ...] = Field(min_length=8, max_length=8)
     validated_candidate_identity_path: Literal[
-        "studies/task04_v2.10_validated_candidate_identity.json"
+        "studies/task04_v2.11_validated_candidate_identity.json"
     ]
     independent_reconciliation_path: Literal[
-        "studies/task04_v2.10_independent_reconciliation.json"
+        "studies/task04_v2.11_independent_reconciliation.json"
     ]
     standalone_completion_evidence_policy: Literal[
         "REOPEN_STRICTLY_VALIDATE_AND_MATCH_LIFECYCLE_CONTEXT_AND_FINAL_BYTES"
     ]
     independent_rating_reconciliation_policy: Literal[
         "COMPARE_EVERY_REGISTERED_PRODUCTION_RATING_SUMMARY_FIELD"
+    ]
+    reporting_interpretation_policy: Literal[
+        "NON_SIGNIFICANCE_IS_NON_DETECTION_NOT_ABSENCE_OR_EQUIVALENCE"
+    ]
+    validation_segment_label_policy: Literal[
+        "CHRONOLOGICALLY_RESERVED_NOT_HISTORICALLY_UNSEEN"
+    ]
+    dependence_reporting_policy: Literal[
+        "NOMINAL_PRECISION_NOT_DEPENDENCE_ROBUST_NO_DIRECTIONAL_CLAIM"
     ]
     candidate_identity_schema_version: Literal["task04-validated-candidate-identity-v1"]
     candidate_identity_establishment_stage: Literal[
@@ -231,7 +240,7 @@ class ReceiptIntegrity(ReceiptSection):
 
 
 class Task04RegistrationReceipt(StrictModel):
-    """Immutable pre-result identity of the v2.10 registered replication."""
+    """Immutable pre-result identity of the v2.11 registered replication."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -246,11 +255,11 @@ class Task04RegistrationReceipt(StrictModel):
 class LifecycleIdentity(ReceiptSection):
     lifecycle_schema_version: Literal["task04-registration-lifecycle-v6"]
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.10"]
+    registration_version: Literal["2.11"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.10"]
+    method_version: Literal["range-weekday-registered-replication-v2.11"]
     lifecycle_file_path: Literal[
-        "studies/task04_daily_range_weekday.v2.10.lifecycle.json"
+        "studies/task04_daily_range_weekday.v2.11.lifecycle.json"
     ]
     status: Literal["COMPLETED"]
     receipt_fingerprint: str = Field(pattern=r"^[0-9a-f]{64}$")
@@ -336,7 +345,7 @@ class LifecycleGovernance(ReceiptSection):
 
 
 class Task04RegistrationLifecycle(StrictModel):
-    """Terminal completion evidence bound to the original v2.10 receipt."""
+    """Terminal completion evidence bound to the original v2.11 receipt."""
 
     model_config = ConfigDict(extra="forbid", frozen=True)
 
@@ -525,6 +534,9 @@ def executable_configuration_contract(config: Task04Config) -> dict[str, Any]:
             "independent_rating_reconciliation_policy": (
                 config.independent_rating_reconciliation_policy
             ),
+            "reporting_interpretation_policy": (config.reporting_interpretation_policy),
+            "validation_segment_label_policy": (config.validation_segment_label_policy),
+            "dependence_reporting_policy": config.dependence_reporting_policy,
             "completion_sequence": list(config.completion_sequence),
             "candidate_outputs_are_completed_evidence": (
                 config.candidate_outputs_are_completed_evidence
@@ -980,6 +992,15 @@ def build_registration_receipt(
             ),
             "independent_rating_reconciliation_policy": (
                 registration.production_governance.independent_rating_reconciliation_policy
+            ),
+            "reporting_interpretation_policy": (
+                registration.production_governance.reporting_interpretation_policy
+            ),
+            "validation_segment_label_policy": (
+                registration.production_governance.validation_segment_label_policy
+            ),
+            "dependence_reporting_policy": (
+                registration.production_governance.dependence_reporting_policy
             ),
             "candidate_identity_schema_version": (
                 registration.production_governance.candidate_identity_schema_version

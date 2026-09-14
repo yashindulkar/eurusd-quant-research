@@ -16,6 +16,7 @@ from eurusd_research.studies.task04 import (
     _markdown_report,
     _validate_deviation_reconciliation,
     _validate_existing_output_scope,
+    _validate_reporting_semantics,
     _validate_written_outputs,
     _write_csv,
 )
@@ -181,3 +182,77 @@ def test_markdown_and_atomic_writers_use_historical_evidence_fixture(
     csv_path = tmp_path / "nested" / "table.csv"
     _write_csv(csv_path, tables["weekday_statistics.csv"].head(2))
     assert len(pd.read_csv(csv_path)) == 2
+
+
+def test_reporting_semantics_require_non_detection_not_absence() -> None:
+    summary = {
+        "robustness": {
+            "volatility_regime": (
+                "The registered analysis did not detect a statistically significant "
+                "weekday difference in the HIGH-volatility subset. This "
+                "non-significant result does not establish equivalence or absence "
+                "of a weekday effect."
+            )
+        }
+    }
+    report = (
+        "The chronologically reserved validation segment was specified by the "
+        "registered split; reserved does not mean historically unseen."
+    )
+    _validate_reporting_semantics(summary, report)
+
+    for unsupported in (
+        "The relationship did not persist in the HIGH regime.",
+        "The relationship disappeared in HIGH volatility.",
+        "There is no relationship in the HIGH regime.",
+        "There is no weekday effect in the HIGH regime.",
+        "The weekday effect is absent in the HIGH regime.",
+        "HIGH volatility eliminates the effect.",
+    ):
+        changed = {"robustness": {"volatility_regime": unsupported}}
+        with pytest.raises(ValueError, match="reporting"):
+            _validate_reporting_semantics(changed, report)
+
+    self_contradictory = {
+        "robustness": {
+            "volatility_regime": (
+                summary["robustness"]["volatility_regime"]
+                + " There is no relationship in the HIGH regime."
+            )
+        }
+    }
+    with pytest.raises(ValueError, match="unsupported absence"):
+        _validate_reporting_semantics(self_contradictory, report)
+
+    with pytest.raises(ValueError, match="chronologically reserved"):
+        _validate_reporting_semantics(summary, "The final validation segment.")
+
+
+@pytest.mark.parametrize(
+    "overstatement",
+    (
+        "the untouched validation segment",
+        "the untouched final 30% validation segment",
+        "the historically untouched segment",
+        "the unseen validation segment",
+        "the never examined validation segment",
+        "the first-look validation segment",
+    ),
+)
+def test_reporting_semantics_reject_false_first_look_claims(
+    overstatement: str,
+) -> None:
+    summary = {
+        "robustness": {
+            "volatility_regime": (
+                "The registered analysis did not detect a statistically significant "
+                "weekday difference in the HIGH-volatility subset. This result "
+                "does not establish equivalence or absence of a weekday effect."
+            )
+        }
+    }
+    with pytest.raises(ValueError, match="Validation-segment reporting"):
+        _validate_reporting_semantics(
+            summary,
+            f"Chronologically reserved but also described as {overstatement}.",
+        )

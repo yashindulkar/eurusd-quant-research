@@ -491,3 +491,15 @@ CSV. It explicitly excludes all ambient receipt, candidate, validated identity,
 reconciliation, final-output, lifecycle, historical runtime, cache, coverage,
 and temporary mutation state. Every other lifecycle-state test likewise builds
 its own state rather than inheriting the live repository state.
+
+### Registration version 2.11 reporting-semantics amendment
+
+Version 2.11 preserves the complete v2.10 scientific design, Task 03 identities,
+reconciliation tolerances, evidence-rating algorithm, figures, and exact 28-file
+scientific inventory. It changes reporting governance only. A non-significant
+HIGH-volatility result means the registered analysis did not detect a
+statistically significant weekday difference; it does not establish equivalence
+or absence of an effect. The final 30% segment is chronologically reserved by the
+registered split but is not represented as historically unseen or first-look.
+IID bootstrap precision remains nominal rather than dependence-robust; future
+dependence-aware inference requires a separately registered study.

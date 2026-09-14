@@ -127,9 +127,9 @@ class Task04Config(StrictModel):
     """Complete fail-closed configuration for the weekday-range study."""
 
     study_id: Literal["TASK-04"]
-    registration_version: Literal["2.10"]
+    registration_version: Literal["2.11"]
     method_id: Literal["RANGE-WEEKDAY-001"]
-    method_version: Literal["range-weekday-registered-replication-v2.10"]
+    method_version: Literal["range-weekday-registered-replication-v2.11"]
     implementation_version: str = Field(min_length=1)
     receipt_schema_version: Literal["task04-registration-receipt-v6"]
     lifecycle_schema_version: Literal["task04-registration-lifecycle-v6"]
@@ -200,6 +200,15 @@ class Task04Config(StrictModel):
     ]
     independent_rating_reconciliation_policy: Literal[
         "COMPARE_EVERY_REGISTERED_PRODUCTION_RATING_SUMMARY_FIELD"
+    ]
+    reporting_interpretation_policy: Literal[
+        "NON_SIGNIFICANCE_IS_NON_DETECTION_NOT_ABSENCE_OR_EQUIVALENCE"
+    ]
+    validation_segment_label_policy: Literal[
+        "CHRONOLOGICALLY_RESERVED_NOT_HISTORICALLY_UNSEEN"
+    ]
+    dependence_reporting_policy: Literal[
+        "NOMINAL_PRECISION_NOT_DEPENDENCE_ROBUST_NO_DIRECTIONAL_CLAIM"
     ]
     completion_sequence: tuple[str, ...] = Field(min_length=14, max_length=14)
     candidate_outputs_are_completed_evidence: Literal[False]

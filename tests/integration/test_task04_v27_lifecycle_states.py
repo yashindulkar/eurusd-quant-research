@@ -49,8 +49,8 @@ def _identity(output_digest: OutputDigestEvidence) -> ValidatedCandidateIdentity
     digest = output_digest.model_dump(mode="json")
     payload = {
         "schema_version": "task04-validated-candidate-identity-v1",
-        "registration_version": "2.10",
-        "method_version": "range-weekday-registered-replication-v2.10",
+        "registration_version": "2.11",
+        "method_version": "range-weekday-registered-replication-v2.11",
         "anchor_commit": "a" * 40,
         "receipt_fingerprint": "b" * 64,
         "establishment_stage": "AFTER_TWELVE_COMPONENT_RECONCILIATION",
@@ -141,8 +141,8 @@ def test_full_simulated_phase_b_sequence_is_state_safe_and_non_mutating(
     comparison = compare_output_to_validated_identity(
         candidate,
         identity,
-        registration_version="2.10",
-        method_version="range-weekday-registered-replication-v2.10",
+        registration_version="2.11",
+        method_version="range-weekday-registered-replication-v2.11",
         anchor_commit="a" * 40,
         receipt_fingerprint="b" * 64,
     )

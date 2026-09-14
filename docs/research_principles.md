@@ -118,3 +118,9 @@ Task 04 v2.10 also treats lifecycle-state test fixtures as explicit registered
 states. PRE_RECEIPT copies only the registered anchor dependency inventory and
 raw CSV; it cannot inherit ambient runtime evidence, caches, coverage output, or
 temporary attack artifacts from a completed developer repository.
+
+Task 04 v2.11 treats statistical non-significance as non-detection rather than
+affirmative absence, labels the registered final 30% segment chronologically
+reserved rather than historically untouched, and states that IID-bootstrap
+precision is not dependence-robust. These are reporting controls only and do not
+alter any scientific calculation or evidence-rating threshold.

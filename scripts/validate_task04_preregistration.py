@@ -48,17 +48,17 @@ def main() -> int:
         ),
     )
     if project_path(config.registration_receipt_path, root).exists():
-        raise ValueError("v2.10 receipt already exists; this is not pre-anchor state")
+        raise ValueError("v2.11 receipt already exists; this is not pre-anchor state")
     if project_path(config.registration_lifecycle_path, root).exists():
-        raise ValueError("v2.10 lifecycle already exists before anchoring")
+        raise ValueError("v2.11 lifecycle already exists before anchoring")
     if project_path(config.output_directory, root).exists():
-        raise ValueError("v2.10 production output directory exists before anchoring")
+        raise ValueError("v2.11 production output directory exists before anchoring")
     if project_path(config.candidate_output_directory, root).exists():
-        raise ValueError("v2.10 candidate output directory exists before anchoring")
+        raise ValueError("v2.11 candidate output directory exists before anchoring")
     if project_path(config.validated_candidate_identity_path, root).exists():
-        raise ValueError("v2.10 candidate identity exists before anchoring")
+        raise ValueError("v2.11 candidate identity exists before anchoring")
     if project_path(config.independent_reconciliation_path, root).exists():
-        raise ValueError("v2.10 reconciliation exists before anchoring")
+        raise ValueError("v2.11 reconciliation exists before anchoring")
     print(
         f"Task 04 preregistration: PASS | status={registration.status} | "
         f"registration_version={registration.registration_version} | "

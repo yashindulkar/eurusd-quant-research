@@ -2,6 +2,22 @@
 
 Material decisions are appended with an ISO date, rationale, and implications.
 
+## 2026-09-13 — Treat non-significance as non-detection in Task 04 reporting
+
+**Decision:** Version 2.11 preserves the complete v2.10 scientific design and
+changes production reporting only. A non-significant HIGH-volatility result is
+reported as failure to detect a statistically significant weekday difference,
+with an explicit statement that it does not establish equivalence or absence.
+The final 30% segment is called chronologically reserved, not untouched or
+historically unseen. IID-bootstrap precision is explicitly described as not
+dependence-robust.
+
+**Rationale:** v2.10 passed Phase B, reconciliation, deterministic regeneration,
+promotion, and lifecycle validation, but final red-team review rejected an
+unsupported absence claim in lifecycle-bound report bytes and an overstated
+first-look description. Editing those completed bytes in place is forbidden, so
+a governance/reporting-only successor is required.
+
 ## 2026-09-12 — Isolate lifecycle-state integration fixtures from ambient evidence
 
 **Decision:** Version 2.10 constructs PRE_RECEIPT fixtures from the immutable

@@ -102,12 +102,12 @@ def _receipt() -> Task04RegistrationReceipt:
         "identity": {
             "receipt_schema_version": "task04-registration-receipt-v6",
             "study_id": "TASK-04",
-            "registration_version": "2.10",
+            "registration_version": "2.11",
             "method_id": "RANGE-WEEKDAY-001",
-            "method_version": "range-weekday-registered-replication-v2.10",
-            "registration_file_path": "studies/task04_daily_range_weekday.v2.10.yaml",
+            "method_version": "range-weekday-registered-replication-v2.11",
+            "registration_file_path": "studies/task04_daily_range_weekday.v2.11.yaml",
             "receipt_file_path": (
-                "studies/task04_daily_range_weekday.v2.10.receipt.json"
+                "studies/task04_daily_range_weekday.v2.11.receipt.json"
             ),
             "registration_classification": registration.registration_classification,
             "non_first_look_disclosure": registration.registration_disclosure,
@@ -154,7 +154,7 @@ def _receipt() -> Task04RegistrationReceipt:
             "expected_production_output_inventory": inventory,
             "expected_figure_inventory": figures,
             "validated_candidate_identity_path": (
-                "studies/task04_v2.10_validated_candidate_identity.json"
+                "studies/task04_v2.11_validated_candidate_identity.json"
             ),
             "candidate_identity_schema_version": (
                 "task04-validated-candidate-identity-v1"
@@ -169,13 +169,22 @@ def _receipt() -> Task04RegistrationReceipt:
                 "CURRENT_PATH_SIZE_SHA256_AND_DIGEST_MUST_EQUAL_VALIDATED_BASELINE"
             ),
             "independent_reconciliation_path": (
-                "studies/task04_v2.10_independent_reconciliation.json"
+                "studies/task04_v2.11_independent_reconciliation.json"
             ),
             "standalone_completion_evidence_policy": (
                 "REOPEN_STRICTLY_VALIDATE_AND_MATCH_LIFECYCLE_CONTEXT_AND_FINAL_BYTES"
             ),
             "independent_rating_reconciliation_policy": (
                 "COMPARE_EVERY_REGISTERED_PRODUCTION_RATING_SUMMARY_FIELD"
+            ),
+            "reporting_interpretation_policy": (
+                "NON_SIGNIFICANCE_IS_NON_DETECTION_NOT_ABSENCE_OR_EQUIVALENCE"
+            ),
+            "validation_segment_label_policy": (
+                "CHRONOLOGICALLY_RESERVED_NOT_HISTORICALLY_UNSEEN"
+            ),
+            "dependence_reporting_policy": (
+                "NOMINAL_PRECISION_NOT_DEPENDENCE_ROBUST_NO_DIRECTIONAL_CLAIM"
             ),
         },
         "upstream_evidence": {
@@ -266,8 +275,8 @@ def _validated_identity(
         )
     payload = {
         "schema_version": "task04-validated-candidate-identity-v1",
-        "registration_version": "2.10",
-        "method_version": "range-weekday-registered-replication-v2.10",
+        "registration_version": "2.11",
+        "method_version": "range-weekday-registered-replication-v2.11",
         "anchor_commit": "a" * 40,
         "receipt_fingerprint": receipt_fingerprint,
         "establishment_stage": "AFTER_TWELVE_COMPONENT_RECONCILIATION",
@@ -321,8 +330,8 @@ def _independent(
         "schema_version": "task04-independent-reconciliation-v3",
         "implementation_id": "task04-independent-full-reproduction-v2",
         "study_id": "TASK-04",
-        "registration_version": "2.10",
-        "method_version": "range-weekday-registered-replication-v2.10",
+        "registration_version": "2.11",
+        "method_version": "range-weekday-registered-replication-v2.11",
         "anchor_commit": "a" * 40,
         "receipt_fingerprint": receipt_fingerprint,
         "raw_sha256": "a" * 64,
@@ -491,10 +500,10 @@ def test_receipt_builder_populates_every_v24_binding(
     root = find_repository_root()
     config, registration = _contract()
     source = read_source_dependency_manifest(
-        root / "studies/task04_v2.10_source_manifest.json"
+        root / "studies/task04_v2.11_source_manifest.json"
     )
     task03 = read_task03_row_membership_evidence(
-        root / "studies/task03_task04_v2.10_evidence.json"
+        root / "studies/task03_task04_v2.11_evidence.json"
     )
     monkeypatch.setattr(
         registry_module, "validate_task04_dependencies", lambda *_: None
@@ -541,7 +550,7 @@ def test_receipt_builder_populates_every_v24_binding(
         root=root,
         anchor_commit="a" * 40,
     )
-    assert receipt.identity.registration_file_path.endswith("v2.10.yaml")
+    assert receipt.identity.registration_file_path.endswith("v2.11.yaml")
     assert receipt.git_anchor.anchor_parent_commit_id == "c" * 40
     assert receipt.git_anchor.registered_blob_identities
     assert receipt.upstream_evidence.task03.scientific_membership_fingerprint == (

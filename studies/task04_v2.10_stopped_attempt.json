@@ -1,0 +1,43 @@
+{
+  "anchor_commit": "d3b3bc71da71b718de6b57e71e564e6f5f0012a7",
+  "anchor_parent": "fa9dce03395b63576325f4f15ada1125e106ad86",
+  "anchor_tree": "e95c03e10bf0fa5070b8a86cb6c57d87eeb1fceb",
+  "candidate_digest": "8f438aa8e37b0a15fb0fad4da7ba2ef29b48bfcd9666d3345be1334aff6514c5",
+  "candidate_inventory_count": 28,
+  "candidate_scientific_estimates_accepted_as_production_evidence": false,
+  "checked_field_count": 733300,
+  "checked_row_count": 25103,
+  "classification": "FINAL_RED_TEAM_REJECTED_REGISTERED_ATTEMPT",
+  "completed_lifecycle_created": true,
+  "deterministic_regeneration_passed": true,
+  "final_output_promoted": true,
+  "governance_chain_corruption_detected": false,
+  "independent_reconciliation_fingerprint": "47c935603444f0281500c5e521b6ad9b3db0d0fb093013c97320fa9438d0634a",
+  "lifecycle_fingerprint": "cd1df3db7b5b6ea949c985c5516a4d77b032c7e8679fb81792b489856f3a86b1",
+  "maximum_numerical_discrepancy": 4.547473508864641e-13,
+  "method_version": "range-weekday-registered-replication-v2.10",
+  "phase_b_status": "PASSED",
+  "production_authorized": false,
+  "production_commit_created": false,
+  "production_push_created": false,
+  "receipt_fingerprint": "0537ed8a84aa1b52168c78b7b20a4ee9b3d7ad33a2da4a06dfdf2ad31808014e",
+  "reconciliation_status": "PASS_12_OF_12",
+  "registration_version": "2.10",
+  "rejection": {
+    "primary_reason": "The lifecycle-bound report converted a non-significant HIGH-volatility result into the unsupported absence claim that the relationship did not persist. No equivalence, non-inferiority, interaction, or adequately powered absence test was registered.",
+    "secondary_reason": "The report called the chronologically reserved validation segment untouched even though this corrective replication followed previously examined Task 04 analyses.",
+    "stage": "FINAL_RED_TEAM_PRODUCTION_AUTHORIZATION"
+  },
+  "runtime_artifact_sha256": {
+    "independent_reconciliation": "33cbaf52bd7259d512483dbfae49b80e278a9df5992904c9ad5edf5a0bf8ef07",
+    "lifecycle": "0d73d01b47dad714d40c0dd721b7d80eb156db98e57f28c3c2a3615d58a18aa9",
+    "receipt": "53c4da6aa7257ef3402abd0c1b49d00fbf545a1571c90af12cf8c2c2bc1c9389",
+    "validated_candidate_identity": "164a626a6184590b09224fcf94c87245ef7685749816d184961de5ca4e18408a"
+  },
+  "schema_version": "task04-stopped-attempt-v1",
+  "scientific_calculation_failed": false,
+  "scientific_reconciliation_failed": false,
+  "status": "STOPPED_AFTER_FINAL_RED_TEAM_REJECTION",
+  "study_id": "TASK-04",
+  "validated_candidate_identity_fingerprint": "9be7889a3cd91bd78f4c14da2a2469354ad76a9293d1be066c73acce641a8182"
+}

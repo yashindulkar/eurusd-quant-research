@@ -243,3 +243,9 @@ Version 2.10 does not change either standalone evidence schema. Its governance
 amendment isolates lifecycle-state test repositories from ambient untracked
 runtime artifacts; those artifacts are neither registered inputs nor scientific
 evidence for v2.10.
+
+Version 2.11 does not change any scientific field or artifact schema. It adds
+registered report semantics: HIGH-regime non-significance is non-detection, not
+equivalence or absence; the chronological validation segment is reserved rather
+than asserted historically unseen; and IID-bootstrap precision is not described
+as dependence-robust.

@@ -42,7 +42,7 @@ def _candidate(root: Path) -> Path:
 def _identity(
     digest: OutputDigestEvidence,
     *,
-    version: str = "2.10",
+    version: str = "2.11",
     anchor: str = "a" * 40,
     receipt: str = "b" * 64,
 ) -> ValidatedCandidateIdentity:
@@ -64,8 +64,8 @@ def _compare(candidate: Path, identity: ValidatedCandidateIdentity):
     return compare_output_to_validated_identity(
         candidate,
         identity,
-        registration_version="2.10",
-        method_version="range-weekday-registered-replication-v2.10",
+        registration_version="2.11",
+        method_version="range-weekday-registered-replication-v2.11",
         anchor_commit="a" * 40,
         receipt_fingerprint="b" * 64,
     )
@@ -194,19 +194,19 @@ def test_baseline_is_frozen_and_context_bound(tmp_path: Path) -> None:
         (
             "c" * 40,
             "b" * 64,
-            "range-weekday-registered-replication-v2.10",
+            "range-weekday-registered-replication-v2.11",
         ),
         (
             "a" * 40,
             "d" * 64,
-            "range-weekday-registered-replication-v2.10",
+            "range-weekday-registered-replication-v2.11",
         ),
         ("a" * 40, "b" * 64, "different-method"),
     ):
         comparison = compare_output_to_validated_identity(
             candidate,
             baseline,
-            registration_version="2.10",
+            registration_version="2.11",
             method_version=method,
             anchor_commit=anchor,
             receipt_fingerprint=receipt,

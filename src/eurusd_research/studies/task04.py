@@ -741,14 +741,20 @@ def _markdown_report(summary: dict[str, Any], tables: dict[str, pd.DataFrame]) -
         "",
         "Mean, median, and pairwise median-difference intervals use 2,000 "
         "deterministic percentile-bootstrap resamples with seed 20260727. They use "
-        "iid resampling and therefore do not remove serial dependence.",
+        "iid resampling and therefore do not remove serial dependence or volatility "
+        "clustering; their nominal inferential precision is not dependence-robust. "
+        "A future separately registered study may examine block, HAC, or "
+        "cluster-aware inference without presuming whether significance would be "
+        "preserved.",
         "",
         "## Chronological validation",
         "",
         summary["robustness"]["chronological"],
         "",
         "The period view compares the same weekday medians across fixed windows "
-        "and the untouched final 30% validation segment.",
+        "and the chronologically reserved final 30% validation segment. Because "
+        "this is a corrective registered replication of previously examined Task "
+        "04 analyses, reserved does not mean historically unseen or first-look.",
         "",
         "![Chronological stability](figures/07_chronological_stability.png)",
         "",
@@ -845,6 +851,43 @@ def _markdown_report(summary: dict[str, Any], tables: dict[str, pd.DataFrame]) -
         ]
     )
     return "\n".join(lines)
+
+
+def _validate_reporting_semantics(summary: dict[str, Any], report: str) -> None:
+    """Reject absence claims and false first-look language in production prose."""
+    robustness = cast(dict[str, str], summary["robustness"])
+    high_regime = robustness["volatility_regime"].lower()
+    required_high_regime_concepts = (
+        "did not detect a statistically significant weekday difference",
+        "does not establish equivalence or absence",
+    )
+    if any(concept not in high_regime for concept in required_high_regime_concepts):
+        raise ValueError("HIGH-regime reporting lacks registered non-detection limits")
+    prohibited_absence_claims = (
+        "relationship did not persist",
+        "relationship disappeared",
+        "there is no relationship",
+        "no weekday effect",
+        "effect is absent",
+        "high volatility eliminates the effect",
+    )
+    if any(claim in high_regime for claim in prohibited_absence_claims):
+        raise ValueError("HIGH-regime reporting asserts unsupported absence")
+    report_lower = report.lower()
+    if "chronologically reserved" not in report_lower:
+        raise ValueError(
+            "Validation segment is not labelled as chronologically reserved"
+        )
+    prohibited_first_look_claims = (
+        "untouched validation",
+        "untouched final 30%",
+        "historically untouched",
+        "unseen validation",
+        "never examined validation",
+        "first-look validation",
+    )
+    if any(claim in report_lower for claim in prohibited_first_look_claims):
+        raise ValueError("Validation-segment reporting overstates first-look status")
 
 
 def _atomic_text(path: Path, text: str) -> None:
@@ -1128,8 +1171,11 @@ def generate_task04_study(
                 "information; warm-up dates remain unclassified. Omnibus p-values "
                 f"were {float(regime_primary.loc['LOW', 'p_value']):.4g} (LOW), "
                 f"{float(regime_primary.loc['MEDIUM', 'p_value']):.4g} (MEDIUM), and "
-                f"{float(regime_primary.loc['HIGH', 'p_value']):.4g} (HIGH), so the "
-                "relationship did not persist in the HIGH regime."
+                f"{float(regime_primary.loc['HIGH', 'p_value']):.4g} (HIGH). The "
+                "registered analysis did not detect a statistically significant "
+                "weekday difference in the HIGH-volatility subset. This "
+                "non-significant result does not establish equivalence or absence "
+                "of a weekday effect."
             ),
             "coverage_profiles": (
                 "STRICT_CONTINUITY remained significant with rank correlation "
@@ -1255,7 +1301,9 @@ def generate_task04_study(
         )
         + "\n",
     )
-    _atomic_text(destination / "study_summary.md", _markdown_report(summary, tables))
+    report = _markdown_report(summary, tables)
+    _validate_reporting_semantics(summary, report)
+    _atomic_text(destination / "study_summary.md", report)
     if tuple(path.name for path in figure_paths) != task_config.expected_figure_files:
         raise RuntimeError(
             "Task 04 plotting did not return the registered figure order"

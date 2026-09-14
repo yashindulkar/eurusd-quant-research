@@ -145,7 +145,7 @@ def test_full_reconciliation_orchestration_calculates_every_component(
         "task04_config_fingerprint": "f" * 64,
         "preregistration_fingerprint": "1" * 64,
         "method_id": "RANGE-WEEKDAY-001",
-        "method_version": "range-weekday-registered-replication-v2.10",
+        "method_version": "range-weekday-registered-replication-v2.11",
         "repository_version": "fixture",
     }
     frames = {
@@ -271,7 +271,7 @@ def test_full_reconciliation_orchestration_calculates_every_component(
                 "task04_config_fingerprint": "f" * 64,
                 "preregistration_fingerprint": "1" * 64,
                 "method_id": "RANGE-WEEKDAY-001",
-                "method_version": "range-weekday-registered-replication-v2.10",
+                "method_version": "range-weekday-registered-replication-v2.11",
                 "repository_version": "fixture",
             }
         ]
@@ -402,12 +402,12 @@ def test_full_reconciliation_orchestration_calculates_every_component(
     assert all(getattr(evidence, name).passed for name in evidence.checked_components)
 
 
-def test_v210_scientific_design_is_identical_to_v29() -> None:
-    v29 = yaml.safe_load(
-        (ROOT / "studies/task04_daily_range_weekday.v2.9.yaml").read_text()
-    )
+def test_v211_scientific_design_is_identical_to_v210() -> None:
     v210 = yaml.safe_load(
         (ROOT / "studies/task04_daily_range_weekday.v2.10.yaml").read_text()
+    )
+    v211 = yaml.safe_load(
+        (ROOT / "studies/task04_daily_range_weekday.v2.11.yaml").read_text()
     )
     scientific_fields = (
         "research_question",
@@ -442,8 +442,8 @@ def test_v210_scientific_design_is_identical_to_v29() -> None:
         "known_limitations",
         "prohibited_analyses",
     )
-    assert {field: v210[field] for field in scientific_fields} == {
-        field: v29[field] for field in scientific_fields
+    assert {field: v211[field] for field in scientific_fields} == {
+        field: v210[field] for field in scientific_fields
     }
 
 

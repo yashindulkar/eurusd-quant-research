@@ -79,13 +79,13 @@ make test                 # all tests with coverage thresholds
 make check                # lint, typecheck, tests, and environment validation
 make audit-raw-data       # read-only registered raw-data quality audit
 make generate-coverage    # Task 02-backed research eligibility metadata
-make prepare-task04-v210-integrity
-make prepare-task04-v210-registration
-make validate-task04-preregistration  # Phase A; no v2.10 results
+make prepare-task04-v211-integrity
+make prepare-task04-v211-registration
+make validate-task04-preregistration  # Phase A; no v2.11 results
 make create-task04-registration-receipt  # Phase B, after anchor commit
 make validate-task04-registration-receipt
 make generate-task04-candidate  # Phase B candidate generation; never completion
-make reconcile-task04-v210      # establish and verify candidate byte identity
+make reconcile-task04-v211      # establish and verify candidate byte identity
 ```
 
 `make audit-raw-data` verifies the registered identity, loads the CSV once for
@@ -147,8 +147,8 @@ deleted and no row-level copy of the raw dataset is written.
 
 Task 04 remains a correctively registered replication of the reviewed
 development analysis. Version 2.2 is retained as historical control evidence;
-the current pre-anchor design is version 2.10 at
-`studies/task04_daily_range_weekday.v2.10.yaml`, method
+the current pre-anchor design is version 2.11 at
+`studies/task04_daily_range_weekday.v2.11.yaml`, method
 `RANGE-WEEKDAY-001`. It asks whether the distribution of unrounded EUR/USD
 daily high-low range in pips differs across Monday-Friday UTC calendar dates.
 
@@ -164,7 +164,7 @@ correction; one-way and Welch ANOVA are complementary. The outputs include
 effect sizes, deterministic bootstrap intervals, chronological and yearly
 stability, past-only volatility regimes, coverage-profile comparisons, and
 reversible extreme-event sensitivities under
-`reports/research/task04_daily_range_weekday_v2.10/` only after the separately
+`reports/research/task04_daily_range_weekday_v2.11/` only after the separately
 authorized anchor commit. The existing unversioned directory remains
 historical v2.2 output.
 
@@ -186,8 +186,13 @@ fingerprint/context equality, and final-byte equality. v2.9 then completed the
 scientific workflow but stopped before production authorization because its
 PRE_RECEIPT test copied ambient completed runtime evidence. Version 2.10 copies
 only registered anchor inputs plus raw data into that fixture and builds every
-lifecycle state explicitly. Historical estimates remain regression controls,
-not v2.10 evidence.
+lifecycle state explicitly. Version 2.10 then completed Phase B and scientific
+reconciliation but was rejected at final red-team review because its report
+mistook HIGH-regime non-significance for evidence that the relationship did not
+persist and called a previously examined validation segment "untouched". Version
+2.11 preserves all calculations while registering conservative non-detection and
+chronologically-reserved reporting semantics. Historical estimates remain
+regression controls, not v2.11 evidence.
 
 ## Research workflow
 
