@@ -1,0 +1,184 @@
+{
+  "anchor_commit": "35dd92dd1ea6776c3436dad13ef34e10d411ad07",
+  "establishment_stage": "AFTER_TWELVE_COMPONENT_RECONCILIATION",
+  "identity_fingerprint": "ba3a019681f4f4fc991ef8c45bf7a245bf3f8707bbcc2f9f6acbddbcba70a0ad",
+  "method_version": "range-weekday-registered-replication-v2.11",
+  "output_digest": {
+    "digest_algorithm": "task04-path-length-bytes-sha256-v1",
+    "files": [
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "chronological_split_results.csv",
+        "sha256": "6d3a3a1cb565c3ae56807e94f3faafe6db9ed9cf64c93b5f3a043c1d6c0dedb0",
+        "size_bytes": 1028
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "coverage_profile_comparison.csv",
+        "sha256": "0e4fcf83dad0d2b36570edb9ee0730b25d93875b73173546fe31aa4a9d0d67ad",
+        "size_bytes": 839
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "daily_observations.csv",
+        "sha256": "aec95ec0d62af3dffb6357125f749b1f4623b59a3d998993652b97cd9571154b",
+        "size_bytes": 6345624
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "daily_profile_observations.csv",
+        "sha256": "45caec790999de02794ad584507c3cc16951da43f3a79abc1b07403bad62c809",
+        "size_bytes": 17589530
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "effect_sizes.csv",
+        "sha256": "55877f83d257d29a341c606ae0516add1c02b47845c6455a2c7e8f68fcb9fcb6",
+        "size_bytes": 6317
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "extreme_event_sensitivity.csv",
+        "sha256": "40b70d0043488b975ae347614f1f2705e2cd2b91bd4170aa8d366eee28d9b779",
+        "size_bytes": 750
+      },
+      {
+        "category": "FIGURE",
+        "relative_path": "figures/01_weekday_boxplot.png",
+        "sha256": "be7a22393fac06df2300cb56d43af3f9bbb016738faa859b68a1eb75b2053b9f",
+        "size_bytes": 56479
+      },
+      {
+        "category": "FIGURE",
+        "relative_path": "figures/02_weekday_violin_or_distribution.png",
+        "sha256": "75297b01f808e3940b3007cdd4c2cbc0fd938b3db7d0a7c4aa0255305c50b3c4",
+        "size_bytes": 99777
+      },
+      {
+        "category": "FIGURE",
+        "relative_path": "figures/03_weekday_ecdf.png",
+        "sha256": "416dd45bb553f57dab5cd31f46a851afd7c90126431b72617c0d1d2861d92eba",
+        "size_bytes": 131907
+      },
+      {
+        "category": "FIGURE",
+        "relative_path": "figures/04_weekday_mean_median_ci.png",
+        "sha256": "76478ed1b387e7daa7618e7d7af814f0d4c1080a0fa06f709141f9185e81757d",
+        "size_bytes": 63322
+      },
+      {
+        "category": "FIGURE",
+        "relative_path": "figures/05_yearly_weekday_medians.png",
+        "sha256": "90620b78edeca0ad6b52a88c426f4c5a8769a85de23ecc83a68352c397d0ddaf",
+        "size_bytes": 191350
+      },
+      {
+        "category": "FIGURE",
+        "relative_path": "figures/06_coverage_profile_comparison.png",
+        "sha256": "a6ae54682e5fa19de42b1abecfba8822f47a4025d989cef5105b57586281459d",
+        "size_bytes": 126570
+      },
+      {
+        "category": "FIGURE",
+        "relative_path": "figures/07_chronological_stability.png",
+        "sha256": "ef9c62e038ff4b464e4c99e0d753c6512338192a314ed74f5198df6eb4009062",
+        "size_bytes": 145433
+      },
+      {
+        "category": "FIGURE",
+        "relative_path": "figures/08_volatility_regime_comparison.png",
+        "sha256": "9fe47d33309667e015618b9bf91b2dae6e58c5022f742623b4c496ff268789df",
+        "size_bytes": 118585
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "omnibus_tests.csv",
+        "sha256": "a5c8f1578602bbe71852fd5b33fc4dfeffd998147c5afe35085b9dbd30a0bb7a",
+        "size_bytes": 2889
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "pairwise_tests.csv",
+        "sha256": "899a6189612e79fd93a49519c75cbfc40dbd300215a2ec1a079b5c2f00383f6e",
+        "size_bytes": 12698
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "period_robustness.csv",
+        "sha256": "d99bf668dd6e2e080027256dce0a3e7f089c15a07730e7b5f5f8b72807b23938",
+        "size_bytes": 1841
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "population_reconciliation.csv",
+        "sha256": "399309323e6b087a1f06c9fe21c3e9c1c520bb905acb1dd6a6a4647de508a03f",
+        "size_bytes": 5226
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "preregistration_deviations.csv",
+        "sha256": "ca2c298e741700484dfc7e0a86e9ce211b202fac53445ac190c0055767d7192d",
+        "size_bytes": 188
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "study_registry_record.json",
+        "sha256": "368eafa4a9dd70000abc380e43dd3cad80fd5017e1ebdfa6aef6fabca7e33f4b",
+        "size_bytes": 2578
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "study_summary.json",
+        "sha256": "d585d4e00f0ee1afb32f95769b37d5a630e2721e3b484f4775bd5a73e12757fa",
+        "size_bytes": 10329
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "study_summary.md",
+        "sha256": "3b1f518e2e8eb785c663f8f17814d1876538345933727e27e3c8f77ce71b5c62",
+        "size_bytes": 8400
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "volatility_regime_lineage.csv",
+        "sha256": "8915bb67ce5c76c8f1214e41b00b3184d47df46f649fca50cfea2ee362ff53bf",
+        "size_bytes": 2823748
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "volatility_regime_statistics.csv",
+        "sha256": "fe2aa794bb98b9dcafb3973e247b383ba59e6724178d68ec9fd0de004cdc302f",
+        "size_bytes": 8834
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "volatility_regime_tests.csv",
+        "sha256": "5565bfcadb5a13503586f9b7163d76118be9924db52940ae977fd987298b7371",
+        "size_bytes": 2298
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "weekday_statistics.csv",
+        "sha256": "f1cf9617bbe39bb66eec0d827fff72b0f9e0c8c176aef377dd0f6ca1741339f0",
+        "size_bytes": 11453
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "yearly_omnibus_tests.csv",
+        "sha256": "6e1eefff1a3554859a6dcc03ffcc33789fe9cc2fe66c7d5e1e4afd9eb197e011",
+        "size_bytes": 2449
+      },
+      {
+        "category": "TABLE_OR_REPORT",
+        "relative_path": "yearly_statistics.csv",
+        "sha256": "0fb4fcadbca5ac61fa047ccdd052091e527dcd2cc7997f2ad4f7a9973243f7bb",
+        "size_bytes": 7725
+      }
+    ],
+    "inventory_fingerprint": "b4a9504be7c336fbe9d8322cf63fa2193ddb002ae4eb5e727a0cb47a9e03466a",
+    "path_plus_bytes_digest": "90646e6859c4942f0c0a77d93e703678bb27fac2a20f7db39a94cc20c28722ca"
+  },
+  "receipt_fingerprint": "59f50abc41f4eb16a307b08ad39af789459ddd0f516324508ca15673780355b0",
+  "registration_version": "2.11",
+  "schema_version": "task04-validated-candidate-identity-v1"
+}

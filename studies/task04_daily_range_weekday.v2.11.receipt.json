@@ -1,0 +1,1021 @@
+{
+  "git_anchor": {
+    "anchor_commit_id": "35dd92dd1ea6776c3436dad13ef34e10d411ad07",
+    "anchor_parent_commit_id": "d3b3bc71da71b718de6b57e71e564e6f5f0012a7",
+    "anchor_reachability_policy": "ANCHOR_MUST_REMAIN_REACHABLE",
+    "anchor_tree_id": "801303d0f2f854a3476cd671e467ce887655dbb1",
+    "branch_at_registration": "main",
+    "descendant_validation_policy": "CURRENT_STATE_MUST_EQUAL_OR_DESCEND_FROM_ANCHOR",
+    "registered_blob_identities": [
+      {
+        "git_blob_id": "218a19d06fb4b7cf49aa145026c2806317a2abf3",
+        "path": "Makefile",
+        "sha256": "fae507224f65ffb06e34f558bdc9ec5cda304626537b9f05ee94c7e76d0a582d"
+      },
+      {
+        "git_blob_id": "f91f71214b87e2c651f798dea6130297e9462551",
+        "path": "configs/coverage.yaml",
+        "sha256": "cf42122995607f0798d1b52236e3a8a3303b09f4c943dae32dc418fee9b6183e"
+      },
+      {
+        "git_blob_id": "727dbd92ce80d62da3dea3be032f10a5c5a84853",
+        "path": "configs/data.yaml",
+        "sha256": "9eac485be2b4fec87d78404395d5cf51efa18b02f679124c3e00c2c1944c0fae"
+      },
+      {
+        "git_blob_id": "29ec1f3adec17c0553e1696c1e40c5132cc8b344",
+        "path": "configs/project.yaml",
+        "sha256": "b83aa42c7b43e0a9588c3f9e100d26e09eb8b047102c40eba483eca7d2f9a7bf"
+      },
+      {
+        "git_blob_id": "f19cee3741681a26eaeac00abdd968b0a0d236ae",
+        "path": "configs/sessions.yaml",
+        "sha256": "42afd10076ae639d0fc23dd12adf5aa6621e2f89510a0e346061c4cf93f15b44"
+      },
+      {
+        "git_blob_id": "cc46449517b2008847824ab09660e95f881176be",
+        "path": "configs/task04_daily_range_weekday.yaml",
+        "sha256": "4d12e8b2998adee03636557d10a86dbf2f92f1b3a416eb1c096431ac78c958ae"
+      },
+      {
+        "git_blob_id": "362e3eede6179702c0f7fef46a4e086e0a6f163b",
+        "path": "pyproject.toml",
+        "sha256": "3cf522c7b92cea658b12dfe42106e5a826708a04c0108fede2254507747dc078"
+      },
+      {
+        "git_blob_id": "47ac83af9f76a16ba5ee956e70074f32ec9b8007",
+        "path": "reports/audits/monthly_coverage.csv",
+        "sha256": "16a7bcc38addf98892b532b4386f59cc5833bd6cf4ecc423e7b9e286027c495a"
+      },
+      {
+        "git_blob_id": "69309b78a2b5955dbdd1d27258f344416badeac9",
+        "path": "reports/audits/raw_data_quality_audit.json",
+        "sha256": "08fec2eae33b54a8f034bf236526e6e37770eb350e4fabc344d991e8a6594ab7"
+      },
+      {
+        "git_blob_id": "4f7ffb41459a7df8a5520a5c2f28e1813646a8be",
+        "path": "reports/audits/raw_dataset_manifest.json",
+        "sha256": "dce975d2e769e6201e89010cc77be7011a3e18b5782f7ae4a8ece6abb803e2e1"
+      },
+      {
+        "git_blob_id": "8ea0acc4e318d410b6365f6d31f43308fffb31d9",
+        "path": "reports/audits/timestamp_gaps.csv",
+        "sha256": "60b48e06c107b5c676f200392db6002ca4f678ed4a6c31bb3f0439ebbf6e06c9"
+      },
+      {
+        "git_blob_id": "6ee0987051e16aeb9ddf155695172f731bf8e55a",
+        "path": "reports/coverage/coverage_profiles.csv",
+        "sha256": "51dd5865a4bebe866354fd31bbef9b3161cf200ff8a75f4904cec7f3eadb0403"
+      },
+      {
+        "git_blob_id": "f412e72687d1e93e4d4355202f358e02b7f4faa2",
+        "path": "reports/coverage/coverage_summary.json",
+        "sha256": "3bc8a6d9c44e9801dfddb625bad92839d3a7d64b582642d413087bdb4866c096"
+      },
+      {
+        "git_blob_id": "5ae94ebfc91dbf7ce54544d261f43f9192743143",
+        "path": "reports/coverage/coverage_summary.md",
+        "sha256": "a2a6cff62e5e0b7a112b607d120c341144ac5b138e52a0b1630baffe3140ae31"
+      },
+      {
+        "git_blob_id": "fd530290c6de72508e77b8cc068b65422d0b3bb7",
+        "path": "reports/coverage/date_flag_counts.csv",
+        "sha256": "8d7c55365db05edc7d1d354ca66cc72bfe52485e0adc2bf345d41112781724a7"
+      },
+      {
+        "git_blob_id": "117b33c193c4f5ef1e05e4ffaf6daed7707b51dd",
+        "path": "reports/coverage/month_flag_counts.csv",
+        "sha256": "405e745e29b66e4acfaff4a1ea860d7e2b76a3e30c26d3c04dc21e9c09113444"
+      },
+      {
+        "git_blob_id": "fe16433483f7e755dfc7d9aeb40704d8fd71ed2f",
+        "path": "reports/coverage/row_flag_counts.csv",
+        "sha256": "391f6fbd47cbda3b1d89790a34f5971c2c679bd41302d4d00b6ee99ce255731e"
+      },
+      {
+        "git_blob_id": "c76424ecd96457ffa7808b12cb80933307d2f8c5",
+        "path": "scripts/complete_task04_v210.py",
+        "sha256": "a777eb4406f39535c507476c2e656449d7c425d4920b9bab611e758025a0d6e2"
+      },
+      {
+        "git_blob_id": "b9daef1473447855cc6822724866767faf2cf517",
+        "path": "scripts/complete_task04_v211.py",
+        "sha256": "5047b1edd42c2f257acbbfa9aa9e171a11f74fb07db1b1178eca1dcb9a4b9a36"
+      },
+      {
+        "git_blob_id": "4181de2fb178f7a97fd8be787d161dbb3be49d5b",
+        "path": "scripts/complete_task04_v24.py",
+        "sha256": "7924cc2377e4426372b71ffa92846317e4f8f876a098ed19f5b22986ab7ef2f8"
+      },
+      {
+        "git_blob_id": "674c09f70dfb0668255df3406d7e8f4a4291064c",
+        "path": "scripts/complete_task04_v25.py",
+        "sha256": "a547015471ff35e560d3e8f89d56ea8e6d801b6a29737d9074d91f39e9ea013d"
+      },
+      {
+        "git_blob_id": "12b476e0744630e198105be64842dd9ab1a60e42",
+        "path": "scripts/complete_task04_v26.py",
+        "sha256": "4a3d844e2b52bd13cea4f229c1295f330c2ea85fb014418f0a67bcc187acddaa"
+      },
+      {
+        "git_blob_id": "8d67b3cd2f1dbd181f5cf06bcfad59ae41175cc9",
+        "path": "scripts/complete_task04_v27.py",
+        "sha256": "47c8433eddaef3e05b1fac439958fb85f639009a29ad60199101d526fa4a0c35"
+      },
+      {
+        "git_blob_id": "8171caf8ca3a497c44f9c092f43c8c8b932f18c8",
+        "path": "scripts/complete_task04_v28.py",
+        "sha256": "ec899fb6315fd12fd07ba70a01f08c1a6cbdbe6e774ef275ea4b5027b9d01650"
+      },
+      {
+        "git_blob_id": "04a9e45ec810e88ae4e87fdd04b7ef302f1b622e",
+        "path": "scripts/complete_task04_v29.py",
+        "sha256": "5ce73dfc344fc80f964ac13edae517de4cc48adad90f95289ffc95f9f6524bc4"
+      },
+      {
+        "git_blob_id": "12494757eff84eb8bbe63f3b39cc7c0c619639df",
+        "path": "scripts/create_task04_registration_receipt.py",
+        "sha256": "5c5ac9f36a9a755185e6a4299832d7dee7be9d6b5391be783631b94956e19eae"
+      },
+      {
+        "git_blob_id": "ba9b2e954075337c26cbc74060a02c95dcdb1451",
+        "path": "scripts/prepare_task04_v210_integrity_evidence.py",
+        "sha256": "652db158808f5e30c51b9275db97a9860ae237f81eec6f75155c12f9a9966085"
+      },
+      {
+        "git_blob_id": "65287f418bcdf6f0cacbe16d7d95e5043e608fda",
+        "path": "scripts/prepare_task04_v210_registration.py",
+        "sha256": "4f5dffb2704b31ea9b67883afe2cb8f725bdbf806a31b5ff2926a6ea8aec0e5e"
+      },
+      {
+        "git_blob_id": "ba521920aa5ed6feb09f86d44f69830ea57803de",
+        "path": "scripts/prepare_task04_v211_integrity_evidence.py",
+        "sha256": "bc4cb6f1ed680d32d1bd99ff28646d8c037ff9d7c58940d897ab8ac457d02f55"
+      },
+      {
+        "git_blob_id": "2ad7244c77f70b173cdf3e025b9e45d193e28230",
+        "path": "scripts/prepare_task04_v211_registration.py",
+        "sha256": "3c5c56b2e8e3920d8c41e7ffe24cbf47f77f0e65c3ea5c16661b2aa3039b7df9"
+      },
+      {
+        "git_blob_id": "4a97e61fa6e50ed4c86c0a9404202bb5881c0234",
+        "path": "scripts/prepare_task04_v23_integrity_evidence.py",
+        "sha256": "143581d8c0903fd20bdc4a55d983c959738b274953cc9493f354f04f73813ce4"
+      },
+      {
+        "git_blob_id": "7659f901931460ed5738291282e15bba08f487c6",
+        "path": "scripts/prepare_task04_v23_registration.py",
+        "sha256": "270ca19b3067912acae37537d3ea53da32362d39bbbabfbf3dbf800bea1c5bac"
+      },
+      {
+        "git_blob_id": "156f6837c3927735824d73db2c2cf3d32f536b63",
+        "path": "scripts/prepare_task04_v24_integrity_evidence.py",
+        "sha256": "d2f8b1f9d170c5344da22a612defee36ed7c520bfce8fe217e10ecc6669abbc9"
+      },
+      {
+        "git_blob_id": "f3a37692d9a3a9f551ee5187f8b866342e0f20dc",
+        "path": "scripts/prepare_task04_v24_registration.py",
+        "sha256": "d29dad6dccdcbb21ad6a106283c0bbf4f8fc15b51646fca16533abe7add44a1f"
+      },
+      {
+        "git_blob_id": "5e8c7522b04901ffdc0d0571b5c06edf01bdb858",
+        "path": "scripts/prepare_task04_v25_integrity_evidence.py",
+        "sha256": "033d66047c988ca8b761e386ba9b60813865b35958379fa2adbfefe3a518ee2a"
+      },
+      {
+        "git_blob_id": "db124c2346ce9cd0f6db07c24669e6f318e2f79e",
+        "path": "scripts/prepare_task04_v25_registration.py",
+        "sha256": "b8280a5c990ab4bf12ae308571f4b8663fc2226f0c2c0fb9fe3b68077a8969a7"
+      },
+      {
+        "git_blob_id": "f40c59dc5296f1624b077b70350b379ba48facd4",
+        "path": "scripts/prepare_task04_v26_integrity_evidence.py",
+        "sha256": "eebb61ea4f762576131381e2ae53672f8dd9e6b9cf0dc48a023d4f2f306a4935"
+      },
+      {
+        "git_blob_id": "d024e61ac350f7e63298f25b691ff43c7e479c21",
+        "path": "scripts/prepare_task04_v26_registration.py",
+        "sha256": "31d17a3a315aaf42641e4033037eb2252845d7048e4cf06712365d1af0b7f9a1"
+      },
+      {
+        "git_blob_id": "02b0d48bd9ef0e932efea0515ee7172b2c2fe3b3",
+        "path": "scripts/prepare_task04_v27_integrity_evidence.py",
+        "sha256": "49b68046fdfc18816315834355609520a0757ed7f43915bb51cd3af482a3d00e"
+      },
+      {
+        "git_blob_id": "8d669522021c4350d109042a910b4da9a623fed9",
+        "path": "scripts/prepare_task04_v27_registration.py",
+        "sha256": "c96d7a0461600ff91d2242ec0e843238f9f5bf125edd52092bc59fe191301cdb"
+      },
+      {
+        "git_blob_id": "e1701c643e8cf29a76b744f7336a29b514fec087",
+        "path": "scripts/prepare_task04_v28_integrity_evidence.py",
+        "sha256": "4f24cd913ce3e0dba38368a1b56e72f70446e1e4ba26d8ad5099e2f4766a9e2e"
+      },
+      {
+        "git_blob_id": "49d7bfbe6f5f0d353a353086aaa644201b3fe5ce",
+        "path": "scripts/prepare_task04_v28_registration.py",
+        "sha256": "edf57606fc9fcc4a24b06517a6ca570c573a5a7ea7f8be42bfcae9eaea21cbba"
+      },
+      {
+        "git_blob_id": "302941a8dc158e2df7fd51f583fb13e2e83e05c1",
+        "path": "scripts/prepare_task04_v29_integrity_evidence.py",
+        "sha256": "ccd2f52b542b5be10a41e9eea22c80118dd91883a93a87690f8fea5f25eb9d09"
+      },
+      {
+        "git_blob_id": "c2ac18f74e331245109f0db80d3b1892d40f2e63",
+        "path": "scripts/prepare_task04_v29_registration.py",
+        "sha256": "920f5d69d6a290844d3a744b86344d4ba0281db14ce09c8b0711050652181f0b"
+      },
+      {
+        "git_blob_id": "dc531967e3e46f12fcfcb3fed6b6f6c57b15eb3e",
+        "path": "scripts/reconcile_task04_v210.py",
+        "sha256": "dbcf7bce6a9b46713b57f78ab8bd10990be7887c384508f315fffe1b6922dd50"
+      },
+      {
+        "git_blob_id": "57fcb11bb16e0968e9a2933949433bbb39155f54",
+        "path": "scripts/reconcile_task04_v211.py",
+        "sha256": "1c9199b5cee3334fbda23561036f78435440081f911696b910354d5e284c73cf"
+      },
+      {
+        "git_blob_id": "46b807386f5ea9bffdf8b10771f299a7c6e0fe9a",
+        "path": "scripts/reconcile_task04_v25.py",
+        "sha256": "89bc128f904965e46909e9235fa70a461e18c5d350887e76d2221f72ff048e22"
+      },
+      {
+        "git_blob_id": "009d3cdc111d36b3312d6d82b1d9e350863a5e2c",
+        "path": "scripts/reconcile_task04_v26.py",
+        "sha256": "50c35a915557a58d4938b8efb94e1310117e201d1b481772318e95c298032ba8"
+      },
+      {
+        "git_blob_id": "12986567113191cec0543d15ae6601e12c96f8c9",
+        "path": "scripts/reconcile_task04_v27.py",
+        "sha256": "c9006e9ea7474906be4f307e74e70c98c4cca40a44711140e1f5b816601efb5f"
+      },
+      {
+        "git_blob_id": "ac10a0a234022cf1e24a060fec452f1dfe6286e7",
+        "path": "scripts/reconcile_task04_v28.py",
+        "sha256": "b8d1c61f4ccbc3df9efbfa61299646f42ce18991ddb38e50311922fa6660a601"
+      },
+      {
+        "git_blob_id": "73bfa6fc2b6066f4b5367c74c32700a616ef9be0",
+        "path": "scripts/reconcile_task04_v29.py",
+        "sha256": "a0adbe567939f37199f6a1d6162c474a2a3ff8b80403007f4ee3d2d4c9e5264e"
+      },
+      {
+        "git_blob_id": "a5c00162104a8c7771822093b7431cef124149db",
+        "path": "scripts/register_raw_dataset.py",
+        "sha256": "32d20eed9edc89af80e6f5167a508c9ecd7e1890793d52d856bb29f02c432313"
+      },
+      {
+        "git_blob_id": "0d5b424bc8db9ee3e351f737be3aa03b4fd8dd03",
+        "path": "scripts/validate_environment.py",
+        "sha256": "ee68f2b596dfb01501276adb893c1644377dcfffd46d06cc8f8aef079a2537d8"
+      },
+      {
+        "git_blob_id": "2549ba5345346864ff4923a91240b395ec00ec58",
+        "path": "scripts/validate_task04_preregistration.py",
+        "sha256": "82ea1efd5075af370d6187a71798ca21a9d89251ead1e7417e3af37527bec589"
+      },
+      {
+        "git_blob_id": "53dfc78fb28dfdb065a5b6d790deaad1041ab28c",
+        "path": "scripts/validate_task04_registration_receipt.py",
+        "sha256": "fda64b0c2fce47a7f323147387bed2ae17862f7b6cb1677219a0bacac8fad64c"
+      },
+      {
+        "git_blob_id": "09fc5050cb84dc8dc58ee18ce6b87cac4fb75c7b",
+        "path": "scripts/validate_task04_v210_schemas.py",
+        "sha256": "3d60685d0cd191fd93d4b92f7e0840d395b6e1c4fae4846b7f95db290a0b80a0"
+      },
+      {
+        "git_blob_id": "5241d50b55fd79f130642732a223033e773c9b42",
+        "path": "scripts/validate_task04_v211_schemas.py",
+        "sha256": "4e0452514b4b9867a62d2880544090798215fc0d14c5312e593268bec82f070f"
+      },
+      {
+        "git_blob_id": "a98d3992000e3239d1c47e329787413e477c6db2",
+        "path": "scripts/validate_task04_v24_schemas.py",
+        "sha256": "bfe5aa5a6ee47cf76ad3f53e1786c49378d9da0b1f4aeeebb08870c6534e3a50"
+      },
+      {
+        "git_blob_id": "bcf9716aa75f12850a76072698d5e0d6dfe9cd34",
+        "path": "scripts/validate_task04_v25_schemas.py",
+        "sha256": "5d1fc62297b1ca9377940dd77b0a3c67a1acd6d3194cca99e5e317fd0e03c05f"
+      },
+      {
+        "git_blob_id": "df6c0e3fce8d15b83eb46a64c60398025ee9a46c",
+        "path": "scripts/validate_task04_v26_schemas.py",
+        "sha256": "a17011df835552c9740e524601dc8232b41a7d7b378bb5023cd26d6418981a18"
+      },
+      {
+        "git_blob_id": "105793f721a09ec8434b82f9c43b01a054855473",
+        "path": "scripts/validate_task04_v27_schemas.py",
+        "sha256": "e4d5131afef9ecf62ac45d888a19b01b7a54c877a1a380d63bf6964bfb81ca65"
+      },
+      {
+        "git_blob_id": "4ef9efc6bba1a3f522e20e4f004e9c1b10f4f4e1",
+        "path": "scripts/validate_task04_v28_schemas.py",
+        "sha256": "cc0efa50879354c9662ddd848a88bf3c131dd38c8e2fb39559946eb47d9f10ce"
+      },
+      {
+        "git_blob_id": "1d5fe803262343238419de04dcc5e38fe8ece69a",
+        "path": "scripts/validate_task04_v29_schemas.py",
+        "sha256": "74e35067a50291c9201bd878ba6c00cdad0bf6368871d961d78f93d9a498b621"
+      },
+      {
+        "git_blob_id": "08d7da85c5da5164ce74d92ae8e20b208b3526e1",
+        "path": "src/eurusd_research/__init__.py",
+        "sha256": "e5f0d5b111db2416065501debc0fa734d28e104a0133bbaa531821c9e193e332"
+      },
+      {
+        "git_blob_id": "f7366b28cea3de7013e22644980a51364dcbfc51",
+        "path": "src/eurusd_research/calendars/__init__.py",
+        "sha256": "a89bf97a9614d0250359f31c80eaed9b21135f38923be4bf2abb4f006958f891"
+      },
+      {
+        "git_blob_id": "366752babecbe84695d337be54249f54e4eb7410",
+        "path": "src/eurusd_research/config.py",
+        "sha256": "48086f840da1c30425314123021034d66fb674d2cefad6b21330cabeef00f309"
+      },
+      {
+        "git_blob_id": "e5ebbe68f733bddd16f44f8251f7230d7311fc53",
+        "path": "src/eurusd_research/data/__init__.py",
+        "sha256": "e43897431ec486668080d29575d2d2ff3b013ec033e1660d1c52c5457d731842"
+      },
+      {
+        "git_blob_id": "79ebfb0c36134cdd89d3ac2765a99114a7adee26",
+        "path": "src/eurusd_research/data/__main__.py",
+        "sha256": "a9c2fb757dc638fbbe3f4c004157e54b2963966a9a1117a0ce8c788066168236"
+      },
+      {
+        "git_blob_id": "bb7e2f7616e4bce8dffe62b562eded2002108563",
+        "path": "src/eurusd_research/data/audit.py",
+        "sha256": "21367eb649590218620c031e9252f405f85238d6becafff6094671694c07e5a4"
+      },
+      {
+        "git_blob_id": "d732a8b794efd78df7bb206b1ba3d8108411aea7",
+        "path": "src/eurusd_research/data/gaps.py",
+        "sha256": "b69310e5a3c373919375abe44325796dbcb12bfea122550cc24a8065c7777377"
+      },
+      {
+        "git_blob_id": "be7f384339181c4c046b710c760fb4f31a6cc3f7",
+        "path": "src/eurusd_research/data/quality_models.py",
+        "sha256": "475dbf1fb473fabbcf57e1f9b3d1480cafdda958b0931949402a7a993dac99a0"
+      },
+      {
+        "git_blob_id": "84d04c6e6b0ae09e37124dc0c05efb69dc634b5a",
+        "path": "src/eurusd_research/data/registry.py",
+        "sha256": "6aa931700c5ad2f5ae065f806746bbfc768145742ab64a4664a7464564669045"
+      },
+      {
+        "git_blob_id": "d263fa66e4489d6c6898cebb168c06aa792c76fa",
+        "path": "src/eurusd_research/data/reporting.py",
+        "sha256": "729ec82db857ddc76371494e15de49fe9ad6c5a1cfd7d1ededc3cd57144aa89d"
+      },
+      {
+        "git_blob_id": "9ed183335454cb345574d162a1dac2627a73a82b",
+        "path": "src/eurusd_research/data/schemas.py",
+        "sha256": "c4993db367da4b4939e857cc43b066e3be311a0bba9dc44172e89976910f4f63"
+      },
+      {
+        "git_blob_id": "8d809b2c59f0c3b01d5191d6a88e92ae505cbbdc",
+        "path": "src/eurusd_research/data/validation.py",
+        "sha256": "9c1503e970f62b3a89950b30f6f3b9de9c0ad7168fae76c94c5a629fdaac6376"
+      },
+      {
+        "git_blob_id": "a31ef52f54653964788cf0c79fca03addcfce89f",
+        "path": "src/eurusd_research/features/__init__.py",
+        "sha256": "10e5c668317c1579c9d20574050024d610205a9b20bfd2d7003e7a17a7147bdb"
+      },
+      {
+        "git_blob_id": "0289d2186b1ce2c08dfda699f55455e0d66b2a8d",
+        "path": "src/eurusd_research/logging_utils.py",
+        "sha256": "c5685e54f2c92cffb4329b27c6f89f5279b698f794452c885eb458df94c7e15f"
+      },
+      {
+        "git_blob_id": "41ab9032e5dd2c735c74814eaec3efbf6d013e42",
+        "path": "src/eurusd_research/paths.py",
+        "sha256": "397ceacd25995e11e3197ce9e700b37cf575a231861a17f19cc70673963b41a6"
+      },
+      {
+        "git_blob_id": "339f1845bad53715c6490ed65b92ed391b9219ec",
+        "path": "src/eurusd_research/reporting/__init__.py",
+        "sha256": "7ca8c3937387299fa0286c53d920955a3d829049c465c74335622f75a0dee1c2"
+      },
+      {
+        "git_blob_id": "a79e9f18cfd96871e46d4874c780159df7b32082",
+        "path": "src/eurusd_research/research/__init__.py",
+        "sha256": "ce1bf5c2e1cf7229f5ca80a5c933e991cd711462603e0965cdf816ac0de9beb4"
+      },
+      {
+        "git_blob_id": "9e17dfdfd6215a482cd01ca64d0815de4f365317",
+        "path": "src/eurusd_research/research/__main__.py",
+        "sha256": "192e219ff5acf335b6e49fc909806e15b1841dc115040dd67e55145e20ce46ed"
+      },
+      {
+        "git_blob_id": "0b7005cfd91c28b517afde38aa7e9a5cd6381dee",
+        "path": "src/eurusd_research/research/coverage.py",
+        "sha256": "49ee1a58fee8b8d24154cfc3f20a142e5ed4a2e62574873e52a2bac8258e3082"
+      },
+      {
+        "git_blob_id": "d7cd739233d6870bbc082da7916e3e3023761f27",
+        "path": "src/eurusd_research/research/eligibility.py",
+        "sha256": "c6bfadcd50ef4f80e9fb6bc158eef7a62ea8e0edba8ae581d6413178a719637b"
+      },
+      {
+        "git_blob_id": "a4a4c4a09b7810f6b8f8f3b008b821c80e80e423",
+        "path": "src/eurusd_research/research/models.py",
+        "sha256": "6772be65108da26c66aa923a0ea8be0e2d788b08b011b491dfaf1fc0812dd840"
+      },
+      {
+        "git_blob_id": "6c370acfcd3f09000d7e19dd0fcc216c10c426ad",
+        "path": "src/eurusd_research/research/registry.py",
+        "sha256": "6f8372243e5e73607736aceea6802082f504471c17b6e5846397a1852349b285"
+      },
+      {
+        "git_blob_id": "9a02de0369d648a932ca8d5a67263025c906d1de",
+        "path": "src/eurusd_research/statistics/__init__.py",
+        "sha256": "faa05cbff6645b12252353d3c81484153ad1f691cfa0c40028d9c2b5234cb27f"
+      },
+      {
+        "git_blob_id": "52dff850cd73d982d8765240c7fdfd9506863f39",
+        "path": "src/eurusd_research/studies/__init__.py",
+        "sha256": "0fb47f348dc9c1657b0f128436fc40c1792f6dcd0178afde10afea1d03854cfb"
+      },
+      {
+        "git_blob_id": "4ffe8b568f26902781de3c7271adb4e74aef5796",
+        "path": "src/eurusd_research/studies/__main__.py",
+        "sha256": "4dc71ace14032d9f006ec6e86f1e5d6dc2466c1133fccbccd785ab5d15d55f29"
+      },
+      {
+        "git_blob_id": "14115fde15fdb0977ca0adb7f59cfd988c319b5a",
+        "path": "src/eurusd_research/studies/completion.py",
+        "sha256": "c5ad6b04e9b10f816c66d32bd919272f36b1a8b862b39cf8f5ac58c54329f5ca"
+      },
+      {
+        "git_blob_id": "e8d1036247f6b2594ba706986c7e91e0775d14a2",
+        "path": "src/eurusd_research/studies/configuration.py",
+        "sha256": "2a09e7443f0be88168a98ecd19c8d71efc210b79876bdf441766d501bcadd7e2"
+      },
+      {
+        "git_blob_id": "aa6b96d361c648fe2a11a9fe5bbe7a6d16707840",
+        "path": "src/eurusd_research/studies/daily_aggregation.py",
+        "sha256": "3e482808f91915a9497d43e92c07ed2f7d6728f27ef879a729a5caf6ec279aaf"
+      },
+      {
+        "git_blob_id": "b15f57e245f4d829cdf298d2683be8ceeb5e2041",
+        "path": "src/eurusd_research/studies/dependencies.py",
+        "sha256": "c324630ccfcee8ec934f9a8454df04386bf5d460463fd965aa16abf3069a5ca4"
+      },
+      {
+        "git_blob_id": "2629f9a6b9dd0a01564df00c4891bd41be36c16b",
+        "path": "src/eurusd_research/studies/git_anchor.py",
+        "sha256": "b5a09bcc89c0dfe5cc442bcde9c7fa4f5ecdbda0b45b0f997e387d21ab1fbd1d"
+      },
+      {
+        "git_blob_id": "36f2bbda9189832ec57efe2067e389c3b674ce65",
+        "path": "src/eurusd_research/studies/independent_daily.py",
+        "sha256": "42c4b9155cb2edc2ba51277954f2568a52d6c8bb4540c7abebc801fb8bc75991"
+      },
+      {
+        "git_blob_id": "8a28e5fa108f1ba2ec66a763e3fb4f6bca47d6ae",
+        "path": "src/eurusd_research/studies/independent_inventory.py",
+        "sha256": "23bfeaf9e1a798974826a319e528fec36c0a27d0d693f0ccd83d0a7ac9e9819e"
+      },
+      {
+        "git_blob_id": "721f7a57935a045e813232f563ad76eddba35ab2",
+        "path": "src/eurusd_research/studies/independent_rating.py",
+        "sha256": "cc0612147f7a819c65de5a3e7ac0cd05dce3056226b5ed17ce581eea2dc92297"
+      },
+      {
+        "git_blob_id": "09ccc4fe99a95a980e6b164f3e5d265a678e6e52",
+        "path": "src/eurusd_research/studies/independent_reconciliation.py",
+        "sha256": "5cc3d4d8eb18cb0381dacbbea50ebdedde60ea613ad296f292e2dba55612b44a"
+      },
+      {
+        "git_blob_id": "dfc17ad35328cfa1ee7ab16b204ee849f6534f56",
+        "path": "src/eurusd_research/studies/independent_robustness.py",
+        "sha256": "032225e79c97e1e1ca4da46c0464d9dfbf410b46567370709e15f5e18efbf1eb"
+      },
+      {
+        "git_blob_id": "eb3fe250da1575b14d4eeb828a6f7fc756363642",
+        "path": "src/eurusd_research/studies/independent_statistics.py",
+        "sha256": "00c1530908cdf211c2adc2b882c3ebe39f4943646595a993a94564620ba8133e"
+      },
+      {
+        "git_blob_id": "0b5365d966501ef23507adf2e5c2081798774b3f",
+        "path": "src/eurusd_research/studies/integrity.py",
+        "sha256": "5010ffcf8f61f54dd143945dce8643434355b74764373b30e1568ca089b62807"
+      },
+      {
+        "git_blob_id": "9e549a68a7d3550a88f89cee88289a3f8b51b6a8",
+        "path": "src/eurusd_research/studies/orchestration.py",
+        "sha256": "9b86f7e69c3af0abdb01d2983176c94afce8c1e21a8cd9770eb685abb4f26aea"
+      },
+      {
+        "git_blob_id": "794ffb181f7b901c1f3feeed7aa6eb06639d5587",
+        "path": "src/eurusd_research/studies/plotting.py",
+        "sha256": "e9d39f69f46b2c6b687a1239c47e3fb6a83b91100096c92cb5246b2da96477b6"
+      },
+      {
+        "git_blob_id": "0ac991ae203ca39448961367f236b03ad1ae23eb",
+        "path": "src/eurusd_research/studies/reconciliation_schema.py",
+        "sha256": "4d161560adc22f4dc1c284cde71fd6fd110fa42e97628c59374601eda0822a0c"
+      },
+      {
+        "git_blob_id": "e7a06ecbeb377a1fb62eb0cab9e9d6e6e8bfa305",
+        "path": "src/eurusd_research/studies/registration_models.py",
+        "sha256": "50bc5fa75ef18e82d693f28eb4796b8c8a47a505f248307d67ca69237b270cd5"
+      },
+      {
+        "git_blob_id": "db480bb407f33a660241401754d80bd2bdc887f4",
+        "path": "src/eurusd_research/studies/registry.py",
+        "sha256": "fbae57dcae494755d423bd3ca0ffb4a250cbca8070ddc527e90c957b55d7baa2"
+      },
+      {
+        "git_blob_id": "a6d98acab2cde93070159635d52071ad2528bf56",
+        "path": "src/eurusd_research/studies/robustness.py",
+        "sha256": "644c0ba4e54b587c57b5ce56c2850f2344c8c8563c3a9a9aef04300dfab41433"
+      },
+      {
+        "git_blob_id": "f243785ef9edcc6aad20c4e1ab128b3aebf924da",
+        "path": "src/eurusd_research/studies/statistics.py",
+        "sha256": "4e28884fde38ffac8de36f51283d0cbed3ff8e9f150c24e84835d62dd100f8ae"
+      },
+      {
+        "git_blob_id": "7833f2845cbde5489054c5684328f12a1638dc86",
+        "path": "src/eurusd_research/studies/task04.py",
+        "sha256": "780f551c756c8f1b48cf7aca3f3d8e54c59407902292735c216708d2b885c31c"
+      },
+      {
+        "git_blob_id": "504d672d9588c2ef12c0e1968ea1f1139f4da63d",
+        "path": "studies/task03_task04_v2.11_evidence.json",
+        "sha256": "6ff69a1c39e4181595a7bd46be4b6c7c03a5256405c9dc6227983ed74f0d596e"
+      },
+      {
+        "git_blob_id": "62c264d285eacbba9472f0fa06db5eca4ad5258f",
+        "path": "studies/task04_daily_range_weekday.v2.11.yaml",
+        "sha256": "504084770571b4fb131de864c8fb708d178a94ce76eb2a5ee29132ea0d98b96b"
+      },
+      {
+        "git_blob_id": "9caaff501f1b635e52b38218641db344ad59d3eb",
+        "path": "studies/task04_development_baseline.json",
+        "sha256": "9a37e3799a8005f27c460e25158f8140f0208677ff5a9247a039ec6dd2b9ac3e"
+      },
+      {
+        "git_blob_id": "d06205ae638946dc599685f01cb0accb94590fe3",
+        "path": "studies/task04_v2.10_stopped_attempt.json",
+        "sha256": "09cae69a7b1b887a4ccedeff04311aabf57fff68d9b9e301029a70df7c6f9159"
+      },
+      {
+        "git_blob_id": "37374deec3afc042352c8e1f4e5d91c146e948ee",
+        "path": "studies/task04_v2.11_environment_lock.json",
+        "sha256": "80bbd1b47c91e2c30aa2900b4b472ad39d7e2394d2cb8931d38ec1e31a958977"
+      },
+      {
+        "git_blob_id": "634554d70c495f9af0ba57f346ad25ec86934f5a",
+        "path": "studies/task04_v2.11_source_manifest.json",
+        "sha256": "81f258d602ccb487729ce9af52e276f4dc6eb64a1f95538236b6984d59dcacc5"
+      },
+      {
+        "git_blob_id": "b6a99e0ad99f8e2606036405ad58de16dd949936",
+        "path": "tests/__init__.py",
+        "sha256": "35ea42e8ff309e1701e540131252a973a495590cb3f979d4e3aa00fce3c2508e"
+      },
+      {
+        "git_blob_id": "70df58632e53ac51de1a13e177c3bc8b163079be",
+        "path": "tests/conftest.py",
+        "sha256": "c7dfb46b1c66e14321a8d302dd829a37e2d42c940ea9483365cfb35906c6a04c"
+      },
+      {
+        "git_blob_id": "b206b37e0a074784c3cbda8beb504f0c1967b6f5",
+        "path": "tests/helpers.py",
+        "sha256": "3301f7afc5eb204ca864dd955adc7da5a669debe48142d6232aa40cbef2d0816"
+      },
+      {
+        "git_blob_id": "d1a59df607398844eb7aba34682fd3746f7b9815",
+        "path": "tests/integration/test_raw_audit.py",
+        "sha256": "f3ce3292584e115578ea6db9c190e9ab9cca1ec66996909fb15e81f6161d09e7"
+      },
+      {
+        "git_blob_id": "eeba0fcb7452bb0b6d0bbadcc922a4ed4efad876",
+        "path": "tests/integration/test_repository_setup.py",
+        "sha256": "88a4c871003171d50ae4d908bda677e8c292421d6e83e0c11eceb4b3eb01c523"
+      },
+      {
+        "git_blob_id": "774e3cdae6158582103f49c48e4934d6540e06b4",
+        "path": "tests/integration/test_research_coverage.py",
+        "sha256": "7e576e00b7cb92a5b58a721c9f3edd5af3b4f38e08fb028518688cb21e95d5a9"
+      },
+      {
+        "git_blob_id": "37174e2fa038879e47b616b21693f61c911a7384",
+        "path": "tests/integration/test_task04_study.py",
+        "sha256": "b4edd06c17e384e78ff998757c6eeb5f95f5a73388568f8c339146524f1a0bd6"
+      },
+      {
+        "git_blob_id": "7f3e3f7a82268906705c459f995ca5a922482438",
+        "path": "tests/integration/test_task04_v27_lifecycle_states.py",
+        "sha256": "6bb48f8341fdc97efcad2c893391bf429d4347d1155fef08a94af03037c3f943"
+      },
+      {
+        "git_blob_id": "f0be20cc552d52e841dfb483e1e897fe4081bc88",
+        "path": "tests/unit/test_audit.py",
+        "sha256": "51caee880134dc57a9b6a606418302dd537c2376ec7bc59480c8f3c14633f18f"
+      },
+      {
+        "git_blob_id": "25b4065ebbc2ae7c7c40d8ceb3487847ff877fab",
+        "path": "tests/unit/test_config.py",
+        "sha256": "56e86b2ac734095fc41e63dbe467bc61264e9aff740617eb64d9c77d515a3785"
+      },
+      {
+        "git_blob_id": "75f69607cee59ffe2ec226662df020baff71e4aa",
+        "path": "tests/unit/test_coverage_eligibility.py",
+        "sha256": "88832bdc5bb1cc56aca8f96e7dceb7d64b39ef5e783cbd14446dba83b7ccf163"
+      },
+      {
+        "git_blob_id": "58052baf6eb92a73489a0d041832d9fe49556cea",
+        "path": "tests/unit/test_coverage_orchestration.py",
+        "sha256": "6d9c31e79c91402288603614bee6a52075cd9ba9c01208f31b96deef77c2667e"
+      },
+      {
+        "git_blob_id": "42a810f92739a610500ed5f8924c6b19074afca7",
+        "path": "tests/unit/test_gaps.py",
+        "sha256": "8286b294116411fb5df66bdba309b8519c91e1e354823d880d7097b112d36679"
+      },
+      {
+        "git_blob_id": "60438c3481775677f5ee498b3bc99d236187dd1a",
+        "path": "tests/unit/test_logging_utils.py",
+        "sha256": "4a3fa8e55049bf303c37d7f1e0470fddf2196aa79eff17ec4b0b5bec2a94dd8a"
+      },
+      {
+        "git_blob_id": "79e520f0398e844f50c31d8d6f233d4f54efcecc",
+        "path": "tests/unit/test_paths.py",
+        "sha256": "b81d3808f06278790f8ac5417db9e7aee1e02ea0e82ca1de8c6fd1a8ac0725c6"
+      },
+      {
+        "git_blob_id": "4089016f0c3efe4898010bf8e52a651b1708f95f",
+        "path": "tests/unit/test_quality_models.py",
+        "sha256": "5579c93e9bb657197ce504921743d9d21e74700ef0db806d2b59e9bbd6768116"
+      },
+      {
+        "git_blob_id": "80d96d4300df238a675d3b7df0644ff7e0bfb335",
+        "path": "tests/unit/test_registry.py",
+        "sha256": "57913eb491cc56d5c13a98f40d1c097b1f4134caa036c88d2683f400ac3db873"
+      },
+      {
+        "git_blob_id": "d598c5d4a74e22911b74ea635d4864f8f97f3733",
+        "path": "tests/unit/test_task04_cli.py",
+        "sha256": "fb8f1c2a64796f8548e868e500a131d3d07c63d901dabe99214aae431305dec6"
+      },
+      {
+        "git_blob_id": "0c612ddf75ca4a964592cb379f63431868f7ec55",
+        "path": "tests/unit/test_task04_daily_aggregation.py",
+        "sha256": "929a6e8d704b96b9bf5c04ae1d083784a12a9c8dda614492536dd6b3d349b6ef"
+      },
+      {
+        "git_blob_id": "98cf1286f2de6a7e1b0ee66fbd900f29113f4fa9",
+        "path": "tests/unit/test_task04_evidence_rating.py",
+        "sha256": "140f9f185f35685489438201da1566d8055f8d8af5dfd5ec177f96d3302d3f08"
+      },
+      {
+        "git_blob_id": "bd4825b04bb0cca182328a62a8101e977558c766",
+        "path": "tests/unit/test_task04_git_anchor.py",
+        "sha256": "e6d5990db5316350b04d79471380319555d4a907713997b429fcd807f97d03fd"
+      },
+      {
+        "git_blob_id": "0226a0a0a0cde26f41b20bd9b87bb338e37bf716",
+        "path": "tests/unit/test_task04_integrity.py",
+        "sha256": "4057da655cdd24c697e25ae0fa52e5429e396f36407919bb1b7c610f68fbb0f1"
+      },
+      {
+        "git_blob_id": "b82d349f902a32e3b6f8282bc2fc960c9a12550c",
+        "path": "tests/unit/test_task04_outputs.py",
+        "sha256": "4fc400ff7ec00895c5c4b0c1e9d4431777bde6db058882a4021f847788fedb62"
+      },
+      {
+        "git_blob_id": "1e6073e1865f26095f8ada6f1a248e2919d39f31",
+        "path": "tests/unit/test_task04_plotting.py",
+        "sha256": "bd2f7eb75faf227d27c8da5ec42d3d4b2f23dd5979b0f4b4f73ec7bad0612014"
+      },
+      {
+        "git_blob_id": "786558d7233e40345139281c3f9c257d62130d03",
+        "path": "tests/unit/test_task04_registry_config.py",
+        "sha256": "a03c795640105caf4a4235124e61ae913b83bf732a07ab3d736d6fef3c83211b"
+      },
+      {
+        "git_blob_id": "441e99358914b08d2483107546355893179ee57f",
+        "path": "tests/unit/test_task04_robustness.py",
+        "sha256": "73f42194b04c13b7b322b5ce323dcf39b1e2c5783fbb8bcca7b621dce02f1e49"
+      },
+      {
+        "git_blob_id": "3035bd85fa99bcd0282aa0df145b574dc9c8fe70",
+        "path": "tests/unit/test_task04_statistics.py",
+        "sha256": "92359fd8832855b71c8b7e5228bef58de266bff7246cbf53c73aaf364295acc1"
+      },
+      {
+        "git_blob_id": "e48cf8c173d1b3f6d0e4a43683def0a839740c91",
+        "path": "tests/unit/test_task04_v25_reconciliation.py",
+        "sha256": "e454d3fa893b561f8d44e2dddae8d6faaa7de0e66b71c78063d4d001180390a1"
+      },
+      {
+        "git_blob_id": "ff711b6e581e7ae74bbcbcd70813f232cc1930e8",
+        "path": "tests/unit/test_task04_v26_governance.py",
+        "sha256": "841ec0ca9b1e6c788a7e49c149833e0003e367c010a1aa17572f5a48b0d41ed3"
+      },
+      {
+        "git_blob_id": "fdbe954c58801c9434ab7318e1ea86a76226e9fa",
+        "path": "tests/unit/test_task04_v26_independent_full.py",
+        "sha256": "879f6d1991029a23d794ef9345e7976af4aa06f98bbe92a4ec8906e7db3e2f16"
+      },
+      {
+        "git_blob_id": "be437662cab27b74a3dd34ad92e775962b4e4160",
+        "path": "tests/unit/test_task04_v26_reconciliation.py",
+        "sha256": "0f530cd4672b9e6b325426085e6130bc394f2db7c2d22ad5b724acb674a4b3a8"
+      },
+      {
+        "git_blob_id": "acc60121e8962cd6a4e481220d6e6e9bd27cbdb4",
+        "path": "tests/unit/test_task04_v28_candidate_identity.py",
+        "sha256": "f9b95d15c8ad10c22f954e945c3bf31b78089de31e75e14319b25b773084720f"
+      }
+    ],
+    "registered_path_inventory": [
+      "Makefile",
+      "configs/coverage.yaml",
+      "configs/data.yaml",
+      "configs/project.yaml",
+      "configs/sessions.yaml",
+      "configs/task04_daily_range_weekday.yaml",
+      "pyproject.toml",
+      "reports/audits/monthly_coverage.csv",
+      "reports/audits/raw_data_quality_audit.json",
+      "reports/audits/raw_dataset_manifest.json",
+      "reports/audits/timestamp_gaps.csv",
+      "reports/coverage/coverage_profiles.csv",
+      "reports/coverage/coverage_summary.json",
+      "reports/coverage/coverage_summary.md",
+      "reports/coverage/date_flag_counts.csv",
+      "reports/coverage/month_flag_counts.csv",
+      "reports/coverage/row_flag_counts.csv",
+      "scripts/complete_task04_v210.py",
+      "scripts/complete_task04_v211.py",
+      "scripts/complete_task04_v24.py",
+      "scripts/complete_task04_v25.py",
+      "scripts/complete_task04_v26.py",
+      "scripts/complete_task04_v27.py",
+      "scripts/complete_task04_v28.py",
+      "scripts/complete_task04_v29.py",
+      "scripts/create_task04_registration_receipt.py",
+      "scripts/prepare_task04_v210_integrity_evidence.py",
+      "scripts/prepare_task04_v210_registration.py",
+      "scripts/prepare_task04_v211_integrity_evidence.py",
+      "scripts/prepare_task04_v211_registration.py",
+      "scripts/prepare_task04_v23_integrity_evidence.py",
+      "scripts/prepare_task04_v23_registration.py",
+      "scripts/prepare_task04_v24_integrity_evidence.py",
+      "scripts/prepare_task04_v24_registration.py",
+      "scripts/prepare_task04_v25_integrity_evidence.py",
+      "scripts/prepare_task04_v25_registration.py",
+      "scripts/prepare_task04_v26_integrity_evidence.py",
+      "scripts/prepare_task04_v26_registration.py",
+      "scripts/prepare_task04_v27_integrity_evidence.py",
+      "scripts/prepare_task04_v27_registration.py",
+      "scripts/prepare_task04_v28_integrity_evidence.py",
+      "scripts/prepare_task04_v28_registration.py",
+      "scripts/prepare_task04_v29_integrity_evidence.py",
+      "scripts/prepare_task04_v29_registration.py",
+      "scripts/reconcile_task04_v210.py",
+      "scripts/reconcile_task04_v211.py",
+      "scripts/reconcile_task04_v25.py",
+      "scripts/reconcile_task04_v26.py",
+      "scripts/reconcile_task04_v27.py",
+      "scripts/reconcile_task04_v28.py",
+      "scripts/reconcile_task04_v29.py",
+      "scripts/register_raw_dataset.py",
+      "scripts/validate_environment.py",
+      "scripts/validate_task04_preregistration.py",
+      "scripts/validate_task04_registration_receipt.py",
+      "scripts/validate_task04_v210_schemas.py",
+      "scripts/validate_task04_v211_schemas.py",
+      "scripts/validate_task04_v24_schemas.py",
+      "scripts/validate_task04_v25_schemas.py",
+      "scripts/validate_task04_v26_schemas.py",
+      "scripts/validate_task04_v27_schemas.py",
+      "scripts/validate_task04_v28_schemas.py",
+      "scripts/validate_task04_v29_schemas.py",
+      "src/eurusd_research/__init__.py",
+      "src/eurusd_research/calendars/__init__.py",
+      "src/eurusd_research/config.py",
+      "src/eurusd_research/data/__init__.py",
+      "src/eurusd_research/data/__main__.py",
+      "src/eurusd_research/data/audit.py",
+      "src/eurusd_research/data/gaps.py",
+      "src/eurusd_research/data/quality_models.py",
+      "src/eurusd_research/data/registry.py",
+      "src/eurusd_research/data/reporting.py",
+      "src/eurusd_research/data/schemas.py",
+      "src/eurusd_research/data/validation.py",
+      "src/eurusd_research/features/__init__.py",
+      "src/eurusd_research/logging_utils.py",
+      "src/eurusd_research/paths.py",
+      "src/eurusd_research/reporting/__init__.py",
+      "src/eurusd_research/research/__init__.py",
+      "src/eurusd_research/research/__main__.py",
+      "src/eurusd_research/research/coverage.py",
+      "src/eurusd_research/research/eligibility.py",
+      "src/eurusd_research/research/models.py",
+      "src/eurusd_research/research/registry.py",
+      "src/eurusd_research/statistics/__init__.py",
+      "src/eurusd_research/studies/__init__.py",
+      "src/eurusd_research/studies/__main__.py",
+      "src/eurusd_research/studies/completion.py",
+      "src/eurusd_research/studies/configuration.py",
+      "src/eurusd_research/studies/daily_aggregation.py",
+      "src/eurusd_research/studies/dependencies.py",
+      "src/eurusd_research/studies/git_anchor.py",
+      "src/eurusd_research/studies/independent_daily.py",
+      "src/eurusd_research/studies/independent_inventory.py",
+      "src/eurusd_research/studies/independent_rating.py",
+      "src/eurusd_research/studies/independent_reconciliation.py",
+      "src/eurusd_research/studies/independent_robustness.py",
+      "src/eurusd_research/studies/independent_statistics.py",
+      "src/eurusd_research/studies/integrity.py",
+      "src/eurusd_research/studies/orchestration.py",
+      "src/eurusd_research/studies/plotting.py",
+      "src/eurusd_research/studies/reconciliation_schema.py",
+      "src/eurusd_research/studies/registration_models.py",
+      "src/eurusd_research/studies/registry.py",
+      "src/eurusd_research/studies/robustness.py",
+      "src/eurusd_research/studies/statistics.py",
+      "src/eurusd_research/studies/task04.py",
+      "studies/task03_task04_v2.11_evidence.json",
+      "studies/task04_daily_range_weekday.v2.11.yaml",
+      "studies/task04_development_baseline.json",
+      "studies/task04_v2.10_stopped_attempt.json",
+      "studies/task04_v2.11_environment_lock.json",
+      "studies/task04_v2.11_source_manifest.json",
+      "tests/__init__.py",
+      "tests/conftest.py",
+      "tests/helpers.py",
+      "tests/integration/test_raw_audit.py",
+      "tests/integration/test_repository_setup.py",
+      "tests/integration/test_research_coverage.py",
+      "tests/integration/test_task04_study.py",
+      "tests/integration/test_task04_v27_lifecycle_states.py",
+      "tests/unit/test_audit.py",
+      "tests/unit/test_config.py",
+      "tests/unit/test_coverage_eligibility.py",
+      "tests/unit/test_coverage_orchestration.py",
+      "tests/unit/test_gaps.py",
+      "tests/unit/test_logging_utils.py",
+      "tests/unit/test_paths.py",
+      "tests/unit/test_quality_models.py",
+      "tests/unit/test_registry.py",
+      "tests/unit/test_task04_cli.py",
+      "tests/unit/test_task04_daily_aggregation.py",
+      "tests/unit/test_task04_evidence_rating.py",
+      "tests/unit/test_task04_git_anchor.py",
+      "tests/unit/test_task04_integrity.py",
+      "tests/unit/test_task04_outputs.py",
+      "tests/unit/test_task04_plotting.py",
+      "tests/unit/test_task04_registry_config.py",
+      "tests/unit/test_task04_robustness.py",
+      "tests/unit/test_task04_statistics.py",
+      "tests/unit/test_task04_v25_reconciliation.py",
+      "tests/unit/test_task04_v26_governance.py",
+      "tests/unit/test_task04_v26_independent_full.py",
+      "tests/unit/test_task04_v26_reconciliation.py",
+      "tests/unit/test_task04_v28_candidate_identity.py"
+    ],
+    "registered_path_tree_fingerprint": "d4b7b51903d8ae8f4cc8f5625383a3c509d30d2afe916fd8be888a29bd6f31d7",
+    "repository_dirty_state_policy": "Every registered path must be tracked and byte-identical to its v2.11 anchor blob. Post-anchor receipt, candidate, reconciliation, lifecycle, and final outputs remain outside the registered tree."
+  },
+  "identity": {
+    "method_id": "RANGE-WEEKDAY-001",
+    "method_version": "range-weekday-registered-replication-v2.11",
+    "non_first_look_disclosure": "The study design was locked before the corrected production regeneration. However, the underlying analysis had already been developed and its results reviewed. The corrected production run is therefore treated as a registered replication of the development analysis, not as a pristine first-look preregistration.",
+    "receipt_file_path": "studies/task04_daily_range_weekday.v2.11.receipt.json",
+    "receipt_schema_version": "task04-registration-receipt-v6",
+    "registration_classification": "correctively registered replication of the developed Task 04 analysis",
+    "registration_file_path": "studies/task04_daily_range_weekday.v2.11.yaml",
+    "registration_status_at_anchoring": "PREREGISTERED",
+    "registration_version": "2.11",
+    "study_id": "TASK-04"
+  },
+  "integrity": {
+    "allowed_mutable_fields_after_anchoring": [],
+    "canonicalization_version": "task04-canonical-json-v1",
+    "field_inventory": [
+      "git_anchor.*",
+      "identity.*",
+      "integrity.allowed_mutable_fields_after_anchoring",
+      "integrity.canonicalization_version",
+      "integrity.field_inventory",
+      "integrity.schema_fingerprint",
+      "scientific_and_executable_design.*",
+      "upstream_evidence.raw_dataset.*",
+      "upstream_evidence.task02.*",
+      "upstream_evidence.task03.*"
+    ],
+    "schema_fingerprint": "3aff980eff7c5631845a4756389d59e9d78caa87aaacdfdd74223bb7d72c52e9"
+  },
+  "receipt_fingerprint": "59f50abc41f4eb16a307b08ad39af789459ddd0f516324508ca15673780355b0",
+  "scientific_and_executable_design": {
+    "candidate_identity_comparison_policy": "CURRENT_PATH_SIZE_SHA256_AND_DIGEST_MUST_EQUAL_VALIDATED_BASELINE",
+    "candidate_identity_establishment_stage": "AFTER_TWELVE_COMPONENT_RECONCILIATION",
+    "candidate_identity_immutability_policy": "WRITE_ONCE_NO_AUTOMATIC_REBASELINE",
+    "candidate_identity_schema_version": "task04-validated-candidate-identity-v1",
+    "dependence_reporting_policy": "NOMINAL_PRECISION_NOT_DEPENDENCE_ROBUST_NO_DIRECTIONAL_CLAIM",
+    "deviation_policy": "NEW_REGISTRATION_VERSION_REQUIRED",
+    "environment_lock_fingerprint": "80bbd1b47c91e2c30aa2900b4b472ad39d7e2394d2cb8931d38ec1e31a958977",
+    "executable_configuration_fingerprint": "b88936b4dfbce6dc1719126b46794ab5f8e6a2350faaf88601c3824aafd835b9",
+    "expected_figure_inventory": [
+      "figures/01_weekday_boxplot.png",
+      "figures/02_weekday_violin_or_distribution.png",
+      "figures/03_weekday_ecdf.png",
+      "figures/04_weekday_mean_median_ci.png",
+      "figures/05_yearly_weekday_medians.png",
+      "figures/06_coverage_profile_comparison.png",
+      "figures/07_chronological_stability.png",
+      "figures/08_volatility_regime_comparison.png"
+    ],
+    "expected_production_output_inventory": [
+      "chronological_split_results.csv",
+      "coverage_profile_comparison.csv",
+      "daily_observations.csv",
+      "daily_profile_observations.csv",
+      "effect_sizes.csv",
+      "extreme_event_sensitivity.csv",
+      "figures/01_weekday_boxplot.png",
+      "figures/02_weekday_violin_or_distribution.png",
+      "figures/03_weekday_ecdf.png",
+      "figures/04_weekday_mean_median_ci.png",
+      "figures/05_yearly_weekday_medians.png",
+      "figures/06_coverage_profile_comparison.png",
+      "figures/07_chronological_stability.png",
+      "figures/08_volatility_regime_comparison.png",
+      "omnibus_tests.csv",
+      "pairwise_tests.csv",
+      "period_robustness.csv",
+      "population_reconciliation.csv",
+      "preregistration_deviations.csv",
+      "study_registry_record.json",
+      "study_summary.json",
+      "study_summary.md",
+      "volatility_regime_lineage.csv",
+      "volatility_regime_statistics.csv",
+      "volatility_regime_tests.csv",
+      "weekday_statistics.csv",
+      "yearly_omnibus_tests.csv",
+      "yearly_statistics.csv"
+    ],
+    "independent_rating_reconciliation_policy": "COMPARE_EVERY_REGISTERED_PRODUCTION_RATING_SUMMARY_FIELD",
+    "independent_reconciliation_path": "studies/task04_v2.11_independent_reconciliation.json",
+    "maximum_evidence_rating_cap": "MODERATE",
+    "package_dependency_lock_fingerprint": "3cf522c7b92cea658b12dfe42106e5a826708a04c0108fede2254507747dc078",
+    "reporting_interpretation_policy": "NON_SIGNIFICANCE_IS_NON_DETECTION_NOT_ABSENCE_OR_EQUIVALENCE",
+    "semantic_design_fingerprint": "e06ee9bfbf91516e168b25624e3f4b70615008cb3c433d8f1e4076612f2432a1",
+    "source_manifest_fingerprint": "0ffbb63e0557acd9eb52b2945627acabc02674dbaa313e3c8f60b03bd582365d",
+    "source_tree_fingerprint": "769732b7e10dddad23a82f1d61f79a2d9c584383cd24cee69140d574721e79e6",
+    "standalone_completion_evidence_policy": "REOPEN_STRICTLY_VALIDATE_AND_MATCH_LIFECYCLE_CONTEXT_AND_FINAL_BYTES",
+    "timestamp_assumption": "AS_SUPPLIED_TIMESTAMP_LABEL_DATE",
+    "unresolved_timestamp_limitation": "If timestamp_utc denotes candle close rather than candle open, one M15 interval at a UTC-date or audited weekly boundary may belong to the preceding interval date.",
+    "validated_candidate_identity_path": "studies/task04_v2.11_validated_candidate_identity.json",
+    "validation_segment_label_policy": "CHRONOLOGICALLY_RESERVED_NOT_HISTORICALLY_UNSEEN"
+  },
+  "upstream_evidence": {
+    "raw_dataset": {
+      "dataset_version": "sha256:b2a41310927aa9a9",
+      "manifest_fingerprint": "dce975d2e769e6201e89010cc77be7011a3e18b5782f7ae4a8ece6abb803e2e1",
+      "path": "data/raw/EURUSD_M15_UTC.csv",
+      "sha256": "b2a41310927aa9a9f699ce474bf59c449e99c506bc883cdc73c947286500383c"
+    },
+    "task02": {
+      "audit_fingerprint": "670968cbfcf018abc59bbb64a4b2b3912bae9df44988542765748328caf9c61f",
+      "readiness_status": "PASS, CONDITIONALLY_READY",
+      "schema_version": "raw-data-quality-audit-v2"
+    },
+    "task03": {
+      "algebra_fingerprint": "5737f800347fd54a2abd579f2d6e7127a74e8076c39f458526a653d3489aca6a",
+      "coverage_stable_artifact_fingerprint": "464a9600384481798eef8c48600ff75cc1f04b6faa435c6f15abf595e04a3721",
+      "exact_date_membership_fingerprint": "a898f5d541632464bd70db5cde5d0523f715f261da072c614195cb9edcf10d5f",
+      "exact_row_membership_fingerprint": "e516fb86beb24c13e088f7f5783f9eeb88406f20ae464cf7ad7403dbc3a4f25f",
+      "execution_context_fingerprint_at_receipt": "af37c4d2b4242e06fc33683b142f3f9a709f85197171b92b413c3d9b7edf8f1b",
+      "execution_context_variance_policy": "INFORMATIONAL_IF_SCIENTIFIC_AND_STABLE_ARTIFACT_IDENTITIES_MATCH",
+      "method_version": "research-coverage-v1",
+      "profile_counts": {
+        "default_research_dates": 5146,
+        "default_research_rows": 406945,
+        "observed_dates": 5146,
+        "sensitivity_2023_dates": 156,
+        "sensitivity_2023_rows": 9258,
+        "sensitivity_full_dates": 681,
+        "sensitivity_full_rows": 46468,
+        "strict_continuity_dates": 4465,
+        "strict_continuity_rows": 360477
+      },
+      "schema_version": "task03-layered-evidence-v1",
+      "scientific_membership_fingerprint": "3472712a1db02e6941d136f961acf6f4272f822c3ada1e9784b0bb8ad04251ce",
+      "stable_artifact_fingerprint": "958a1d7aa4d71901368cc3e59971ba736a5ed8187d0c0956e9498f0c46269418"
+    }
+  }
+}
